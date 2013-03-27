@@ -1,0 +1,12 @@
+{% extends "basefeed.html" %}
+
+{% block title %}outline{% endblock %}
+
+{% block content %}
+
+<h3>{{ outline }}</h3>
+{% for post in posts %}
+<div class="post"><a href="">{{ post }}</a><br>{{ post.pubDate }}<br><div class="content">{% if post.content %}{{ post.content|safe }}{% else %}{{ post.description|safe }}{% endif %}</div></div>
+{% endfor %}
+
+{% endblock %}
