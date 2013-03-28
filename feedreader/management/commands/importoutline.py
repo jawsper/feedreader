@@ -51,6 +51,9 @@ class Command(BaseCommand):
 			feed = Feed( title = data['title'], xmlUrl = data['xmlUrl'], htmlUrl = data['htmlUrl'] )
 			feed.save()
 			self.feeds += 1
-		outline = Outline( user = self.user, parent = parent, title = data['title'], feed = feed )
-		outline.save()
-		self.outlines += 1
+		try:
+			outline = Outline.objects.get( feed = feed, user = self.user )
+		except Outline.DoesNotExist:		
+			outline = Outline( user = self.user, parent = parent, title = data['title'], feed = feed )
+			outline.save()
+			self.outlines += 1

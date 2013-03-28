@@ -25,6 +25,7 @@ class UTC(datetime.tzinfo):
 class Command(BaseCommand):
 	def handle( self, *args, **options ):
 		self.stdout.write( '[Outline updater]' )
+		self.imported = 0
 		if len( args ) == 1:
 			import re
 			if re.match( '^\d+$', args[0] ):
@@ -37,6 +38,7 @@ class Command(BaseCommand):
 				return
 		for feed in Feed.objects.all():
 			self.update_feed( feed )
+		self.stdout.write( 'Done! Total posts imported: {0}'.format( self.imported ) )
 
 	def update_feed( self, feed ):
 		result = self.load_feed( feed )
@@ -84,9 +86,12 @@ class Command(BaseCommand):
 			#feed.save()
 		
 		if not changed:
+			self.stdout.write( ' - No changes detected' )
 			return None
 		
-		self.stdout.write( 'Importing {0} posts, please have patience...'.format( len( data['entries'] ) ) )
+		self.stdout.write( ' - scanning {0} posts, please have patience...'.format( len( data['entries'] ) ) )
+		
+		imported = 0
 		
 		for entry in data['entries']:
 			insert_data = {}
@@ -150,8 +155,11 @@ class Command(BaseCommand):
 				post = Post( **insert_data )
 				try:
 					post.save()
+					imported += 1
 				except IntegrityError:
 					self.stdout.write( str( entry ) )
 					raise CommandError( 'Invalid post' )
 		
+		self.stdout.write( ' - Inserted {0} new posts'.format( imported ) )
+		self.imported += imported
 		return 'OK'
