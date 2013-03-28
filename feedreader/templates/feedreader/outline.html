@@ -6,7 +6,13 @@
 
 <h3>{{ outline }}</h3>
 {% for post in posts %}
-<div class="post"><a href="">{{ post }}</a><br>{{ post.pubDate }}<br><div class="content">{% if post.content %}{{ post.content|safe }}{% else %}{{ post.description|safe }}{% endif %}</div></div>
+<div class="post">
+<div class="link"><a href="{{ post.link }}" target="_blank">{{ post.title }}</a></div>
+<div class="pubDate">{{ post.pubDate }}</div>
+<div class="source">{% if post.author %}Posted by <span class="authorName">{{ post.author }}</span>{% endif %}</div>
+<br>
+<div class="content">{% if post.content %}{{ post.content|safe }}{% else %}{{ post.description|safe }}{% endif %}</div>
+</div>
 {% endfor %}
 
 {% endblock %}
