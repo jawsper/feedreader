@@ -5,13 +5,18 @@
 {% if outline_list %}
 <ul class="feeds">
     {% for outline in outline_list %}
-	<li><img class="favicon" src="{% if outline.feed_id %}{% url 'feed_favicon' outline.feed_id %}{% else %}{{ STATIC_URL }}images/icons/silk/folder.png{% endif %}"><a href="{% url 'outline' outline.id %}">{{ outline.title }}</a>{% if outline.children %}
-	<ul>
-		{% for child in outline.children %}
-			<li><img class="favicon" src="{% if child.feed_id %}{% url 'feed_favicon' child.feed_id %}{% else %}{{ STATIC_URL }}images/icons/silk/feed.png{% endif %}"><a href="{% url 'outline' child.id %}">{{ child.title }}</a></li>
-		{% endfor %}
-	</ul>
-	{% endif %}</li>
+	<li>
+		<span class="feed" style="background-image:url('{% if outline.feed_id %}{% url 'feed_favicon' outline.feed_id %}{% else %}{{ STATIC_URL }}images/icons/silk/folder.png{% endif %}')"><a href="{% url 'outline' outline.id %}">{{ outline.title }}</a></span>
+		{% if outline.children %}
+		<ul>
+			{% for child in outline.children %}
+			<li>
+				<span class="feed" style="backgaround-image:url('{% if child.feed_id %}{% url 'feed_favicon' child.feed_id %}{% else %}{{ STATIC_URL }}images/icons/silk/feed.png{% endif %}')"><a href="{% url 'outline' child.id %}">{{ child.title }}</a></span>
+			</li>
+			{% endfor %}
+		</ul>
+		{% endif %}
+	</li>
     {% endfor %}
 </ul>
 {% else %}
