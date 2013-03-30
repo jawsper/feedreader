@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.conf import settings
+from django.views.generic.base import View
 
 from feedreader.models import Outline, Feed, Post
 
@@ -46,10 +47,6 @@ def outline( request, outline_id ):
 		'posts': posts
 	} )
 
-class IconException(Exception):
-	pass
-
-from django.views.generic.base import View
 class FeedFaviconView(View):
 	def get( self, request, feed_id ):
 		try:
