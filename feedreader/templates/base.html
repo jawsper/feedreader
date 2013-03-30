@@ -33,7 +33,7 @@
 	<div class="colright">
 		<div class="col1wrap">
 			<div id="body" class="col1">
-				<h2>{% block title %}Feedreader{% endblock title %} <img id="spinner" src="static/images/spinner.gif" /></h2>
+				<h2>{% block title %}Feedreader{% endblock title %} <img id="spinner" src="{{ STATIC_URL }}images/spinner.gif" /></h2>
 				{% block content %}{% endblock content %}
 			</div>
 		</div>
