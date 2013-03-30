@@ -11,7 +11,7 @@
 		<ul>
 			{% for child in outline.children %}
 			<li>
-				<span class="feed" style="backgaround-image:url('{% if child.feed_id %}{% url 'feed_favicon' child.feed_id %}{% else %}{{ STATIC_URL }}images/icons/silk/feed.png{% endif %}')"><a href="{% url 'outline' child.id %}">{{ child.title }}</a></span>
+				<span class="feed" style="background-image:url('{% url 'feed_favicon' child.feed_id %}')"><a href="{% url 'outline' child.id %}">{{ child.title }}</a></span>
 			</li>
 			{% endfor %}
 		</ul>
