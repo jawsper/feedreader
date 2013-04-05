@@ -1,0 +1,39 @@
+{% if outline_list %}
+<ul id="outlines" class="feeds">
+    {% for outline in outline_list %}
+	<li class="{% if outline.feed_id %}feed{% else %}folder{% endif %}">
+		<span class="outline"{% if outline.feed_id %} style="background-image:url('{% url 'feed_favicon' outline.feed_id %}')"{% endif %}><a href="{% url 'outline' outline.id %}">{{ outline.title }}</a></span>
+		{% if outline.children %}
+		<ul>
+			{% for child in outline.children %}
+			<li class="feed">
+				<span class="outline" style="background-image:url('{% url 'feed_favicon' child.feed_id %}')"><a href="{% url 'outline' child.id %}">{{ child.title }}</a></span>
+			</li>
+			{% endfor %}
+		</ul>
+		{% endif %}
+	</li>
+    {% endfor %}
+</ul>
+
+<script type="text/javascript">
+// <![CDATA[
+
+$(function()
+{
+	$( '#outlines > li.folder' ).each(function(k,v)
+	{
+		var t = $(this);
+		$( 'span.outline:first', t ).click(function()
+		{
+			t.toggleClass( 'folder-closed' );
+		});
+	});
+});
+
+// ]]>
+</script>
+
+{% else %}
+    <p>No outlines are available.</p>
+{% endif %}

@@ -2,25 +2,6 @@
 
 {% block navigation %}
 
-{% if outline_list %}
-<ul class="feeds">
-    {% for outline in outline_list %}
-	<li>
-		<span class="feed" style="background-image:url('{% if outline.feed_id %}{% url 'feed_favicon' outline.feed_id %}{% else %}{{ STATIC_URL }}images/icons/silk/folder.png{% endif %}')"><a href="{% url 'outline' outline.id %}">{{ outline.title }}</a></span>
-		{% if outline.children %}
-		<ul>
-			{% for child in outline.children %}
-			<li>
-				<span class="feed" style="background-image:url('{% url 'feed_favicon' child.feed_id %}')"><a href="{% url 'outline' child.id %}">{{ child.title }}</a></span>
-			</li>
-			{% endfor %}
-		</ul>
-		{% endif %}
-	</li>
-    {% endfor %}
-</ul>
-{% else %}
-    <p>No outlines are available.</p>
-{% endif %}
+{% include "navigation.html" %}
 
 {% endblock navigation %}
