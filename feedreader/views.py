@@ -8,7 +8,7 @@ from django.db.models import Q
 from django.conf import settings
 from django.views.generic.base import View
 
-from feedreader.models import Outline, Feed, Post
+from feedreader.models import Outline, Feed, Post, UserPost
 
 import urllib2, urlparse
 
@@ -119,3 +119,31 @@ class FeedFaviconView(View):
 	def default_icon( self ):
 		return HttpResponse( open( settings.STATIC_ROOT + 'images/icons/silk/feed.png', 'r' ).read(), content_type = 'image/png' )
 
+class PostActionView(View):
+	def post( self, request, post_id, action ):
+		return self.getpost( request, post_id, action, request.POST )
+	def get( self, request, post_id, action ):
+		return self.getpost( request, post_id, action, request.GET )
+
+	def getpost( self, request, post_id, action, params ):
+		try:
+			post = Post.objects.get( pk = post_id )
+		except Post.DoesNotExist:
+			raise Http404
+		try:
+			user_post = UserPost.objects.get( user = request.user, post = post )
+		except UserPost.DoesNotExist:
+			user_post = UserPost( user = request.user, post = post )
+			user_post.save()
+		handler = '_handle_{0}'.format( action )
+		if hasattr( self, handler ):
+			return getattr( self, handler )( request, user_post, params )
+		raise Http404
+
+	def _handle_read( self, request, user_post, params ):
+		if 'state' in params:
+			state = bool( int( params['state'] ) )
+			user_post.read = state
+			user_post.save()
+			return HttpResponse( 'Action set: user_post[{0},{1}].read = {2}'.format( user_post.user.id, user_post.post.id, state ) )
+		return HttpResponse( 'Action get: user_post[{0},{1}].read = {2}'.format( user_post.user.id, user_post.post.id, user_post.read ) )
