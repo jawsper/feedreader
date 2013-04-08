@@ -134,16 +134,12 @@ class PostActionView(View):
 			user_post = UserPost.objects.get( user = request.user, post = post )
 		except UserPost.DoesNotExist:
 			user_post = UserPost( user = request.user, post = post )
-			user_post.save()
-		handler = '_handle_{0}'.format( action )
-		if hasattr( self, handler ):
-			return getattr( self, handler )( request, user_post, params )
-		raise Http404
-
-	def _handle_read( self, request, user_post, params ):
+		state = None
 		if 'state' in params:
 			state = bool( int( params['state'] ) )
-			user_post.read = state
-			user_post.save()
-			return HttpResponse( 'Action set: user_post[{0},{1}].read = {2}'.format( user_post.user.id, user_post.post.id, state ) )
-		return HttpResponse( 'Action get: user_post[{0},{1}].read = {2}'.format( user_post.user.id, user_post.post.id, user_post.read ) )
+		if action in ( 'read', ):
+			if state != None:
+				setattr( user_post, action, state )
+				user_post.save()
+			return HttpResponse( str( int( getattr( user_post, action ) ) ) )
+		raise Http404
