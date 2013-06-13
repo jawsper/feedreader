@@ -24,7 +24,7 @@ class UTC(datetime.tzinfo):
 
 class Command(BaseCommand):
 	def handle( self, *args, **options ):
-		self.stdout.write( '[Outline updater]' )
+		self.stdout.write( '[Feed updater]' )
 		self.imported = 0
 		if len( args ) == 1:
 			import re
