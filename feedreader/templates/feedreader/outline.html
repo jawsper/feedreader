@@ -12,10 +12,14 @@ $(function()
 		post_id = /_(\d+)$/.exec( this.id )[1]
 		self.find( '.footer .action.read' ).click(function()
 		{
-			url = '/post/' + post_id + '/action/read/';
+			url = '//' + document.location.host + '/post/' + post_id + '/action/read/';
 			state = $(this).is(':checked') ? 1 : 0;
-			console.log( url );
-			console.log( state );
+			console.debug( url );
+			console.debug( state );
+			$.post( url, { state: state }, function( data )
+			{
+				show_result( data );
+			} );
 		});
 	});
 });
