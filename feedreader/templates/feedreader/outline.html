@@ -9,7 +9,7 @@ $(function()
 	$('.post').each(function( k, v )
 	{
 		var self = $(this);
-		post_id = /_(\d+)$/.exec( this.id )[1]
+		var post_id = /_(\d+)$/.exec( self.attr( 'id' ) )[1]
 		self.find( '.footer .action.read' ).click(function()
 		{
 			url = '//' + document.location.host + '/post/' + post_id + '/action/read/';
