@@ -11,6 +11,8 @@ from django.views.generic.base import View
 from feedreader.models import Outline, Feed, Post, UserPost
 
 import urllib2, urlparse
+from PIL import Image
+from StringIO import StringIO
 
 def outline_to_dict_with_children( outline ):
 	return {
@@ -50,6 +52,7 @@ def outline( request, outline_id ):
 class FeedFaviconView(View):
 	def get( self, request, feed_id ):
 		try:
+			raise Exception # temporary
 			self.feed = Feed.objects.get( pk = feed_id )
 			if self.feed.faviconUrl:
 				icon = self.load_icon( self.feed.faviconUrl )
@@ -61,16 +64,16 @@ class FeedFaviconView(View):
 			# locate the <link> tag and find the icon in there
 			icon = self.find_icon_in_page()
 			if icon:
-				self.save_icon( icon[0] )
+				self.save_icon( icon[2] )
 				return HttpResponse( icon[0], content_type = icon[1] )
 			
 			# try <host>/favicon.ico
 			icon = self.try_force_favicon()
 			if icon:
-				self.save_icon( icon[0] )
+				self.save_icon( icon[2] )
 				return HttpResponse( icon[0], content_type = icon[1] )
 		except:
-			pass		
+			pass
 		
 		return self.default_icon()
 	
@@ -83,8 +86,18 @@ class FeedFaviconView(View):
 			result = urllib2.urlopen( urllib2.Request( url, headers = { 'User-Agent': 'Chrome' } ) )
 			data = result.read()
 			content_type = result.headers.get( 'content-type' ) if 'content-type' in result.headers else 'text/html'
-			return ( data, content_type )
-		except:
+			img = Image.open( StringIO( data ) )
+			if False and content_type == 'image/x-icon' or not img.size == (16,16):
+				if not img.size == (16,16):
+					print( 'resizing' )
+					img = img.resize( ( 16, 16 ) )
+				raw = StringIO()
+				img.save( raw, 'PNG' )
+				data = raw.getvalue()
+				content_type = 'image/png'
+			return ( data, content_type, url )
+		except Exception as e:
+			print( "Exception in load_icon: {0}".format( e ) )
 			return False
 	
 	def find_icon_in_page( self ):
