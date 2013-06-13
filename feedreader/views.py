@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.conf import settings
 from django.views.generic.base import View
+from django.utils import simplejson
 
 from feedreader.models import Outline, Feed, Post, UserPost
 
@@ -154,5 +155,5 @@ class PostActionView(View):
 			if state != None:
 				setattr( user_post, action, state )
 				user_post.save()
-			return HttpResponse( str( int( getattr( user_post, action ) ) ) )
+			return HttpResponse( simplejson.dumps( { 'caption': 'Result', 'message': 'OK', 'error': False } ), mimetype='application/json' )
 		raise Http404
