@@ -36,7 +36,7 @@ $(function()
 <div class="source">{% if post.author %}Posted by <span class="authorName">{{ post.author }}</span>{% endif %}</div>
 <br>
 <div class="content">{% if post.content %}{{ post.content|safe }}{% else %}{{ post.description|safe }}{% endif %}</div>
-<div class="footer"><input class="action read" type="checkbox" name="read" value="1"> Mark as read</div>
+<div class="footer"><input class="action read" type="checkbox" name="read" value="1"{% if post.read == 1 %} checked="checked"{% endif %}> Mark as read</div>
 </div>
 {% endfor %}
 

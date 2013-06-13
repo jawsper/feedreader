@@ -40,10 +40,17 @@ def outline( request, outline_id ):
 	except Outline.DoesNotExist:
 		raise Http404
 	if outline.feed:
-		posts = Post.objects.filter( feed = outline.feed ).order_by( '-pubDate' )
+		posts = Post.objects.raw(
+		'select Post.*, UserPost.read ' +
+		'from feedreader_post Post left outer join feedreader_userpost UserPost on ( Post.id = UserPost.post_id ) ' +
+		'where Post.feed_id = %s and ( UserPost.user_id is null or UserPost.user_id = %s ) ' +
+		'order by Post.pubDate DESC', [ outline.feed.id, request.user.id ] )
 	else:
-		feeds = Outline.objects.filter( parent = outline )
-		posts = Post.objects.filter( feed__in = feeds ).order_by( '-pubDate' )
+		posts = Post.objects.raw(
+		'select Post.*, UserPost.read ' +
+		'from feedreader_post Post left outer join feedreader_userpost UserPost on ( Post.id = UserPost.post_id ) ' +
+		'where Post.feed_id in ( select feed_id from feedreader_outline where parent_id = %s ) and ( UserPost.user_id is null or UserPost.user_id = %s ) ' +
+		'order by Post.pubDate DESC', [ outline.id, request.user.id ] )
 	return render( request, 'feedreader/outline.html', { 
 		'outline_list': main_navigation( request ), 
 		'outline': outline,
