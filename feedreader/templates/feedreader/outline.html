@@ -2,16 +2,37 @@
 
 {% block title %}outline{% endblock %}
 
+{% block head %}
+<script type="text/javascript">
+$(function()
+{
+	$('.post').each(function( k, v )
+	{
+		var self = $(this);
+		post_id = /_(\d+)$/.exec( this.id )[1]
+		self.find( '.footer .action.read' ).click(function()
+		{
+			url = '/post/' + post_id + '/action/read/';
+			state = $(this).is(':checked') ? 1 : 0;
+			console.log( url );
+			console.log( state );
+		});
+	});
+});
+</script>
+{% endblock head %}
+
 {% block content %}
 
 <h3>{{ outline }}</h3>
 {% for post in posts %}
-<div class="post">
+<div class="post" id="post_{{ post.id }}">
 <div class="link"><a href="{{ post.link }}" target="_blank">{{ post.title }}</a></div>
 <div class="pubDate">{{ post.pubDate }}</div>
 <div class="source">{% if post.author %}Posted by <span class="authorName">{{ post.author }}</span>{% endif %}</div>
 <br>
 <div class="content">{% if post.content %}{{ post.content|safe }}{% else %}{{ post.description|safe }}{% endif %}</div>
+<div class="footer"><input class="action read" type="checkbox" name="read" value="1"> Mark as read</div>
 </div>
 {% endfor %}
 
