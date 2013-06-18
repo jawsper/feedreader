@@ -43,7 +43,7 @@ class Command(BaseCommand):
 	def update_feed( self, feed ):
 		result = self.load_feed( feed )
 		if result:
-			feed.lastUpdated = datetime.datetime.utcnow().replace(tzinfo=UTC())
+			feed.lastUpdated = datetime.datetime.utcnow().replace( tzinfo = UTC() )
 			feed.lastStatus = result
 			feed.save()
 	
@@ -75,15 +75,11 @@ class Command(BaseCommand):
 			last_updated = data['updated_parsed']
 		elif 'published_parsed' in data:
 			last_updated = data['published_parsed']
-			
-		#self.stdout.write( str( type( feed.lastPubDate ) ) )
-		#return
 		
 		if feed.lastPubDate and last_updated and compare_datetime_to_struct_time( feed.lastPubDate, last_updated ):
 			changed = False
 		elif last_updated:
 			feed.lastPubDate = time.strftime( MYSQL_DATETIME_FORMAT, last_updated )
-			#feed.save()
 		
 		if not changed:
 			self.stdout.write( ' - No changes detected' )
