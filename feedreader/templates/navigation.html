@@ -16,24 +16,6 @@
     {% endfor %}
 </ul>
 
-<script type="text/javascript">
-// <![CDATA[
-
-$(function()
-{
-	$( '#outlines > li.folder' ).each(function(k,v)
-	{
-		var t = $(this);
-		$( 'span.outline:first', t ).click(function()
-		{
-			t.toggleClass( 'folder-closed' );
-		});
-	});
-});
-
-// ]]>
-</script>
-
 {% else %}
     <p>No outlines are available.</p>
 {% endif %}
