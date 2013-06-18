@@ -21,6 +21,9 @@ class Outline(models.Model):
 	title	= models.CharField( max_length = 1000 )
 	feed 	= models.ForeignKey( Feed, null = True, blank = True )
 	
+	sort_order_asc	= models.BooleanField( default = False )
+	show_only_new	= models.BooleanField( default = False )
+	
 	def __unicode__( self ):
 		return self.title
 
@@ -38,6 +41,15 @@ class Post(models.Model):
 	
 	def __unicode__( self ):
 		return self.title
+		
+	def toJsonDict( self ):
+		data = {}
+		for k in ( 'id', 'link', 'title', 'author' ):
+			data[ k ] = ( getattr( self, k ) )
+		data[ 'pubDate' ] = str( self.pubDate )
+		data[ 'content'] = ( self.content if self.content else self.description )
+		data[ 'read' ] = self.read if self.read != None else False
+		return data
 
 class UserPost(models.Model):
 	user = models.ForeignKey( User )
