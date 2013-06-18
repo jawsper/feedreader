@@ -7,10 +7,11 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.conf import settings
 from django.views.generic.base import View
-from django.utils import simplejson
+from django.core import serializers
 
 from feedreader.models import Outline, Feed, Post, UserPost
 
+import json
 import urllib2, urlparse
 from PIL import Image
 from StringIO import StringIO
@@ -56,6 +57,80 @@ def outline( request, outline_id ):
 		'outline': outline,
 		'posts': posts
 	} )
+	
+class HttpJsonResponse( HttpResponse ):
+	def __init__( self, data = None, **kwargs ):
+		HttpResponse.__init__( self, json.dumps( data if data else kwargs ), content_type = 'application/json' )
+	
+@login_required
+def get_posts( request, outline_id, arg_skip = 0 ):
+	try:
+		outline = Outline.objects.get( pk = outline_id, user = request.user.id )
+	except Outline.DoesNotExist:
+		return HttpJsonResponse()
+	
+	sort_order = 'ASC' if outline.sort_order_asc else 'DESC'
+	show_only_new = outline.show_only_new
+	skip = int( arg_skip )
+	limit = 20
+	
+	if show_only_new:
+		query_user_post_where = ' and ( UserPost.read is null or UserPost.read = 0 ) '
+	else:
+		query_user_post_where = ''
+	
+	if outline.feed:
+		posts = Post.objects.raw(
+		'select Post.*, UserPost.read ' +
+		'from feedreader_post Post left outer join feedreader_userpost UserPost on ( Post.id = UserPost.post_id and UserPost.user_id = %s ) ' +
+		'where Post.feed_id = %s ' + query_user_post_where + ' ' +
+		'order by Post.pubDate ' + sort_order + ' ' +
+		'LIMIT %s,%s', [ request.user.id, outline.feed.id, skip, limit ] )
+	else:
+		posts = Post.objects.raw(
+		'select Post.*, UserPost.read ' +
+		'from feedreader_post Post left outer join feedreader_userpost UserPost on ( Post.id = UserPost.post_id and UserPost.user_id = %s ) ' +
+		'where Post.feed_id in ( select feed_id from feedreader_outline where parent_id = %s ) ' + query_user_post_where + ' ' +
+		'order by Post.pubDate ' + sort_order + ' ' +
+		'LIMIT %s,%s', [ request.user.id, outline.id, skip, limit ] )
+	return HttpJsonResponse( title = outline.feed.title if outline.feed else outline.title, show_only_new = show_only_new, sort_order = sort_order, limit = limit, posts = [ post.toJsonDict() for post in posts ] )
+
+@login_required
+def outline_set( request, outline_id ):
+	try:
+		outline = Outline.objects.get( pk = outline_id, user = request.user.id )
+	except Outline.DoesNotExist:
+		return HttpResponse( 'ERROR' )
+	
+	if len( request.POST ) == 0 or 'action' not in request.POST:
+		return HttpResponse( 'ERROR' )
+	
+	if request.POST['action'] not in ( 'sort_order', 'show_only_new' ):
+		return HttpResponse( 'ERROR' )
+	
+	if 'value' in request.POST and request.POST['value'] in ( '0', '1' ):
+		value = bool( request.POST['value'] )
+	else:
+		value = 'toggle'
+	
+	if request.POST['action'] == 'sort_order':
+		if value == 'toggle':
+			value = not outline.sort_order_asc
+		outline.sort_order_asc = value
+	elif request.POST['action'] == 'show_only_new':
+		if value == 'toggle':
+			value = not outline.show_only_new
+		outline.show_only_new = value
+	else:
+		return HttpResponse( 'ERROR' )
+		
+	outline.save()
+	
+	return HttpResponse( 'OK' );
+
+@login_required
+def api0( request, action ):
+	return HttpResponse( 'OK' )
 
 class FeedFaviconView(View):
 	def get( self, request, feed_id ):
@@ -162,5 +237,5 @@ class PostActionView(View):
 			if state != None:
 				setattr( user_post, action, state )
 				user_post.save()
-			return HttpResponse( simplejson.dumps( { 'caption': 'Result', 'message': 'OK', 'error': False } ), mimetype='application/json' )
+			return HttpJsonResponse( caption = 'Result', message = 'Post {} marked as {}'.format( post_id, 'read' if state else 'unread' ), error = False )
 		raise Http404
