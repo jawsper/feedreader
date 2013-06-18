@@ -40,22 +40,9 @@ def outline( request, outline_id ):
 		outline = Outline.objects.get( pk = outline_id, user = request.user.id )
 	except Outline.DoesNotExist:
 		raise Http404
-	if outline.feed:
-		posts = Post.objects.raw(
-		'select Post.*, UserPost.read ' +
-		'from feedreader_post Post left outer join feedreader_userpost UserPost on ( Post.id = UserPost.post_id ) ' +
-		'where Post.feed_id = %s and ( UserPost.user_id is null or UserPost.user_id = %s ) ' +
-		'order by Post.pubDate DESC', [ outline.feed.id, request.user.id ] )
-	else:
-		posts = Post.objects.raw(
-		'select Post.*, UserPost.read ' +
-		'from feedreader_post Post left outer join feedreader_userpost UserPost on ( Post.id = UserPost.post_id ) ' +
-		'where Post.feed_id in ( select feed_id from feedreader_outline where parent_id = %s ) and ( UserPost.user_id is null or UserPost.user_id = %s ) ' +
-		'order by Post.pubDate DESC', [ outline.id, request.user.id ] )
 	return render( request, 'feedreader/outline.html', { 
 		'outline_list': main_navigation( request ), 
 		'outline': outline,
-		'posts': posts
 	} )
 	
 class HttpJsonResponse( HttpResponse ):
@@ -63,7 +50,7 @@ class HttpJsonResponse( HttpResponse ):
 		HttpResponse.__init__( self, json.dumps( data if data else kwargs ), content_type = 'application/json' )
 	
 @login_required
-def get_posts( request, outline_id, arg_skip = 0 ):
+def get_posts( request, outline_id ):
 	try:
 		outline = Outline.objects.get( pk = outline_id, user = request.user.id )
 	except Outline.DoesNotExist:
@@ -71,7 +58,7 @@ def get_posts( request, outline_id, arg_skip = 0 ):
 	
 	sort_order = 'ASC' if outline.sort_order_asc else 'DESC'
 	show_only_new = outline.show_only_new
-	skip = int( arg_skip )
+	skip = int( request.POST['skip'] ) if 'skip' in request.POST else 0
 	limit = 20
 	
 	if show_only_new:
@@ -93,7 +80,7 @@ def get_posts( request, outline_id, arg_skip = 0 ):
 		'where Post.feed_id in ( select feed_id from feedreader_outline where parent_id = %s ) ' + query_user_post_where + ' ' +
 		'order by Post.pubDate ' + sort_order + ' ' +
 		'LIMIT %s,%s', [ request.user.id, outline.id, skip, limit ] )
-	return HttpJsonResponse( title = outline.feed.title if outline.feed else outline.title, show_only_new = show_only_new, sort_order = sort_order, limit = limit, posts = [ post.toJsonDict() for post in posts ] )
+	return HttpJsonResponse( title = outline.feed.title if outline.feed else outline.title, show_only_new = show_only_new, sort_order = sort_order, skip = skip, limit = limit, posts = [ post.toJsonDict() for post in posts ] )
 
 @login_required
 def outline_set( request, outline_id ):
