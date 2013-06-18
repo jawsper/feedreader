@@ -1,43 +1,33 @@
 {% extends "basefeed.html" %}
 
-{% block title %}outline{% endblock %}
-
 {% block head %}
 <script type="text/javascript">
-$(function()
-{
-	$('.post').each(function( k, v )
-	{
-		var self = $(this);
-		var post_id = /_(\d+)$/.exec( self.attr( 'id' ) )[1]
-		self.find( '.footer .action.read' ).click(function()
-		{
-			url = '//' + document.location.host + '/post/' + post_id + '/action/read/';
-			state = $(this).is(':checked') ? 1 : 0;
-			console.debug( url );
-			console.debug( state );
-			$.post( url, { state: state }, function( data )
-			{
-				show_result( data );
-			} );
-		});
-	});
-});
+var outline_id = {{ outline.id }};
 </script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/outline.js"></script>
 {% endblock head %}
 
+{% block content_header %}
+<button id="button_refresh">Refresh</button>
+<button id="button_show_only_new"></button>
+<button id="button_sort_order"></button>
+{% endblock content_header %}
+
 {% block content %}
-
-<h3>{{ outline }}</h3>
-{% for post in posts %}
-<div class="post" id="post_{{ post.id }}">
-<div class="link"><a href="{{ post.link }}" target="_blank">{{ post.title }}</a></div>
-<div class="pubDate">{{ post.pubDate }}</div>
-<div class="source">{% if post.author %}Posted by <span class="authorName">{{ post.author }}</span>{% endif %}</div>
-<br>
-<div class="content">{% if post.content %}{{ post.content|safe }}{% else %}{{ post.description|safe }}{% endif %}</div>
-<div class="footer"><input class="action read" type="checkbox" name="read" value="1"{% if post.read == 1 %} checked="checked"{% endif %}> Mark as read</div>
+<script type="text/template" id="postTemplate">
+<div class="post" id="post_{0}">
+	<div class="body">
+		<div class="link"><a href="{1}" target="_blank">{2}</a></div>
+		<div class="pubDate">{3}</div>
+		<div class="source">{4}</div>
+		<br>
+		<div class="content">{5}</div>
+	</div>
+	<div class="footer">
+		<label for="cb_action_read_post_{0}"><input id="cb_action_read_post_{0}" class="action read" type="checkbox" name="read" value="1"{6}> Mark as read</label>
+	</div>
 </div>
-{% endfor %}
-
-{% endblock %}
+</script>
+<h3 id="outline_title">{{ outline }}</h3>
+<div id="posts"></div>
+{% endblock content %}
