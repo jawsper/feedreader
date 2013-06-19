@@ -61,5 +61,5 @@ class UserPost(models.Model):
 		unique_together = ( ( 'user', 'post' ), )
 
 class ConfigStore( models.Model ):
-	key		= models.CharField( max_length = 1000 )
-	value	= models.CharField( max_length = 1000 )
+	key		= models.CharField( max_length = 255, primary_key = True )
+	value	= models.CharField( max_length = 255 )
