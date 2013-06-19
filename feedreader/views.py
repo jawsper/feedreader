@@ -96,7 +96,17 @@ def get_posts( request, outline_id ):
 		'order by Post.pubDate ' + sort_order + ' ' +
 		'LIMIT %s,%s', [ request.user.id, outline.id, skip, limit ] )
 	
-	return HttpJsonResponse( title = outline.feed.title if outline.feed else outline.title, show_only_new = show_only_new, sort_order = sort_order, skip = skip, limit = limit, posts = [ post.toJsonDict() for post in posts ], unread_count = get_unread_count( request.user, outline ) )
+	return HttpJsonResponse(
+		title = outline.feed.title if outline.feed else outline.title,
+		htmlUrl = outline.feed.htmlUrl if outline.feed else None,
+		is_feed = bool( outline.feed ),
+		show_only_new = show_only_new,
+		sort_order = sort_order,
+		skip = skip,
+		limit = limit,
+		posts = [ post.toJsonDict() for post in posts ],
+		unread_count = get_unread_count( request.user, outline )
+	)
 
 @login_required
 def get_outline_data( request, outline_id ):
@@ -109,7 +119,7 @@ def get_outline_data( request, outline_id ):
 	show_only_new = outline.show_only_new
 	
 	return HttpJsonResponse( title = outline.feed.title if outline.feed else outline.title, show_only_new = show_only_new, sort_order = sort_order, unread_count = get_unread_count( request.user, outline ) )
-
+	
 @login_required
 def outline_set( request, outline_id ):
 	try:
@@ -163,6 +173,14 @@ def outline_mark_as_read( request, outline_id ):
 	transaction.commit()
 
 	return HttpResponse( 'OK' )
+	
+@login_required
+def get_unread_counts( request ):
+	outlines = Outline.objects.filter( user = request.user )
+	counts = { outline.id: get_unread_count( request.user, outline ) for outline in outlines }
+	total = 0
+	for c in counts.itervalues(): total += c
+	return HttpJsonResponse( counts = counts, total = total )
 
 @login_required
 def api0( request, action ):
