@@ -46,6 +46,7 @@ class Post(models.Model):
 		data = {}
 		for k in ( 'id', 'link', 'title', 'author' ):
 			data[ k ] = ( getattr( self, k ) )
+		data[ 'feedTitle' ] = str( self.feed.title )
 		data[ 'pubDate' ] = str( self.pubDate )
 		data[ 'content'] = ( self.content if self.content else self.description )
 		data[ 'read' ] = self.read if self.read != None else False
