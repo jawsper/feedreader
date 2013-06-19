@@ -4,10 +4,10 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
 from django.conf import settings
 from django.views.generic.base import View
 from django.core import serializers
+from django.db import transaction
 
 from feedreader.models import Outline, Feed, Post, UserPost
 
@@ -113,7 +113,29 @@ def outline_set( request, outline_id ):
 		
 	outline.save()
 	
-	return HttpResponse( 'OK' );
+	return HttpResponse( 'OK' )
+
+@login_required
+@transaction.commit_manually
+def outline_mark_as_read( request, outline_id ):
+	try:
+		outline = Outline.objects.get( pk = outline_id, user = request.user.id )
+	except Outline.DoesNotExist:
+		return HttpResponse( 'ERROR' )
+
+	from django.db import connection
+	cursor = connection.cursor()
+	if outline.feed:
+		cursor.execute( 'insert ignore into `feedreader_userpost` ( `user_id`, `post_id` ) select %s, `id` from `feedreader_post` where `feed_id` = %s', [ request.user.id, outline.feed.id ] )
+		cursor.execute( 'update `feedreader_userpost` set `read` = 1 where `user_id` = %s and `post_id` in ( select `id` from `feedreader_post` where `feed_id` = %s )', [ request.user.id, outline.feed.id ] )
+	else:
+		cursor.execute( 'insert ignore into `feedreader_userpost` ( `user_id`, `post_id` ) select %s, `id` from `feedreader_post` where `feed_id` in ( select `feed_id` from `feedreader_outline` where `parent_id` = %s )', [ request.user.id, outline.id ] )
+		cursor.execute( 'update `feedreader_userpost` set `read` = 1 where `user_id` = %s and `post_id` in ( select `id` from `feedreader_post` where `feed_id` in ( select `feed_id` from `feedreader_outline` where `parent_id` = %s ) )', [ request.user.id, outline.id ] )
+	cursor.close()
+
+	transaction.commit()
+
+	return HttpResponse( 'OK' )
 
 @login_required
 def api0( request, action ):
