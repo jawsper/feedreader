@@ -127,9 +127,7 @@ class Command(BaseCommand):
 					continue
 			elif 'updated_parsed' in entry and entry['updated_parsed']:
 				insert_data['pubDate'] = time.strftime( MYSQL_DATETIME_FORMAT, entry['updated_parsed'] )
-			else:
-				insert_data['pubDate'] = datetime.datetime.utcnow().replace(tzinfo=UTC())
-			
+
 			if 'id' in entry:
 				insert_data['guid'] = entry['id']
 			if not 'guid' in insert_data:
@@ -144,6 +142,9 @@ class Command(BaseCommand):
 					self.stdout.write( str( entry ) )
 					self.stdout.write( str( insert_data ) )
 					raise CommandError( 'See above' )
+			if not 'pubDate' in insert_data:
+				insert_data['pubDate'] = datetime.datetime.utcnow().replace(tzinfo=UTC())
+
 			try:
 				test = Post.objects.get( guid__exact = insert_data['guid'] )
 			except Post.DoesNotExist:
