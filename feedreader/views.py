@@ -21,7 +21,7 @@ def outline_to_dict_with_children( outline ):
 		'id': outline.id,
 		'title': outline.title,
 		'feed_id': outline.feed.id if outline.feed else None,
-		'children': map( lambda x: outline_to_dict_with_children( x ), Outline.objects.filter( parent_id = outline.id ) ),
+		'children': [ outline_to_dict_with_children( outline ) for outline in Outline.objects.filter( parent_id = outline.id ) ],
 	}
 	
 def get_unread_count( user, outline ):
@@ -40,7 +40,7 @@ def get_unread_count( user, outline ):
 	return unread_count[0] if unread_count else None
 
 def main_navigation( request ):
-	return map( lambda x: outline_to_dict_with_children( x ), Outline.objects.filter( parent_id = None, user = request.user.id ) )
+	return [ outline_to_dict_with_children( outline ) for outline in Outline.objects.filter( parent_id = None, user = request.user.id ) ]
 
 #def login( request ):
 #	return render( request, 'feedreader/login.html' )
