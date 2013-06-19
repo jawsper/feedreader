@@ -29,7 +29,10 @@
 <div id="navigation" class="left col scroll-y">
 	{% if user.is_authenticated %}
 		<p>Welcome, {{ user.username }} [<a href="{% url 'logout' %}">Logout</a>]</p>
-		<p><a id="button_options" class="button">Options</a> <a id="button_refresh_page" class="button">Refresh</a></p>
+		<p><a id="button-options" class="button">Options</a> <a id="button_refresh_page" class="button">Refresh</a></p>
+		<ul class="options clean">
+		</ul>
+		<hr class="options" />
 		{% block navigation %}{% endblock navigation %}
 	{% else %}
 		<p>Welcome, new user. Please log in.</p>
