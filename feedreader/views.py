@@ -9,7 +9,7 @@ from django.views.generic.base import View
 from django.core import serializers
 from django.db import connection, transaction
 
-from feedreader.models import Outline, Feed, Post, UserPost
+from feedreader.models import Outline, Feed, Post, UserPost, ConfigStore
 
 import json
 import urllib2, urlparse
@@ -51,18 +51,21 @@ def index( request ):
 
 @login_required
 def get_option( request ):
-	if len( request.POST ) == 0:
-		return HttpJsonResponse()
+	if 'keys[]' in request.POST:
+		return HttpJsonResponse( options = { x.key: x.value for x in ConfigStore.objects.filter( key__in = request.POST.getlist( 'keys[]' ) ) } )
 	if not 'key' in request.POST:
+		return HttpJsonResponse( error = 'no key' )
+	data = ConfigStore.objects.get( key = request.POST['key'] )
+	if not data:
 		return HttpJsonResponse()
-	return HttpJsonResponse()
+	return HttpJsonResponse( key = data.key, value = data.value )
 
 @login_required
 def set_option( request ):
 	if len( request.POST ) == 0:
 		return HttpResponse( 'ERROR' )
 	for key, value in request.POST.iteritems():
-		pass
+		ConfigStore( key = key, value = value ).save()
 	return HttpResponse( 'OK' )
 
 @login_required
