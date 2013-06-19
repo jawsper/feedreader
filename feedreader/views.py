@@ -99,6 +99,18 @@ def get_posts( request, outline_id ):
 	return HttpJsonResponse( title = outline.feed.title if outline.feed else outline.title, show_only_new = show_only_new, sort_order = sort_order, skip = skip, limit = limit, posts = [ post.toJsonDict() for post in posts ], unread_count = get_unread_count( request.user, outline ) )
 
 @login_required
+def get_outline_data( request, outline_id ):
+	try:
+		outline = Outline.objects.get( pk = outline_id, user = request.user.id )
+	except Outline.DoesNotExist:
+		return HttpJsonResponse()
+	
+	sort_order = 'ASC' if outline.sort_order_asc else 'DESC'
+	show_only_new = outline.show_only_new
+	
+	return HttpJsonResponse( title = outline.feed.title if outline.feed else outline.title, show_only_new = show_only_new, sort_order = sort_order, unread_count = get_unread_count( request.user, outline ) )
+
+@login_required
 def outline_set( request, outline_id ):
 	try:
 		outline = Outline.objects.get( pk = outline_id, user = request.user.id )
