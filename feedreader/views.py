@@ -176,10 +176,10 @@ def outline_mark_as_read( request, outline_id ):
 	
 @login_required
 def get_unread_counts( request ):
-	outlines = Outline.objects.filter( user = request.user )
-	counts = { outline.id: get_unread_count( request.user, outline ) for outline in outlines }
+	counts = { outline.id: get_unread_count( request.user, outline ) for outline in Outline.objects.filter( user = request.user ) }
 	total = 0
-	for c in counts.itervalues(): total += c
+	for outline in Outline.objects.filter( user = request.user, feed__isnull = False ):
+		total += counts[ outline.id ]
 	return HttpJsonResponse( counts = counts, total = total )
 
 @login_required
