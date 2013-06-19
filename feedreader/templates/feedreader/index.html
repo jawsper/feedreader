@@ -1,6 +1,28 @@
 {% extends "basefeed.html" %}
 
-{% block title %}index{% endblock %}
+{% block content_header %}
+<button id="button_refresh">Refresh</button>
+<button id="button_mark_all_as_read">Mark all as read</button>
+<button id="button_show_only_new"></button>
+<button id="button_sort_order"></button>
+<span id="scroll_pos"></span>
+{% endblock content_header %}
 
 {% block content %}
+<script type="text/template" id="postTemplate">
+<div class="post" id="post_{0}">
+	<div class="body">
+		<div class="link"><a href="{1}" target="_blank">{2}</a></div>
+		<div class="pubDate">{3}</div>
+		<div class="source">{4}</div>
+		<br>
+		<div class="content">{5}</div>
+	</div>
+	<div class="footer">
+		<label for="cb_action_read_post_{0}"><input id="cb_action_read_post_{0}" class="action read" type="checkbox" name="read" value="1"{6}> Mark as read</label>
+	</div>
+</div>
+</script>
+<h3 id="outline_title"><a target="_blank"></a></h3>
+<div id="posts"></div>
 {% endblock content %}
