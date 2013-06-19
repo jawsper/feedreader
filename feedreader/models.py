@@ -59,3 +59,7 @@ class UserPost(models.Model):
 	
 	class Meta:
 		unique_together = ( ( 'user', 'post' ), )
+
+class ConfigStore( models.Model ):
+	key		= models.CharField( max_length = 1000 )
+	value	= models.CharField( max_length = 1000 )
