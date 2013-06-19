@@ -55,3 +55,6 @@ class UserPost(models.Model):
 	user = models.ForeignKey( User )
 	post = models.ForeignKey( Post )
 	read = models.BooleanField( default = False )
+	
+	class Meta:
+		unique_together = ( ( 'user', 'post' ), )
