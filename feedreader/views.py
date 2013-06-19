@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.views.generic.base import View
 from django.core import serializers
-from django.db import transaction
+from django.db import connection, transaction
 
 from feedreader.models import Outline, Feed, Post, UserPost
 
@@ -24,6 +24,21 @@ def outline_to_dict_with_children( outline ):
 		'children': map( lambda x: outline_to_dict_with_children( x ), Outline.objects.filter( parent_id = outline.id ) ),
 	}
 	
+def get_unread_count( user, outline ):
+	cursor = connection.cursor()
+	if outline.feed:
+		cursor.execute( 'select count(Post.id) ' + 
+		'from feedreader_post Post left outer join feedreader_userpost UserPost on ( Post.id = UserPost.post_id and UserPost.user_id = %s ) ' + 
+		'where Post.feed_id = %s and ( UserPost.read is null or UserPost.read = 0 )', [ user.id, outline.feed.id ]  )
+		unread_count = cursor.fetchone()
+	else:
+		cursor.execute( 'select count(Post.id) ' + 
+		'from feedreader_post Post left outer join feedreader_userpost UserPost on ( Post.id = UserPost.post_id and UserPost.user_id = %s ) ' + 
+		'where Post.feed_id in ( select feed_id from feedreader_outline where parent_id = %s ) and ( UserPost.read is null or UserPost.read = 0 )', [ user.id, outline.id ] )
+		unread_count = cursor.fetchone()
+	cursor.close()
+	return unread_count[0] if unread_count else None
+
 def main_navigation( request ):
 	return map( lambda x: outline_to_dict_with_children( x ), Outline.objects.filter( parent_id = None, user = request.user.id ) )
 
@@ -80,7 +95,8 @@ def get_posts( request, outline_id ):
 		'where Post.feed_id in ( select feed_id from feedreader_outline where parent_id = %s ) ' + query_user_post_where + ' ' +
 		'order by Post.pubDate ' + sort_order + ' ' +
 		'LIMIT %s,%s', [ request.user.id, outline.id, skip, limit ] )
-	return HttpJsonResponse( title = outline.feed.title if outline.feed else outline.title, show_only_new = show_only_new, sort_order = sort_order, skip = skip, limit = limit, posts = [ post.toJsonDict() for post in posts ] )
+	
+	return HttpJsonResponse( title = outline.feed.title if outline.feed else outline.title, show_only_new = show_only_new, sort_order = sort_order, skip = skip, limit = limit, posts = [ post.toJsonDict() for post in posts ], unread_count = get_unread_count( request.user, outline ) )
 
 @login_required
 def outline_set( request, outline_id ):
@@ -123,7 +139,6 @@ def outline_mark_as_read( request, outline_id ):
 	except Outline.DoesNotExist:
 		return HttpResponse( 'ERROR' )
 
-	from django.db import connection
 	cursor = connection.cursor()
 	if outline.feed:
 		cursor.execute( 'insert ignore into `feedreader_userpost` ( `user_id`, `post_id` ) select %s, `id` from `feedreader_post` where `feed_id` = %s', [ request.user.id, outline.feed.id ] )
