@@ -50,6 +50,22 @@ def index( request ):
 	return render( request, 'feedreader/index.html', { 'outline_list': main_navigation( request ) } )
 
 @login_required
+def get_option( request ):
+	if len( request.POST ) == 0:
+		return HttpJsonResponse()
+	if not 'key' in request.POST:
+		return HttpJsonResponse()
+	return HttpJsonResponse()
+
+@login_required
+def set_option( request ):
+	if len( request.POST ) == 0:
+		return HttpResponse( 'ERROR' )
+	for key, value in request.POST.iteritems():
+		pass
+	return HttpResponse( 'OK' )
+
+@login_required
 def outline( request, outline_id ):
 	try:
 		outline = Outline.objects.get( pk = outline_id, user = request.user.id )

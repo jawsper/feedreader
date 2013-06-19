@@ -3,6 +3,8 @@ from feedreader import views
 
 urlpatterns = patterns('feedreader.views',
     url( r'^$', 'index', name='index' ),
+	url( r'^get_option/$', 'get_option', name = 'get_option' ),
+	url( r'^set_option/$', 'set_option', name = 'set_option' ),
     url( r'^outline/(?P<outline_id>\d+)/$', 'outline', name='outline' ),
 	url( r'^outline/(?P<outline_id>\d+)/get_posts/$', 'get_posts', name = 'get_posts' ),
 	url( r'^outline/(?P<outline_id>\d+)/get_data/$', 'get_outline_data', name = 'get_outline_data' ),
