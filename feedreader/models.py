@@ -21,6 +21,8 @@ class Outline(models.Model):
 	title	= models.CharField( max_length = 1000 )
 	feed 	= models.ForeignKey( Feed, null = True, blank = True )
 	
+	sort_position	= models.IntegerField( null = True, blank = True )
+	
 	sort_order_asc	= models.BooleanField( default = True )
 	show_only_new	= models.BooleanField( default = True )
 	
