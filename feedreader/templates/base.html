@@ -40,7 +40,7 @@
 </div>
 <div id="body" class="right col">
 	<div class="content_header row">{% block content_header %}{% endblock content_header %} <img id="spinner" src="{{ STATIC_URL }}images/spinner.gif"></div>
-	<div id="content" class="content row scroll-y">
+	<div id="content" class="content row scroll-y" tabindex="0">
 		{% block content %}{% endblock content %}
 		<div style="height: 50%"></div>
 	</div>
