@@ -52,10 +52,10 @@ def index( request ):
 @login_required
 def get_option( request ):
 	if 'keys[]' in request.POST:
-		return HttpJsonResponse( options = { x.key: x.value for x in ConfigStore.objects.filter( key__in = request.POST.getlist( 'keys[]' ) ) } )
+		return HttpJsonResponse( options = { x.key: x.value for x in ConfigStore.objects.filter( user = request.user, key__in = request.POST.getlist( 'keys[]' ) ) } )
 	if not 'key' in request.POST:
 		return HttpJsonResponse( error = 'no key' )
-	data = ConfigStore.objects.get( key = request.POST['key'] )
+	data = ConfigStore.objects.get( user = request.user, key = request.POST['key'] )
 	if not data:
 		return HttpJsonResponse()
 	return HttpJsonResponse( key = data.key, value = data.value )
@@ -65,7 +65,7 @@ def set_option( request ):
 	if len( request.POST ) == 0:
 		return HttpResponse( 'ERROR' )
 	for key, value in request.POST.iteritems():
-		ConfigStore( key = key, value = value ).save()
+		ConfigStore( user = request.user, key = key, value = value ).save()
 	return HttpResponse( 'OK' )
 
 @login_required
