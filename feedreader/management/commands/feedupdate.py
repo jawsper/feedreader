@@ -9,6 +9,9 @@ import time
 
 import datetime
 
+import socket
+socket.setdefaulttimeout( 15 )
+
 MYSQL_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S%z'
 def compare_datetime_to_struct_time( dt, st ):
 	return dt.strftime( MYSQL_DATETIME_FORMAT ) == time.strftime( MYSQL_DATETIME_FORMAT, st )
