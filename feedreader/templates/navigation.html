@@ -1,7 +1,7 @@
 {% if outline_list %}
 <ul id="outlines" class="feeds">
     {% for outline in outline_list %}
-	<li class="outline {% if outline.feed_id %}feed{% else %}folder{% endif %}" id="outline-{{ outline.id }}">
+	<li class="outline {% if outline.feed_id %}feed{% else %}folder{% if not outline.folder_opened %} folder-closed{% endif %}{% endif %}" id="outline-{{ outline.id }}">
 		<div class="outline-line"{% if outline.feed_id %} style="background-image:url('{% url 'feed_favicon' outline.feed_id %}')"{% endif %}>
 			<a class="outline-text" href="{% url 'outline' outline.id %}">{{ outline.title }}</a>
 			<span class="outline-unread-count" id="outline-unread-count-{{ outline.id }}"></span>

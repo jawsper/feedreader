@@ -21,6 +21,7 @@ def outline_to_dict_with_children( outline ):
 		'id': outline.id,
 		'title': outline.title,
 		'feed_id': outline.feed.id if outline.feed else None,
+		'folder_opened': outline.folder_opened,
 		'children': [ outline_to_dict_with_children( outline ) for outline in Outline.objects.filter( parent_id = outline.id ) ],
 	}
 	
@@ -141,32 +142,44 @@ def get_outline_data( request, outline_id ):
 	
 @login_required
 def outline_set( request, outline_id ):
+	action_to_field = \
+	{
+		'sort_order': 'sort_order_asc',
+		'show_only_new': 'show_only_new',
+		'folder_opened': 'folder_opened'
+	}
+
 	try:
 		outline = Outline.objects.get( pk = outline_id, user = request.user.id )
 	except Outline.DoesNotExist:
-		return HttpResponse( 'ERROR' )
+		return HttpResponse( 'ERROR: outline does not exist' )
 	
 	if len( request.POST ) == 0 or 'action' not in request.POST:
-		return HttpResponse( 'ERROR' )
+		return HttpResponse( 'ERROR: action not set' )
 	
-	if request.POST['action'] not in ( 'sort_order', 'show_only_new' ):
-		return HttpResponse( 'ERROR' )
+	if request.POST['action'] not in action_to_field:
+		return HttpResponse( 'ERROR: invalid action' )
 	
 	if 'value' in request.POST and request.POST['value'] in ( '0', '1' ):
 		value = bool( request.POST['value'] )
 	else:
 		value = 'toggle'
 	
-	if request.POST['action'] == 'sort_order':
-		if value == 'toggle':
-			value = not outline.sort_order_asc
-		outline.sort_order_asc = value
-	elif request.POST['action'] == 'show_only_new':
-		if value == 'toggle':
-			value = not outline.show_only_new
-		outline.show_only_new = value
-	else:
-		return HttpResponse( 'ERROR' )
+	field = action_to_field[ request.POST['action'] ]
+	if value == 'toggle':
+		value = not getattr( outline, field )
+	setattr( outline, field, value )
+#	if request.POST['action'] == 'sort_order':
+#		if value == 'toggle':
+#			value = not outline.sort_order_asc
+#		outline.sort_order_asc = value
+#	elif request.POST['action'] == 'show_only_new':
+#		if value == 'toggle':
+#			value = not outline.show_only_new
+#		outline.show_only_new = value
+	#elif request.PORT
+	#else:
+	#	return HttpResponse( 'ERROR: value not set' )
 		
 	outline.save()
 	

@@ -25,6 +25,8 @@ class Outline(models.Model):
 	
 	sort_order_asc	= models.BooleanField( default = True )
 	show_only_new	= models.BooleanField( default = True )
+
+	folder_opened	= models.BooleanField( default = True )
 	
 	def __unicode__( self ):
 		return self.title
