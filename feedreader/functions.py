@@ -29,6 +29,15 @@ def get_unread_count( user, outline ):
 	cursor.close()
 	return unread_count[0] if unread_count else None
 
+def get_total_unread_count( user ):
+	cursor = connection.cursor()
+	cursor.execute( 'select count(Post.id) ' +
+		'from feedreader_post Post left outer join feedreader_userpost UserPost on ( Post.id = UserPost.post_id and UserPost.user_id = %s )' +
+		'where Post.feed_id in ( select feed_id from feedreader_outline Outline where feed_id is not null and user_id = %s ) ' +
+		' and ( UserPost.read is null or UserPost.read = 0 )', [ user.id, user.id ] )
+	count = cursor.fetchone()
+	cursor.close()
+	return count[0] if count else None
 
 def outline_to_dict_with_children( request, outline, use_short_keys = False ):
 	short_keys = ( 'i', 't', 'f', 'o', 'u', 'c' )

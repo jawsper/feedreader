@@ -4,12 +4,28 @@
 
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from feedreader.functions import HttpJsonResponse, get_unread_count
+from feedreader.functions import HttpJsonResponse, get_unread_count, get_total_unread_count
 from feedreader.models import ConfigStore, Outline
 
 @login_required
 def get_options( request ):
 	return HttpJsonResponse( options = { x.key: x.value for x in ConfigStore.objects.filter( user = request.user ) } )
+
+@login_required
+def get_unread( request ):
+	if not 'outline_id' in request.REQUEST:
+		return HttpJsonResponse()
+
+	try:
+		outline = Outline.objects.get( pk = int( request.REQUEST['outline_id'] ) )
+	except Outline.DoesNotExist:
+		return HttpJsonResponse()
+
+	data = {}
+	data[ outline.id ] = get_unread_count( request.user, outline )
+	if outline.parent:
+		data[ outline.parent.id ] = get_unread_count( request.user, outline.parent )
+	return HttpJsonResponse( counts = data, total = get_total_unread_count( request.user ) )
 
 @login_required
 def get_option( request ):

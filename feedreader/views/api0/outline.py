@@ -67,7 +67,12 @@ def get_outline_data( request, outline_id ):
 	sort_order = 'ASC' if outline.sort_order_asc else 'DESC'
 	show_only_new = outline.show_only_new
 	
-	return HttpJsonResponse( title = outline.feed.title if outline.feed else outline.title, show_only_new = show_only_new, sort_order = sort_order, unread_count = get_unread_count( request.user, outline ) )
+	return HttpJsonResponse(
+		title = outline.feed.title if outline.feed else outline.title,
+		show_only_new = show_only_new,
+		sort_order = sort_order,
+		unread_count = get_unread_count( request.user, outline )
+	)
 	
 @login_required
 def outline_set( request, outline_id ):
