@@ -47,11 +47,3 @@ def outline_to_dict_with_children( request, outline, use_short_keys = False ):
 def main_navigation( request, use_short_keys = True ):
 	return [ outline_to_dict_with_children( request, outline, use_short_keys ) for outline in Outline.objects.filter( parent = None, user = request.user ) ]
 
-def camelCaseDashedDict( cfg ):
-	def camelCaseDashedString( s ):
-		return re.sub( r'-(\w)', lambda m: m.group(1).upper(), s )
-	d = {}
-	for val in cfg.values():
-		d[ camelCaseDashedString( val['key'] ) ] = val['value']
-	return d
-

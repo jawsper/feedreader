@@ -70,3 +70,10 @@ class ConfigStore( models.Model ):
 	value	= models.CharField( max_length = 255 )
 	class Meta:
 		unique_together = ( 'key', 'user' )
+		
+	@staticmethod
+	def getUserConfig( user ):
+		config = {}
+		for line in ConfigStore.objects.filter( user = user ):
+			config[ line.key ] = line.value
+		return config

@@ -10,7 +10,7 @@ from django.views.generic.base import View
 
 from feedreader.models import Outline, Feed, Post, UserPost, ConfigStore
 
-from feedreader.functions import camelCaseDashedDict, main_navigation
+from feedreader.functions import main_navigation
 
 import re
 import urllib2, urlparse
@@ -20,7 +20,7 @@ from StringIO import StringIO
 @login_required
 def index( request ):
 	return render( request, 'feedreader/index.html', {
-		'config': camelCaseDashedDict( ConfigStore.objects.filter( user = request.user ) ),
+		'config': ConfigStore.getUserConfig( user = request.user ),
 		'outline_list': main_navigation( request, False )
 	} )
 
