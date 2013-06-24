@@ -9,6 +9,11 @@ from feedreader.views import HttpJsonResponse, get_unread_count
 from feedreader.models import Outline, Post
 
 @login_required
+def get_all_outlines( request ):
+	from feedreader.views import main_navigation
+	return HttpJsonResponse( outlines = main_navigation( request ) )
+
+@login_required
 def get_posts( request, outline_id ):
 	try:
 		outline = Outline.objects.get( pk = outline_id, user = request.user.id )
