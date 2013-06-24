@@ -5,7 +5,7 @@
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.db import connection, transaction
-from feedreader.views import HttpJsonResponse, get_unread_count
+from feedreader.functions import HttpJsonResponse, get_unread_count
 from feedreader.models import Outline, Post
 
 @login_required

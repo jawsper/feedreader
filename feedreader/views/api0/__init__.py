@@ -4,7 +4,7 @@
 
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from feedreader.views import HttpJsonResponse, get_unread_count
+from feedreader.functions import HttpJsonResponse, get_unread_count
 from feedreader.models import ConfigStore, Outline
 
 @login_required

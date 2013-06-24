@@ -3,8 +3,8 @@
 # Date: 2013-06-24
 
 from django.contrib.auth.decorators import login_required
+from feedreader.functions import HttpJsonResponse
 from feedreader.models import Post, UserPost
-from feedreader.views import HttpJsonResponse
 
 @login_required
 def action( request, post_id, action ):
