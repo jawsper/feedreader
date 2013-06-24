@@ -8,6 +8,10 @@ from feedreader.functions import HttpJsonResponse, get_unread_count
 from feedreader.models import ConfigStore, Outline
 
 @login_required
+def get_options( request ):
+	return HttpJsonResponse( options = { x.key: x.value for x in ConfigStore.objects.filter( user = request.user ) } )
+
+@login_required
 def get_option( request ):
 	if 'keys[]' in request.POST:
 		return HttpJsonResponse( options = { x.key: x.value for x in ConfigStore.objects.filter( user = request.user, key__in = request.POST.getlist( 'keys[]' ) ) } )
