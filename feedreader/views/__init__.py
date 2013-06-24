@@ -35,24 +35,29 @@ def get_unread_count( user, outline ):
 	cursor.close()
 	return unread_count[0] if unread_count else None
 
-def outline_to_dict_with_children( outline ):
-	return {
-		'id': outline.id,
-		'title': outline.title,
-		'feed_id': outline.feed.id if outline.feed else None,
-		'folder_opened': outline.folder_opened,
-		'children': [ outline_to_dict_with_children( outline ) for outline in Outline.objects.filter( parent_id = outline.id ) ],
-	}
+def outline_to_dict_with_children( request, outline, use_short_keys = False ):
+	short_keys = ( 'i', 't', 'f', 'o', 'u', 'c' )
+	long_keys = ( 'id', 'title', 'feed_id', 'folder_opened', 'unread_count', 'children' )
+	return dict( zip(
+		short_keys if use_short_keys else long_keys, [
+			outline.id,
+			outline.title,
+			outline.feed.id if outline.feed else None,
+			outline.folder_opened,
+			get_unread_count( request.user, outline ),
+			[ outline_to_dict_with_children( request, child, use_short_keys ) for child in Outline.objects.filter( parent = outline, user = request.user ) ]
+		]
+	) )
 
-def main_navigation( request ):
-	return [ outline_to_dict_with_children( outline ) for outline in Outline.objects.filter( parent_id = None, user = request.user.id ) ]
+def main_navigation( request, use_short_keys = True ):
+	return [ outline_to_dict_with_children( request, outline, use_short_keys ) for outline in Outline.objects.filter( parent = None, user = request.user ) ]
 
 #def login( request ):
 #	return render( request, 'feedreader/login.html' )
 
 @login_required
 def index( request ):
-	return render( request, 'feedreader/index.html', { 'outline_list': main_navigation( request ) } )
+	return render( request, 'feedreader/index.html', { 'outline_list': main_navigation( request, False ) } )
 
 @login_required
 def outline( request, outline_id ):
