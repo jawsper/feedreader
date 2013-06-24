@@ -1,5 +1,9 @@
 {% extends "basefeed.html" %}
 
+{% block head %}
+<script type="text/javascript" src="{{ STATIC_URL }}js/outline.js"></script>
+{% endblock head %}
+
 {% block content_header %}
 <button id="button_refresh">Refresh</button>
 <button id="button_mark_all_as_read">Mark all as read</button>
