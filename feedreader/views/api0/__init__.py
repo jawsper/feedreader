@@ -14,7 +14,7 @@ def get_options( request ):
 @login_required
 def get_unread( request ):
 	if not 'outline_id' in request.REQUEST:
-		return HttpJsonResponse()
+		return get_unread_counts( request )
 
 	try:
 		outline = Outline.objects.get( pk = int( request.REQUEST['outline_id'] ) )
