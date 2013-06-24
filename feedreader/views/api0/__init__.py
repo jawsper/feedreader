@@ -1,4 +1,6 @@
-# api 0
+# api0/__init__.py
+# Author: Jasper Seidel
+# Date: 2013-06-24
 
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required

@@ -1,4 +1,6 @@
-# Create your views here.
+# __init__.py
+# Author: Jasper Seidel
+# Date: 2013-06-24
 
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
@@ -11,6 +13,7 @@ from django.db import connection, transaction
 
 from feedreader.models import Outline, Feed, Post, UserPost, ConfigStore
 
+import re
 import json
 import urllib2, urlparse
 from PIL import Image
@@ -55,9 +58,17 @@ def main_navigation( request, use_short_keys = True ):
 #def login( request ):
 #	return render( request, 'feedreader/login.html' )
 
+def camelCaseDashedDict( cfg ):
+	def camelCaseDashedString( s ):
+		return re.sub( r'-(\w)', lambda m: m.group(1).upper(), s )
+	d = {}
+	for val in cfg.values():
+		d[ camelCaseDashedString( val['key'] ) ] = val['value']
+	return d
+
 @login_required
 def index( request ):
-	return render( request, 'feedreader/index.html', { 'outline_list': main_navigation( request, False ) } )
+	return render( request, 'feedreader/index.html', { 'config': camelCaseDashedDict( ConfigStore.objects.filter( user = request.user ) ), 'outline_list': main_navigation( request, False ) } )
 
 @login_required
 def outline( request, outline_id ):
