@@ -2,10 +2,26 @@
 # Author: Jasper Seidel
 # Date: 2013-06-24
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from feedreader.functions import HttpJsonResponse, get_unread_count, get_total_unread_count
 from feedreader.models import ConfigStore, Outline
+
+import django.contrib.auth as auth
+
+def login( request ):
+	if not all( k in request.POST for k in ( 'user', 'pass' ) ): # check if username and password are supplied
+		return HttpResponseForbidden()
+
+	user = auth.authenticate( username = request.POST['user'], password = request.POST['pass'] )
+	if user is not None:
+		if user.is_active:
+			auth.login( request, user )
+			return HttpResponse( 'OK' )
+		else:
+			return HttpResponseForbidden()
+	else:
+		return HttpResponseForbidden()
 
 @login_required
 def get_options( request ):
