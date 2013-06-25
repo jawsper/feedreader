@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
-class Feed(models.Model):
+class Feed( models.Model ):
 	title 		= models.CharField( max_length = 1000 )
 	xmlUrl 		= models.CharField( max_length = 1000 )
 	htmlUrl 	= models.CharField( max_length = 1000 )
@@ -14,8 +14,8 @@ class Feed(models.Model):
 	
 	def __unicode__( self ):
 		return self.title
-	
-class Outline(models.Model):
+
+class Outline( models.Model ):
 	user 	= models.ForeignKey( User )
 	parent 	= models.ForeignKey( 'self', null = True, blank = True )
 	title	= models.CharField( max_length = 1000 )
@@ -27,11 +27,11 @@ class Outline(models.Model):
 	show_only_new	= models.BooleanField( default = True )
 
 	folder_opened	= models.BooleanField( default = True )
-	
+
 	def __unicode__( self ):
 		return self.title
 
-class Post(models.Model):
+class Post( models.Model ):
 	feed 				= models.ForeignKey( Feed )
 	title 				= models.CharField( max_length = 1000 )
 	link 				= models.CharField( max_length = 1000 )
@@ -42,7 +42,7 @@ class Post(models.Model):
 	author				= models.CharField( max_length = 1000, null = True, blank = True )
 	content 			= models.TextField()
 	description 		= models.TextField()
-	
+
 	def __unicode__( self ):
 		return self.title
 		
@@ -56,7 +56,7 @@ class Post(models.Model):
 		data[ 'read' ] = self.read if self.read != None else False
 		return data
 
-class UserPost(models.Model):
+class UserPost( models.Model ):
 	user = models.ForeignKey( User )
 	post = models.ForeignKey( Post )
 	read = models.BooleanField( default = False )

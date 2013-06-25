@@ -9,6 +9,6 @@ urlpatterns = patterns( 'feedreader.views.api0',
 	url( r'^outline/(?P<outline_id>\d+)/get_posts/$', 'outline.get_posts', name = 'get_posts' ),
 	url( r'^outline/(?P<outline_id>\d+)/get_data/$', 'outline.get_outline_data', name = 'get_outline_data' ),
 	url( r'^outline/(?P<outline_id>\d+)/set/$', 'outline.outline_set', name = 'outline_set' ),
-	url( r'^outline/(?P<outline_id>\d+)/mark_as_read/', 'outline.outline_mark_as_read', name = 'outline_mark_as_read' ),
+	url( r'^outline/(?P<outline_id>\d+)/mark_as_read/$', 'outline.outline_mark_as_read' ),
 	url( r'^post/(?P<post_id>\d+)/action/(?P<action>[a-z_]+)/$', 'post.action' )
 )

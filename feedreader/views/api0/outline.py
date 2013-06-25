@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.db import connection, transaction
 from feedreader.functions import HttpJsonResponse, get_unread_count
-from feedreader.models import Outline, Post
+from feedreader.models import Outline, Post, Feed, UserPost
 
 @login_required
 def get_all_outlines( request ):
@@ -108,10 +108,34 @@ def outline_set( request, outline_id ):
 	
 	return HttpResponse( 'OK' )
 	
+@login_required
+def outline_mark_as_read( request, outline_id ):
+	try:
+		outline = Outline.objects.get( pk = outline_id, user = request.user )
+	except Outline.DoesNotExist:
+		return HttpJsonResponse( success = False, message = 'Outline does not exist' )
+	
+	if outline.feed:
+		posts = Post.objects.filter( feed = outline.feed )
+	else:
+		feed_ids = [ o.feed.id for o in Outline.objects.filter( parent = outline ) ]
+		feeds = Feed.objects.filter( pk__in = feed_ids )
+		posts = Post.objects.filter( feed__in = feeds )
+	total = 0
+	for post in posts:
+		try:
+			u = UserPost.objects.get( user = request.user, post = post )
+		except UserPost.DoesNotExist:
+			u = UserPost( user = request.user, post = post )
+		if not u.id or not u.read:
+			u.read = True
+			u.save()
+			total += 1
+	return HttpJsonResponse( success = True, count = total )
 	
 @login_required
 @transaction.commit_manually
-def outline_mark_as_read( request, outline_id ):
+def outline_mark_as_read_b( request, outline_id ):
 	try:
 		outline = Outline.objects.get( pk = outline_id, user = request.user.id )
 	except Outline.DoesNotExist:
