@@ -4,13 +4,12 @@
 <title>Feedreader</title>
 <meta name="viewport" content="width=device-width">
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/main.css">
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/smoothness/jquery-ui-1.9.1.custom.css">
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.8.3.min.js"></script>
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/smoothness/jquery-ui-1.10.3.custom.min.css">
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-2.0.2.min.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.cookie.js"></script>
 <script type="text/javascript">jQuery.uiBackCompat = false;</script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.9.1.custom.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.10.3.custom.min.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/main.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/outline.js"></script>
 {% block head %}{% endblock head %}
 </head>
 <body>
@@ -40,7 +39,7 @@
 </div>
 <div id="body" class="right col">
 	<div class="content_header row">{% block content_header %}{% endblock content_header %} <img id="spinner" src="{{ STATIC_URL }}images/spinner.gif"></div>
-	<div id="content" class="content row scroll-y">
+	<div id="content" class="content row scroll-y" tabindex="0">
 		{% block content %}{% endblock content %}
 		<div style="height: 50%"></div>
 	</div>
