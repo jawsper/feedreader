@@ -11,17 +11,17 @@ import django.contrib.auth as auth
 
 def login( request ):
 	if not all( k in request.POST for k in ( 'user', 'pass' ) ): # check if username and password are supplied
-		return HttpResponseForbidden()
+		return HttpJsonResponse( success = False, message = 'Please supply your credentials' )
 
 	user = auth.authenticate( username = request.POST['user'], password = request.POST['pass'] )
 	if user is not None:
 		if user.is_active:
 			auth.login( request, user )
-			return HttpResponse( 'OK' )
+			return HttpJsonResponse( success = True, message = 'Login succeeded' )
 		else:
-			return HttpResponseForbidden()
+			return HttpJsonResponse( success = False, message = 'Please supply valid credentials' )
 	else:
-		return HttpResponseForbidden()
+		return HttpJsonResponse( success = False, message = 'Please supply valid credentials' )
 
 @login_required
 def get_options( request ):
