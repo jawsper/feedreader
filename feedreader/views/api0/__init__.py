@@ -10,10 +10,10 @@ from feedreader.models import ConfigStore, Outline
 import django.contrib.auth as auth
 
 def login( request ):
-	if not all( k in request.POST for k in ( 'user', 'pass' ) ): # check if username and password are supplied
+	if not all( k in request.POST for k in ( 'username', 'password' ) ): # check if username and password are supplied
 		return HttpJsonResponse( success = False, message = 'Please supply your credentials' )
 
-	user = auth.authenticate( username = request.POST['user'], password = request.POST['pass'] )
+	user = auth.authenticate( username = request.POST['username'], password = request.POST['password'] )
 	if user is not None:
 		if user.is_active:
 			auth.login( request, user )
