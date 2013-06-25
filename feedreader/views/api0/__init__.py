@@ -25,6 +25,9 @@ def get_unread( request ):
 	data[ outline.id ] = get_unread_count( request.user, outline )
 	if outline.parent:
 		data[ outline.parent.id ] = get_unread_count( request.user, outline.parent )
+	else:
+	    for child in Outline.objects.filter( parent = outline ):
+	        data[ child.id ] = get_unread_count( request.user, child )
 	return HttpJsonResponse( counts = data, total = get_total_unread_count( request.user ) )
 
 @login_required
