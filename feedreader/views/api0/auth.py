@@ -6,6 +6,8 @@ from django.http import HttpResponse, HttpResponseForbidden
 from django.contrib.auth import authenticate
 from feedreader.functions import HttpJsonResponse
 from feedreader.models import UserToken
+from django.utils.timezone import utc
+import datetime
 
 from feedreader.functions import verify_token
 
