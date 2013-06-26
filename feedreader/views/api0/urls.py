@@ -2,7 +2,7 @@ from django.conf.urls import patterns, url
 
 urlpatterns = patterns( 'feedreader.views.api0',
 	url( r'^auth/token/$', 'auth.token' ),
-	url( r'^auth/login/$', 'auth.login' ),
+	url( r'^auth/verify/$', 'auth.verify' ),
 	url( r'^outlines/', 'outline.get_all_outlines' ),
 	url( r'^get_options/$', 'get_options' ),
 	url( r'^get_unread_count/$', 'get_unread' ),

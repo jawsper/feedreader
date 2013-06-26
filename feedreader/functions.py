@@ -4,10 +4,12 @@
 
 from django.http import HttpResponse
 from django.db import connection
-from feedreader.models import Outline
+from django.utils.timezone import utc
+from feedreader.models import Outline, UserToken
 
 import re
 import json
+import datetime
 
 
 class HttpJsonResponse( HttpResponse ):
@@ -56,3 +58,15 @@ def outline_to_dict_with_children( request, outline, use_short_keys = False ):
 def main_navigation( request, use_short_keys = True ):
 	return [ outline_to_dict_with_children( request, outline, use_short_keys ) for outline in Outline.objects.filter( parent = None, user = request.user ) ]
 
+def verify_token( username, token ):
+	if not username or not token:
+		return False
+	try:
+		token = UserToken.objects.get( user__username = username, token = token )
+		if token.expire < datetime.datetime.utcnow().replace( tzinfo = utc ): # invalid token
+			token.delete()
+			return False
+		return token
+	except UserToken.DoesNotExist:
+		pass
+	return False

@@ -3,12 +3,10 @@
 # Date: 2013-06-26
 
 from django.http import HttpResponse, HttpResponseForbidden
-import django.contrib.auth as auth
+from django.contrib.auth import authenticate
 from feedreader.functions import HttpJsonResponse
 
-from feedreader.models import UserToken
-import datetime
-from django.utils.timezone import utc
+from feedreader.functions import verify_token
 
 import uuid
 def generate_token():
@@ -19,7 +17,7 @@ def token( request ):
 		return HttpResponseForbidden()
 
 	if 'password' in request.POST:
-		user = auth.authenticate( username = request.POST['username'], password = request.POST['password'] )
+		user = authenticate( username = request.POST['username'], password = request.POST['password'] )
 		if user is not None:
 			if user.is_active:
 				token = generate_token()
@@ -27,20 +25,8 @@ def token( request ):
 				return HttpResponse( token )
 	return HttpResponseForbidden()
 
-def login( request ):
-	if not 'username' in request.POST:
-		return HttpResponseForbidden()
-	if not any( k in request.POST for k in ( 'password', 'token' ) ): # check if password or token is supplied
-		return HttpResponseForbidden()
-		
-	if 'password' in request.POST:
-		user = auth.authenticate( username = request.POST['username'], password = request.POST['password'] )
-		if user is not None:
-			if user.is_active:
-				request.session['token'] = generate_token()
-				auth.login( request, user )
-				return HttpResponse( request.session['token'] )
-	elif 'token' in request.POST:
-		return HttpResponse() if 'token' in request.session and request.session['token'] == request.POST['token'] else HttpResponseForbidden()
-	return HttpResponseForbidden()
-
+def verify( request ):
+	if all( k in request.POST for k in ( 'username', 'token' ) ):
+		if verify_token( request.POST['username'], request.POST['token'] ):
+			return HttpJsonResponse( success = True )
+	return HttpJsonResponse( success = False )
