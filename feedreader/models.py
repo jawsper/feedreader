@@ -77,3 +77,8 @@ class ConfigStore( models.Model ):
 		for line in ConfigStore.objects.filter( user = user ):
 			config[ line.key ] = line.value
 		return config
+
+class UserToken( models.Model ):
+	user	= models.ForeignKey( User )
+	token	= models.CharField( max_length = 255 )
+	expire	= models.DateTimeField()
