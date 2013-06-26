@@ -5,6 +5,7 @@
 from django.http import HttpResponse, HttpResponseForbidden
 from django.contrib.auth import authenticate
 from feedreader.functions import HttpJsonResponse
+from feedreader.models import UserToken
 
 from feedreader.functions import verify_token
 
