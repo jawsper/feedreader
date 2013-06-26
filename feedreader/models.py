@@ -78,7 +78,13 @@ class ConfigStore( models.Model ):
 			config[ line.key ] = line.value
 		return config
 
+from django.utils.timezone import utc
+import datetime
+
 class UserToken( models.Model ):
 	user	= models.ForeignKey( User )
 	token	= models.CharField( max_length = 255 )
 	expire	= models.DateTimeField()
+
+	def expired( self ):
+		return self.expire < datetime.datetime.utcnow().replace( tzinfo = utc )

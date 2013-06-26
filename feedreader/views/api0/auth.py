@@ -23,9 +23,19 @@ def token( request ):
 		user = authenticate( username = request.POST['username'], password = request.POST['password'] )
 		if user is not None:
 			if user.is_active:
-				token = generate_token()
-				UserToken( user = user, token = token, expire = datetime.datetime.utcnow().replace( tzinfo = utc ) + datetime.timedelta( hours = 24 ) ).save()
-				return HttpResponse( token )
+				token = None
+				try:
+					token = UserToken.objects.get( user = user )
+					if token.expired():
+						token.delete()
+						token = None
+				except ( UserToken.DoesNotExist, UserToken.MultipleObjectsReturned ):
+					token = None
+				if not token:
+					raw_token = generate_token()
+					token = UserToken( user = user, token = raw_token, expire = datetime.datetime.utcnow().replace( tzinfo = utc ) + datetime.timedelta( hours = 24 ) )
+					token.save()
+				return HttpResponse( token.token )
 	return HttpResponseForbidden()
 
 def verify( request ):
