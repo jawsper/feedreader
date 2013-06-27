@@ -23,7 +23,7 @@ def get_posts( request, outline_id ):
 	sort_order = 'ASC' if outline.sort_order_asc else 'DESC'
 	show_only_new = outline.show_only_new
 	skip = int( request.POST['skip'] ) if 'skip' in request.POST else 0
-	limit = 20
+	limit = int( request.POST['count'] ) if 'count' in request.POST else 20
 	
 	if show_only_new:
 		query_user_post_where = ' and ( UserPost.read is null or UserPost.read = 0 ) '
