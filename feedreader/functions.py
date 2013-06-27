@@ -71,3 +71,87 @@ def verify_token( username, token ):
 	except UserToken.DoesNotExist:
 		pass
 	return False
+
+
+import re
+import urllib2, urlparse
+from PIL import Image
+from StringIO import StringIO
+
+class FaviconFinder:
+	def __init__( self, feed, stdout ):
+		self.feed = feed
+		self.stdout = stdout
+		
+	def find( self ):
+		# locate the <link> tag and find the icon in there
+		self.stdout.write( ' * Trying to find icon in html page' )
+		icon = self.find_icon_in_page()
+		if icon:
+			self.save_icon( icon[2] )
+			return
+		
+		# try <host>/favicon.ico
+		self.stdout.write( ' * Trying <host>/favicon.ico' )
+		icon = self.try_force_favicon()
+		if icon:
+			self.save_icon( icon[2] )
+			return
+		
+		self.stdout.write( ' * No icon found...' )
+	
+	def save_icon( self, url ):
+		self.stdout.write( ' * Found icon at {}'.format( url ) )
+		self.feed.faviconUrl = url
+		self.feed.save()
+	
+	def load_icon( self, url ):
+		try:
+			result = urllib2.urlopen( urllib2.Request( url, headers = { 'User-Agent': 'Chrome' } ) )
+			data = result.read()
+			content_type = result.headers.get( 'content-type' ) if 'content-type' in result.headers else 'text/html'
+			img = Image.open( StringIO( data ) )
+			if False and ( content_type == 'image/x-icon' or not img.size == (16,16) ):
+				if not img.size == (16,16):
+					print( 'resizing' )
+					img = img.resize( ( 16, 16 ) )
+				raw = StringIO()
+				img.save( raw, 'PNG' )
+				data = raw.getvalue()
+				content_type = 'image/png'
+			return ( data, content_type, url )
+		except Exception as e:
+			print( "Exception in load_icon: {0}".format( e ) )
+			return False
+	
+	def find_icon_in_page( self ):
+		# load associated html page
+		try:
+			data = urllib2.urlopen( urllib2.Request( self.feed.htmlUrl, headers = { 'User-Agent': 'Chrome' } ) ).read()
+			matches = re.findall( '<link ([^>]+)>', data )
+			for match in matches:
+				if re.search( 'rel="(shortcut )?icon"', match ):
+					m = re.search( 'href="([^"]+)"', match )
+					if not m:
+						continue
+				
+					favicon_url = m.groups(1)[0]
+				
+					p_favicon_url = urlparse.urlparse( favicon_url )
+				
+					# relative url, add hostname of site
+					if not p_favicon_url.hostname:
+						p_url = urlparse.urlparse( self.feed.htmlUrl )
+						favicon_url = urlparse.urlunparse( p_url[0:2] + p_favicon_url[2:] )
+				
+					return self.load_icon( favicon_url )
+		except:
+			pass
+		return False
+	
+	def try_force_favicon( self ):
+		p_url = urlparse.urlparse( self.feed.htmlUrl )
+		return self.load_icon( '{0}://{1}/favicon.ico'.format( p_url[0], p_url[1] ) )
+	
+	def default_icon( self ):
+		return HttpResponse( open( settings.STATIC_ROOT + 'images/icons/silk/feed.png', 'r' ).read(), content_type = 'image/png' )
