@@ -42,21 +42,22 @@ def get_total_unread_count( user ):
 	return count[0] if count else None
 
 def outline_to_dict_with_children( request, outline, use_short_keys = False ):
-	short_keys = ( 'i', 't', 'f', 'o', 'u', 'c' )
-	long_keys = ( 'id', 'title', 'feed_id', 'folder_opened', 'unread_count', 'children' )
+	short_keys = ( 'i', 't', 'f', 'fi', 'o', 'u', 'c' )
+	long_keys = ( 'id', 'title', 'feed_id', 'faviconUrl', 'folder_opened', 'unread_count', 'children' )
 	return dict( zip(
 		short_keys if use_short_keys else long_keys, [
 			outline.id,
 			outline.title,
 			outline.feed.id if outline.feed else None,
+			outline.feed.faviconUrl if outline.feed else None,
 			outline.folder_opened,
 			get_unread_count( request.user, outline ),
-			[ outline_to_dict_with_children( request, child, use_short_keys ) for child in Outline.objects.filter( parent = outline, user = request.user ) ]
+			[ outline_to_dict_with_children( request, child, use_short_keys ) for child in Outline.objects.select_related().filter( parent = outline, user = request.user ) ]
 		]
 	) )
 
 def main_navigation( request, use_short_keys = True ):
-	return [ outline_to_dict_with_children( request, outline, use_short_keys ) for outline in Outline.objects.filter( parent = None, user = request.user ) ]
+	return [ outline_to_dict_with_children( request, outline, use_short_keys ) for outline in Outline.objects.select_related().filter( parent = None, user = request.user ) ]
 
 def verify_token( username, token ):
 	if not username or not token:
