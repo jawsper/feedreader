@@ -53,7 +53,7 @@ class Post( models.Model ):
 		data[ 'feedTitle' ] = str( self.feed.title )
 		data[ 'pubDate' ] = str( self.pubDate )
 		data[ 'content'] = ( self.content if self.content else self.description )
-		data[ 'read' ] = self.read if self.read != None else False
+		data[ 'read' ] = bool( int( self.read ) ) if self.read != None else False
 		return data
 
 class UserPost( models.Model ):
@@ -77,3 +77,14 @@ class ConfigStore( models.Model ):
 		for line in ConfigStore.objects.filter( user = user ):
 			config[ line.key ] = line.value
 		return config
+
+from django.utils.timezone import utc
+import datetime
+
+class UserToken( models.Model ):
+	user	= models.ForeignKey( User )
+	token	= models.CharField( max_length = 255 )
+	expire	= models.DateTimeField()
+
+	def expired( self ):
+		return self.expire < datetime.datetime.utcnow().replace( tzinfo = utc )
