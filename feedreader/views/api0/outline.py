@@ -118,11 +118,12 @@ def outline_mark_as_read( request, outline_id ):
 	if outline.feed:
 		posts = Post.objects.filter( feed = outline.feed )
 	else:
-		feed_ids = [ o.feed.id for o in Outline.objects.filter( parent = outline ) ]
+		feed_ids = Outline.objects.filter( parent = outline ).values_list( 'feed', flat = True )
 		feeds = Feed.objects.filter( pk__in = feed_ids )
 		posts = Post.objects.filter( feed__in = feeds )
-	total = 0
+	post_count = change_count = 0
 	for post in posts:
+		post_count += 1
 		try:
 			u = UserPost.objects.get( user = request.user, post = post )
 		except UserPost.DoesNotExist:
@@ -130,8 +131,8 @@ def outline_mark_as_read( request, outline_id ):
 		if not u.id or not u.read:
 			u.read = True
 			u.save()
-			total += 1
-	return HttpJsonResponse( success = True, count = total )
+			change_count += 1
+	return HttpJsonResponse( success = True, post_count = post_count, change_count = change_count )
 	
 @login_required
 @transaction.commit_manually
