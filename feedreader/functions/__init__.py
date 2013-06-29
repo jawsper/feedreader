@@ -1,11 +1,14 @@
-# functions.py
+# functions/__init__.py
 # Author: Jasper Seidel
-# Date: 2013-06-24
+# Date: 2013-06-29
 
 from django.http import HttpResponse
 from django.db import connection
 from django.utils.timezone import utc
-from feedreader.models import Outline, UserToken
+from feedreader.models import Outline, UserToken, Feed
+
+# subfunctions
+from feedreader.functions.feeds import add_feed
 
 import re
 import json
@@ -155,3 +158,4 @@ class FaviconFinder:
 	
 	def default_icon( self ):
 		return HttpResponse( open( settings.STATIC_ROOT + 'images/icons/silk/feed.png', 'r' ).read(), content_type = 'image/png' )
+
