@@ -12,7 +12,7 @@ socket.setdefaulttimeout( 15 )
 
 class Command( BaseCommand ):
 	def handle( self, *args, **options ):
-		self.stdout.write( '[Favicon loader]' )
+		self.stdout.write( '[Favicon finder]' )
 		
 		if( len( args ) > 0 ):
 			feeds = Feed.objects.filter( pk__in = args )
