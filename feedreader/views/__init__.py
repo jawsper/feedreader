@@ -27,34 +27,16 @@ def index( request ):
 class FeedFaviconView(View):
 	def get( self, request, feed_id ):
 		try:
-			raise Exception # temporary
-			self.feed = Feed.objects.get( pk = feed_id )
-			if self.feed.faviconUrl:
-				icon = self.load_icon( self.feed.faviconUrl )
+			feed = Feed.objects.get( pk = feed_id )
+			if feed.faviconUrl:
+				icon = self.load_icon( feed.faviconUrl )
 				if icon:
 					return HttpResponse( icon[0], content_type = icon[1] )
-				else:
-					return self.default_icon()
-			
-			# locate the <link> tag and find the icon in there
-			icon = self.find_icon_in_page()
-			if icon:
-				self.save_icon( icon[2] )
-				return HttpResponse( icon[0], content_type = icon[1] )
-			
-			# try <host>/favicon.ico
-			icon = self.try_force_favicon()
-			if icon:
-				self.save_icon( icon[2] )
-				return HttpResponse( icon[0], content_type = icon[1] )
-		except:
+		except Feed.DoesNotExist:
 			pass
 		
 		return self.default_icon()
 	
-	def save_icon( self, url ):
-		self.feed.faviconUrl = url
-		self.feed.save()
 	
 	def load_icon( self, url ):
 		try:
@@ -62,47 +44,18 @@ class FeedFaviconView(View):
 			data = result.read()
 			content_type = result.headers.get( 'content-type' ) if 'content-type' in result.headers else 'text/html'
 			img = Image.open( StringIO( data ) )
-			if False and content_type == 'image/x-icon' or not img.size == (16,16):
-				if not img.size == (16,16):
-					print( 'resizing' )
-					img = img.resize( ( 16, 16 ) )
-				raw = StringIO()
-				img.save( raw, 'PNG' )
-				data = raw.getvalue()
-				content_type = 'image/png'
+			#if content_type == 'image/x-icon' or not img.size == (16,16):
+			#	if not img.size == (16,16):
+			#		print( 'resizing' )
+			#		img = img.resize( ( 16, 16 ) )
+			#	raw = StringIO()
+			#	img.save( raw, 'PNG' )
+			#	data = raw.getvalue()
+			#	content_type = 'image/png'
 			return ( data, content_type, url )
 		except Exception as e:
 			print( "Exception in load_icon: {0}".format( e ) )
 			return False
-	
-	def find_icon_in_page( self ):
-		# load associated html page
-		try:
-			data = urllib2.urlopen( urllib2.Request( self.feed.htmlUrl, headers = { 'User-Agent': 'Chrome' } ) ).read()
-			matches = re.findall( '<link ([^>]+)>', data )
-			for match in matches:
-				if re.search( 'rel="(shortcut )?icon"', match ):
-					m = re.search( 'href="([^"]+)"', match )
-					if not m:
-						continue
-				
-					favicon_url = m.groups(1)[0]
-				
-					p_favicon_url = urlparse.urlparse( favicon_url )
-				
-					# relative url, add hostname of site
-					if not p_favicon_url.hostname:
-						p_url = urlparse.urlparse( self.feed.htmlUrl )
-						favicon_url = urlparse.urlunparse( p_url[0:2] + p_favicon_url[2:] )
-				
-					return self.load_icon( favicon_url )
-		except:
-			pass
-		return False
-	
-	def try_force_favicon( self ):
-		p_url = urlparse.urlparse( self.feed.htmlUrl )
-		return self.load_icon( '{0}://{1}/favicon.ico'.format( p_url[0], p_url[1] ) )
 	
 	def default_icon( self ):
 		return HttpResponse( open( settings.STATIC_ROOT + 'images/icons/silk/feed.png', 'r' ).read(), content_type = 'image/png' )
