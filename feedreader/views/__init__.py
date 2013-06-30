@@ -12,6 +12,9 @@ from feedreader.models import Outline, Feed, Post, UserPost, ConfigStore
 
 from feedreader.functions import main_navigation
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+
 import re
 import urllib2, urlparse
 from PIL import Image
@@ -24,7 +27,11 @@ def index( request ):
 		'outline_list': main_navigation( request, False )
 	} )
 
-class FeedFaviconView(View):
+class FeedFaviconView( View ):
+	@method_decorator( cache_page( 60 * 15 ) )
+	def dispatch( self, *args, **kwargs ):
+		return View.dispatch( self, *args, **kwargs )
+
 	def get( self, request, feed_id ):
 		try:
 			feed = Feed.objects.get( pk = feed_id )
