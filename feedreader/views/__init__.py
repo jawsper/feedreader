@@ -8,17 +8,11 @@ from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.views.generic.base import View
 
-from feedreader.models import Outline, Feed, Post, UserPost, ConfigStore
+from feedreader.models import Feed, ConfigStore
 
 from feedreader.functions import main_navigation
 
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
-
-import re
-import urllib2, urlparse
-from PIL import Image
-from StringIO import StringIO
+import urllib2
 
 @login_required
 def index( request ):
@@ -46,15 +40,6 @@ class FeedFaviconView( View ):
 			result = urllib2.urlopen( urllib2.Request( url, headers = { 'User-Agent': 'Chrome' } ) )
 			data = result.read()
 			content_type = result.headers.get( 'content-type' ) if 'content-type' in result.headers else 'text/html'
-			img = Image.open( StringIO( data ) )
-			#if content_type == 'image/x-icon' or not img.size == (16,16):
-			#	if not img.size == (16,16):
-			#		print( 'resizing' )
-			#		img = img.resize( ( 16, 16 ) )
-			#	raw = StringIO()
-			#	img.save( raw, 'PNG' )
-			#	data = raw.getvalue()
-			#	content_type = 'image/png'
 			return ( data, content_type, url )
 		except Exception as e:
 			print( "Exception in load_icon: {0}".format( e ) )
