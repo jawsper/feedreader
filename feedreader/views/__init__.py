@@ -28,10 +28,6 @@ def index( request ):
 	} )
 
 class FeedFaviconView( View ):
-	@method_decorator( cache_page( 60 * 15 ) )
-	def dispatch( self, *args, **kwargs ):
-		return View.dispatch( self, *args, **kwargs )
-
 	def get( self, request, feed_id ):
 		try:
 			feed = Feed.objects.get( pk = feed_id )
