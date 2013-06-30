@@ -7,6 +7,16 @@ from django.contrib.auth.decorators import login_required
 from django.db import connection, transaction
 from feedreader.functions import HttpJsonResponse, get_unread_count
 from feedreader.models import Outline, Post, Feed, UserPost
+import feedreader.functions as func
+
+@login_required
+def add_feed( request ):
+	if not 'url' in request.POST:
+		return HttpJsonResponse( success = False, message = 'No URL supplied' )
+
+	result = func.add_feed( request.user, request.POST['url'] )
+
+	return HttpJsonResponse( success = 'outline_id' in result, result = result )
 
 @login_required
 def get_all_outlines( request ):
