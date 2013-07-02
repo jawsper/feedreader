@@ -1,3 +1,5 @@
+<ul id="outlines2" class="feeds">
+</ul>
 {% if outline_list %}
 <ul id="outlines" class="feeds{% if config.showOnlyUnread %} show-only-unread{% endif %}">
     {% for outline in outline_list %}
@@ -26,5 +28,13 @@
 {% else %}
     <p>No outlines are available.</p>
 {% endif %}
-<script type="text/template" id="navigation_item">
+
+<script type="text/template" id="templateNavigationItem">
+	<li class="outline" id="outline-${outline.id}">
+		<div class="outline-line">
+			<a class="outline-text" href="/outline/${outline.id}">${outline.title}</a>
+			<span class="outline-unread-count" id="outline-unread-count-${outline.id}">${outline.unread_count}</span>
+		</div>
+		${outline.children}
+	</li>
 </script>
