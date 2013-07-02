@@ -12,6 +12,8 @@ class Feed( models.Model ):
 	lastUpdated = models.DateTimeField( null = True, blank = True )
 	lastStatus 	= models.CharField( max_length = 1000, null = True, blank = True )
 	
+	disabled	= models.BooleanField( default = False )
+	
 	def __unicode__( self ):
 		return self.title
 
