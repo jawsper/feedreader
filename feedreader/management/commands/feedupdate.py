@@ -1,6 +1,7 @@
 from __future__ import print_function
 from django.core.management.base import BaseCommand, CommandError
 from django.db import IntegrityError
+from optparse import make_option
 
 from feedreader.models import Feed, Post
 
@@ -26,9 +27,15 @@ class UTC(datetime.tzinfo):
 		return datetime.timedelta(0)
 
 class Command(BaseCommand):
+	option_list = BaseCommand.option_list + (
+		make_option( '--debug', action = 'store_true', dest = 'debug', default = False, help = 'Debug' ),
+	)
+
 	def handle( self, *args, **options ):
 		self.stdout.write( '[Feed updater]' )
 		self.imported = 0
+		self.debug = options['debug']
+		
 		if len( args ) == 1:
 			import re
 			if re.match( '^\d+$', args[0] ):
