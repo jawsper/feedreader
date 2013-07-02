@@ -22,13 +22,21 @@
 		</p>
 	</div>
 </div>
+<div id="new-feed-popup" class="ui-helper-hidden" title="Add new feed">
+	<label for="new-feed-url">URL: <input id="new-feed-url" type="text"></label>
+</div>
 <div id="header" class="header row">
 <h1>Feedreader</h1>
 </div>
 <div id="navigation" class="left col scroll-y">
 	{% if user.is_authenticated %}
 		<p>Welcome, {{ user.username }} [<a href="{% url 'logout' %}">Logout</a>]</p>
-		<p><a id="button-options" class="button">Options</a> <a id="button_refresh_page" class="button">Refresh</a></p>
+		<p>
+			<a id="button-new-feed" class="button">Add a new feed</a>
+			<br>
+			<a id="button-options" class="button">Options</a>
+			<a id="button_refresh_page" class="button">Refresh</a
+		</p>
 		<ul class="options clean">
 		</ul>
 		<hr class="options" />
