@@ -60,6 +60,8 @@ def outline_to_dict_with_children( request, outline, use_short_keys = False ):
 	) )
 
 def main_navigation( request, use_short_keys = True ):
+	if 'use_long_keys' in request.POST:
+		use_short_keys = False
 	return [ outline_to_dict_with_children( request, outline, use_short_keys ) for outline in Outline.objects.select_related().filter( parent = None, user = request.user ) ]
 
 def verify_token( username, token ):
