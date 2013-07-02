@@ -39,7 +39,7 @@ class Command(BaseCommand):
 				for feed in Feed.objects.filter( id__gte = int( m.groups(1)[0] ) ):
 					self.update_feed( feed )
 				return
-		for feed in Feed.objects.all():
+		for feed in Feed.objects.filter( disabled = False ):
 			self.update_feed( feed )
 		self.stdout.write( 'Done! Total posts imported: {0}'.format( self.imported ) )
 
