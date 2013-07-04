@@ -42,14 +42,14 @@ def get_posts( request, outline_id ):
 	
 	if outline.feed:
 		posts = Post.objects.raw(
-		'select Post.*, UserPost.read ' +
+		'select Post.*, UserPost.starred, UserPost.read ' +
 		'from feedreader_post Post left outer join feedreader_userpost UserPost on ( Post.id = UserPost.post_id and UserPost.user_id = %s ) ' +
 		'where Post.feed_id = %s ' + query_user_post_where + ' ' +
 		'order by Post.pubDate ' + sort_order + ' ' +
 		'LIMIT %s,%s', [ request.user.id, outline.feed.id, skip, limit ] )
 	else:
 		posts = Post.objects.raw(
-		'select Post.*, UserPost.read ' +
+		'select Post.*, UserPost.starred, UserPost.read ' +
 		'from feedreader_post Post left outer join feedreader_userpost UserPost on ( Post.id = UserPost.post_id and UserPost.user_id = %s ) ' +
 		'where Post.feed_id in ( select feed_id from feedreader_outline where parent_id = %s ) ' + query_user_post_where + ' ' +
 		'order by Post.pubDate ' + sort_order + ' ' +

@@ -23,9 +23,9 @@ def action( request, post_id, action ):
 	state = None
 	if 'state' in params:
 		state = bool( int( params['state'] ) )
-	if action in ( 'read', ):
+	if action in ( 'starred', 'read' ):
 		if state != None:
 			setattr( user_post, action, state )
 			user_post.save()
-		return HttpJsonResponse( caption = 'Result', message = 'Post {} marked as {}'.format( post_id, 'read' if state else 'unread' ), error = False )
+		return HttpJsonResponse( caption = 'Result', message = 'Post {} marked as {}'.format( post_id, action if state else 'not ' + action ), error = False )
 	raise Http404
