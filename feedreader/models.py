@@ -55,13 +55,15 @@ class Post( models.Model ):
 		data[ 'feedTitle' ] = str( self.feed.title )
 		data[ 'pubDate' ] = str( self.pubDate )
 		data[ 'content'] = ( self.content if self.content else self.description )
+		data[ 'starred' ] = bool( int( self.starred ) ) if self.starred != None else False
 		data[ 'read' ] = bool( int( self.read ) ) if self.read != None else False
 		return data
 
 class UserPost( models.Model ):
-	user = models.ForeignKey( User )
-	post = models.ForeignKey( Post )
-	read = models.BooleanField( default = False )
+	user 	= models.ForeignKey( User )
+	post 	= models.ForeignKey( Post )
+	starred = models.BooleanField( default = False )
+	read 	= models.BooleanField( default = False )
 	
 	class Meta:
 		unique_together = ( ( 'user', 'post' ), )
