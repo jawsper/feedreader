@@ -3,7 +3,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import IntegrityError
 from optparse import make_option
 
-from feedreader.models import Feed, Post
+from feedreader.models import Feed, Post, Outline, UserPost
 
 import feedparser
 import time
@@ -162,6 +162,8 @@ class Command(BaseCommand):
 				post = Post( **insert_data )
 				try:
 					post.save()
+					for outline in Outline.objects.get( feed = feed ):
+					    UserPost( user = outline.user, post = post ).save() # make userposts for all users who have this feed
 					imported += 1
 				except IntegrityError:
 					self.stdout.write( str( entry ) )
