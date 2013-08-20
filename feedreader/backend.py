@@ -1,9 +1,6 @@
 from django.contrib.auth.backends import ModelBackend
 from feedreader.models import UserToken
 
-import datetime
-from django.utils.timezone import utc
-
 class TokenBackend( ModelBackend ):
 	def authenticate( self, username = None, token = None ):
 		"""We could authenticate the token by checking with OpenAM
@@ -13,7 +10,7 @@ class TokenBackend( ModelBackend ):
 			return False
 		try:
 			token = UserToken.objects.get( user__username = username, token = token )
-			if token.expire < datetime.datetime.utcnow().replace( tzinfo = utc ): # invalid token
+			if token.expired(): # invalid token
 				token.delete()
 				return
 		except UserToken.DoesNotExist:
