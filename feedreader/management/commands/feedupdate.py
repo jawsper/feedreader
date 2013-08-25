@@ -162,7 +162,7 @@ class Command(BaseCommand):
 				post = Post( **insert_data )
 				try:
 					post.save()
-					for outline in Outline.objects.get( feed = feed ):
+					for outline in Outline.objects.filter( feed = feed ):
 					    UserPost( user = outline.user, post = post ).save() # make userposts for all users who have this feed
 					imported += 1
 				except IntegrityError:
