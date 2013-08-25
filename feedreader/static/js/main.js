@@ -169,7 +169,7 @@ $(function()
 	$( '#outlines a' ).click( function(e) { e.stopPropagation(); } );
 	
 	$( '#outlines' )
-		.on({ click: function( e ) { e.stopPropagation(); } }, 'a' )
+		.on({ click: function( e ) { console.debug('click'); console.debug(this); e.stopPropagation(); } }, 'a' )
 		.on({
 			click: function()
 			{

@@ -198,6 +198,12 @@ ul.clean li
 	display: none;
 }
 
+#outlines a, #outlines a:active, #outlines a:hover, #outlines a:visited
+{
+	color: #333;
+	text-decoration: none;
+}
+
 
 /* end navigation */
 
