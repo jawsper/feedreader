@@ -9,7 +9,9 @@
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.cookie.js"></script>
 <script type="text/javascript">jQuery.uiBackCompat = false;</script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.10.3.custom.min.js"></script>
+{% if user.is_authenticated %}
 <script type="text/javascript" src="{{ STATIC_URL }}js/main.js"></script>
+{% endif %}
 {% block head %}{% endblock head %}
 </head>
 <body>
@@ -22,9 +24,11 @@
 		</p>
 	</div>
 </div>
+{% if user.is_authenticated %}
 <div id="new-feed-popup" class="ui-helper-hidden" title="Add new feed">
 	<label for="new-feed-url">URL: <input id="new-feed-url" type="text"></label>
 </div>
+{% endif %}
 <div id="header" class="header row">
 <h1>Feedreader</h1>
 </div>
@@ -42,7 +46,7 @@
 		<hr class="options" />
 		{% block navigation %}{% endblock navigation %}
 	{% else %}
-		<p>Welcome, new user. Please log in.</p>
+		<p>Welcome. Please log in.</p>
 	{% endif %}
 </div>
 <div id="body" class="right col">
