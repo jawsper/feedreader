@@ -23,7 +23,6 @@ function api_request( path, args, callback )
 				message: errorThrown == 'FORBIDDEN' ? 'Your login has expired. Please refresh the page to re-login' : errorThrown,
 				error: true,
 			});
-			
 		}
 	});
 }
