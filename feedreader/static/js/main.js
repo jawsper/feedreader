@@ -8,10 +8,20 @@ var base_path = '//' + document.location.host + document.location.pathname;
 
 function api_request( path, args, callback )
 {
-    $.post( get_api_url( path ), args, function( result )
-    {
-        callback( result );
-    });
+    $.ajax({
+		type: 'POST',
+		url: get_api_url( path ),
+		data: args,
+		success: function( result )
+		{
+			callback( result );
+		},
+		error: function(xhr, textStatus, errorThrown)
+		{
+			if(errorThrown == 'FORBIDDEN')
+				location.reload();
+		}
+	});
 }
 
 function get_url( path )
