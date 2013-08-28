@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login
+from django.http import HttpResponseForbidden
 
 class TokenMiddleware( object ):
 	def process_request( self, request ):
@@ -11,3 +12,9 @@ class TokenMiddleware( object ):
 			if user:
 				request.user = user
 				login( request, user )
+
+class XmlHttpRequestLoginChecker(object):
+    def process_request(self, request):
+        if 'HTTP_X_REQUESTED_WITH' in request.META and request.META['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest':
+            if not request.user.is_authenticated():
+                return HttpResponseForbidden()
