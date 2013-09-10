@@ -2,6 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>Feedreader</title>
+<base href="{% url 'index' %}">
 <meta name="viewport" content="width=device-width">
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/main.css">
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/smoothness/jquery-ui-1.10.3.custom.min.css">
@@ -11,6 +12,7 @@
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.10.3.custom.min.js"></script>
 {% if user.is_authenticated %}
 <script type="text/javascript" src="{{ STATIC_URL }}js/main.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/outline.js"></script>
 {% endif %}
 {% block head %}{% endblock head %}
 </head>

@@ -4,7 +4,7 @@
 	License: MIT
 */
 
-var base_path = '//' + document.location.host + document.location.pathname;
+var base_path = '//' + document.location.host + '/feedreader/';
 
 function api_request( path, args, callback )
 {
@@ -160,52 +160,43 @@ function save_option( name, value )
 	});
 }
 
-function on_hash_change()
+function url_change( url )
 {
-	console.debug( window.location.hash );
-	// if not start with #!, ignore
-	if( window.location.hash.substring( 0, 2 ) != '#!' ) return;
-	// get the real url
-	var real_url = window.location.hash.substring( 2 );
-	
-	// if is outline url, then set the outline
-	var match = real_url.match( /\/outline\/(\d+)\// );
-	if( match )
+	var m = url.match( /\/outline\/(\d+)\// );
+	if( m )
 	{
-		set_outline( match[1] );
+		set_outline( m[1] );
 	}
+}
+
+function on_popstate(e)
+{
+	url_change( location.pathname );
 }
 
 $(function()
 {
 	// make sure to not propagate when clicked to prevent folders from opening/closing
-	$( '#outlines a' ).click( function(e) { e.stopPropagation(); } );
+	//$( '#outlines a' ).click( function(e) { e.stopPropagation(); } );
 	
 	$( '#outlines' )
-		.on({ click: function( e ) { console.debug('click'); console.debug(this); e.stopPropagation(); } }, 'a' )
+		.on({ click: function( e )
+			{
+				history.pushState( null, null, this.href );
+				url_change( this.href );
+				e.preventDefault();
+				e.stopPropagation();
+			} }, 'a' )
 		.on({
 			click: function()
 			{
 				var outline = $( this ).parent();
 				var outline_id = outline.attr( 'id' ).match( outline_regex )[1];
-				console.debug( outline_id );
 				outline.toggleClass( 'folder-closed' );
 				set_outline_param( outline_id, 'folder_opened', outline.hasClass( 'folder-closed' ) ? 0 : 1, true );
 			}
 		}, '.folder > .outline-line' );
-	
-	/*$( '#outlines > li.folder' ).each(function(k,v)
-	{
-		var t = $(this);
-		$( 'div.outline-line:first', t ).click(function()
-		{
-			t.toggleClass( 'folder-closed' );
-			var outline_id = t.attr( 'id' ).match( outline_regex )[1];
-			console.debug( outline_id );
-			set_outline_param( outline_id, 'folder_opened', t.hasClass( 'folder-closed' ) ? 0 : 1, true );
-		});
-	});*/
-	
+		
 	// make a button for all options
 	$.each( options, function( name, data )
 	{
@@ -244,12 +235,15 @@ $(function()
 		load_navigation();
 	});
 	
-	// load unread counts
-	// get_unread_counts();
-	
 	// trigger initial hash change, and set window.hashchange event
-	on_hash_change();
-	$( window ).on( 'hashchange', on_hash_change );
+	//on_hash_change();
+	//$( window ).on( 'hashchange', on_hash_change );
+	
+	// if is outline url, then set the outline
+	
+	
+	url_change( location.pathname );
+	window.addEventListener( 'popstate', on_popstate );
 	
 	load_navigation();
 });

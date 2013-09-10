@@ -5,7 +5,7 @@
     {% for outline in outline_list %}
 	<li data-unread-count="{{ outline.unread_count }}" class="outline {% if outline.unread_count > 0 %}has-unread {% endif %}{% if outline.feed_id %}feed{% else %}folder{% if not outline.folder_opened %} folder-closed{% endif %}{% endif %}" id="outline-{{ outline.id }}">
 		<div class="outline-line"{% if outline.feed_id %} style="background-image:url('{% url 'feed_favicon' outline.feed_id %}')"{% endif %}>
-			<a class="outline-text" href="#!/outline/{{ outline.id }}/">{{ outline.title }}</a>
+			<a class="outline-text" href="outline/{{ outline.id }}/">{{ outline.title }}</a>
 			<span class="outline-unread-count" id="outline-unread-count-{{ outline.id }}">{{ outline.unread_count }}</span>
 		</div>
 		{% if outline.children %}
@@ -13,7 +13,7 @@
 			{% for child in outline.children %}
 			<li data-unread-count="{{ outline.unread_count }}" class="outline {% if child.unread_count > 0 %}has-unread {% endif %}feed" id="outline-{{ child.id }}">
 				<div class="outline-line" style="background-image:url('{% url 'feed_favicon' child.feed_id %}')">
-					<a class="outline-text" href="#!/outline/{{ child.id }}/">{{ child.title }}</a>
+					<a class="outline-text" href="outline/{{ child.id }}/">{{ child.title }}</a>
 					<span class="outline-unread-count" id="outline-unread-count-{{ child.id }}">{{ child.unread_count }}</span>
 				</div>
 				
@@ -32,7 +32,7 @@
 <script type="text/template" id="templateNavigationItem">
 	<li class="outline" id="outline-${outline.id}">
 		<div class="outline-line">
-			<a class="outline-text" href="#!/outline/${outline.id}/">${outline.title}</a>
+			<a class="outline-text" href="outline/${outline.id}/">${outline.title}</a>
 			<span class="outline-unread-count" id="outline-unread-count-${outline.id}">${outline.unread_count}</span>
 		</div>
 	</li>

@@ -2,13 +2,13 @@
 # Author: Jasper Seidel
 # Date: 2013-06-24
 
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.views.generic.base import View
 
-from feedreader.models import Feed, ConfigStore
+from feedreader.models import Feed, ConfigStore, Outline
 
 from feedreader.functions import main_navigation
 
@@ -20,6 +20,17 @@ def index( request ):
 		'config': ConfigStore.getUserConfig( user = request.user ),
 		'outline_list': main_navigation( request, False )
 	} )
+
+@login_required
+def outline( request, outline_id ):
+	try:
+		return render( request, 'feedreader/outline.html', {
+			'outline': Outline.objects.get( pk = outline_id ),
+			'config': ConfigStore.getUserConfig( user = request.user ),
+			'outline_list': main_navigation( request, False )
+		} )
+	except Outline.DoesNotExist:
+		raise Http404
 
 class FeedFaviconView( View ):
 	def get( self, request, feed_id ):
