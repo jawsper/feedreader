@@ -55,8 +55,8 @@ class Post( models.Model ):
 		data[ 'feedTitle' ] = str( self.feed.title )
 		data[ 'pubDate' ] = str( self.pubDate )
 		data[ 'content'] = ( self.content if self.content else self.description )
-		data[ 'starred' ] = bool( int( self.starred ) ) if self.starred != None else False
-		data[ 'read' ] = bool( int( self.read ) ) if self.read != None else False
+		if hasattr(self, 'starred'): data[ 'starred' ] = bool( int( self.starred ) ) if self.starred != None else False
+		if hasattr(self, 'read'): data[ 'read' ] = bool( int( self.read ) ) if self.read != None else False
 		return data
 
 class UserPost( models.Model ):
@@ -67,6 +67,14 @@ class UserPost( models.Model ):
 	
 	class Meta:
 		unique_together = ( ( 'user', 'post' ), )
+
+	def toJsonDict( self ):
+		data = {}
+		if self.post:
+			data = self.post.toJsonDict()
+		data[ 'starred' ] = self.starred if self.starred != None else False
+		data[ 'read' ] = self.read if self.read != None else False
+		return data
 
 class ConfigStore( models.Model ):
 	key		= models.CharField( max_length = 255, primary_key = True )

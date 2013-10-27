@@ -24,6 +24,20 @@ def get_all_outlines( request ):
 	return HttpJsonResponse( outlines = main_navigation( request ) )
 
 @login_required
+def get_all_posts(request):
+	skip = int(request.POST['skip']) if 'skip' in request.POST else 0
+	limit = int(request.POST['limit']) if 'limit' in request.POST else 20
+	userposts = UserPost.objects.filter(user=request.user).select_related()[skip:limit]
+	return HttpJsonResponse(posts=[up.toJsonDict() for up in userposts])
+
+@login_required
+def get_starred_posts(request):
+	skip = int(request.POST['skip']) if 'skip' in request.POST else 0
+	limit = int(request.POST['limit']) if 'limit' in request.POST else 20
+	userposts = UserPost.objects.filter(user=request.user, starred=True).select_related()[skip:limit]
+	return HttpJsonResponse(posts=[up.toJsonDict() for up in userposts])
+
+@login_required
 def get_posts( request, outline_id ):
 	try:
 		outline = Outline.objects.get( pk = outline_id, user = request.user.id )
