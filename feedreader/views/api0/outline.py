@@ -8,6 +8,7 @@ from django.db import connection, transaction
 from feedreader.functions import HttpJsonResponse, get_unread_count
 from feedreader.models import Outline, Post, Feed, UserPost
 import feedreader.functions as func
+from feedreader.functions import main_navigation
 
 @login_required
 def add_feed( request ):
@@ -20,7 +21,6 @@ def add_feed( request ):
 
 @login_required
 def get_all_outlines( request ):
-	from feedreader.views import main_navigation
 	return HttpJsonResponse( outlines = main_navigation( request ) )
 
 @login_required
