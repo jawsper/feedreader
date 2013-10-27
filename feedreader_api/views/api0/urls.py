@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, url
 
-urlpatterns = patterns( 'feedreader.views.api0',
+urlpatterns = patterns( 'feedreader_api.views.api0',
 	url( r'^auth/token/$', 'auth.token' ),
 	url( r'^auth/verify/$', 'auth.verify' ),
 	url( r'^feed/add/$', 'outline.add_feed' ),
