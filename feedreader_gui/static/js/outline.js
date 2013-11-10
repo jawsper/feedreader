@@ -76,12 +76,12 @@ function set_outline( a_outline_id )
 function set_outline_param( a_outline_id, key, value, no_load )
 {
 	if( !a_outline_id ) return;
-	data = { 'action': key };
+	data = { outline: a_outline_id, 'action': key };
 	if( value ) data['value'] = value;
 	
-	$.post( get_api_url( '/outline/' + a_outline_id + '/set/' ), data, function( result )
+	$.post( get_api_url( '/outline/set/' ), data, function( data )
 	{
-		if( result == 'OK' )
+		if( !data.error )
 		{
 			if( !no_load ) load_outline( a_outline_id, true );
 		}
@@ -102,28 +102,34 @@ function set_outline_data( a_outline_id, data )
 function get_outline_data( a_outline_id )
 {
 	if( !a_outline_id ) return;
-	api_request( '/outline/' + a_outline_id + '/get_data/', {}, function( data )
+	api_request( '/outline/get_data/', { outline: a_outline_id }, function( data )
 	{
-		set_outline_data( a_outline_id, data );
+		if( !data.error )
+		{
+			set_outline_data( a_outline_id, data );
+		}
 	});
 }
 
 function load_outline( a_outline_id, forced_refresh )
 {
 	if( !a_outline_id ) return;
-	api_request( '/outline/' + a_outline_id + '/get_posts/', { forced_refresh: forced_refresh }, function( data )
+	api_request( '/outline/get_posts/', { outline: a_outline_id, forced_refresh: forced_refresh }, function( data )
 	{
-		if( g_outline_id != a_outline_id ) return; // attempt to prevent slow loads from overwriting the current outline
-		set_outline_data( a_outline_id, data );
-		
-		$( '#content' ).scrollTop( 0 );
-		$( '#posts' ).empty();
-		g_current_post = null;
-		$.each( data.posts, function( k, post )
+		if( !data.error )
 		{
-			$( '#posts' ).append( post_build_html( post, data.is_feed ) );
-			post_attach_handlers( post.id );
-		});
+			if( g_outline_id != a_outline_id ) return; // attempt to prevent slow loads from overwriting the current outline
+			set_outline_data( a_outline_id, data );
+			
+			$( '#content' ).scrollTop( 0 );
+			$( '#posts' ).empty();
+			g_current_post = null;
+			$.each( data.posts, function( k, post )
+			{
+				$( '#posts' ).append( post_build_html( post, data.is_feed ) );
+				post_attach_handlers( post.id );
+			});
+		}
 	});
 }
 
@@ -131,23 +137,26 @@ function load_outline( a_outline_id, forced_refresh )
 function mark_all_as_read( a_outline_id )
 {
 	if( !a_outline_id ) return;
-	api_request( '/outline/' + a_outline_id + '/mark_as_read/', {}, function( data )
+	api_request( '/outline/mark_as_read/', { outline: a_outline_id }, function( data )
 	{
-		if( data.success ) load_outline( a_outline_id, true );
+		if( !data.error ) load_outline( a_outline_id, true );
 	});
 }
 
 function load_more_posts( a_outline_id, skip, on_complete )
 {
 	if( !a_outline_id ) return;
-	api_request( '/outline/' + a_outline_id + '/get_posts/', { skip: skip }, function( data )
+	api_request( '/outline/get_posts/', { outline: a_outline_id, skip: skip }, function( data )
 	{
-		$.each( data.posts, function( k, post )
+		if( !data.error )
 		{
-			$( '#posts' ).append( post_build_html( post, data.is_feed ) );
-			post_attach_handlers( post.id );
-		});
-		if( on_complete ) on_complete();
+			$.each( data.posts, function( k, post )
+			{
+				$( '#posts' ).append( post_build_html( post, data.is_feed ) );
+				post_attach_handlers( post.id );
+			});
+			if( on_complete ) on_complete();
+		}
 	});
 }
 
@@ -171,7 +180,7 @@ function set_post_starred_state( post_id, state )
 }
 function set_post_attr_state( post_id, attr, state )
 {
-	api_request( '/post/' + post_id + '/action/' + attr + '/', { state: state }, function( data )
+	api_request( '/post/action/', { post: post_id, action: attr, state: state }, function( data )
 	{
 		show_result( data );
 		get_outline_data( g_outline_id );

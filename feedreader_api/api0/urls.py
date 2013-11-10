@@ -11,9 +11,9 @@ urlpatterns = patterns( 'feedreader_api.api0',
 	url( r'^set_option/$', 'set_option', name = 'set_option' ),
 	url( r'^outline/get_all_posts/$', 'outline.get_all_posts', name='get_all_posts'),
 	url( r'^outline/get_starred_posts/$', 'outline.get_starred_posts', name='get_starred_posts'),
-	url( r'^outline/(?P<outline_id>\d+)/get_posts/$', 'outline.get_posts', name = 'get_posts' ),
-	url( r'^outline/(?P<outline_id>\d+)/get_data/$', 'outline.get_outline_data', name = 'get_outline_data' ),
-	url( r'^outline/(?P<outline_id>\d+)/set/$', 'outline.outline_set', name = 'outline_set' ),
-	url( r'^outline/(?P<outline_id>\d+)/mark_as_read/$', 'outline.outline_mark_as_read', name='outline_mark_read' ),
-	url( r'^post/(?P<post_id>\d+)/action/(?P<action>[a-z_]+)/$', 'post.action', name='post_action' )
+	url( r'^outline/get_posts/$', 'outline.get_posts', name='get_posts' ),
+	url( r'^outline/get_data/$', 'outline.get_outline_data', name='get_outline_data' ),
+	url( r'^outline/set/$', 'outline.outline_set', name = 'outline_set' ),
+	url( r'^outline/mark_as_read/$', 'outline.outline_mark_as_read', name='outline_mark_read' ),
+	url( r'^post/action/$', 'post.action', name='post_action' )
 )
