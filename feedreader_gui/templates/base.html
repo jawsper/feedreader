@@ -11,6 +11,7 @@
 <script type="text/javascript">jQuery.uiBackCompat = false;</script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.10.3.custom.min.js"></script>
 {% if user.is_authenticated %}
+<script src="{% url 'script_urls' %}"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/main.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/outline.js"></script>
 {% endif %}

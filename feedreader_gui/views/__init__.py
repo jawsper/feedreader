@@ -5,8 +5,9 @@
 from django.http import HttpResponse, Http404
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.conf import settings
-from django.views.generic.base import View
+from django.views.generic.base import View, TemplateView
 
 from feedreader.models import Feed, ConfigStore, Outline
 
@@ -59,3 +60,22 @@ class FeedFaviconView( View ):
 	def default_icon( self ):
 		return HttpResponse( open( settings.STATIC_ROOT + 'images/icons/silk/feed.png', 'r' ).read(), content_type = 'image/png' )
 
+class ScriptUrls(TemplateView):
+	template_name = 'feedreader/urls.js.html'
+	content_type = 'application/javascript'
+
+	@method_decorator(login_required)
+	def dispatch(self, *args, **kwargs):
+		return super(ScriptUrls, self).dispatch(*args, **kwargs)
+
+	def get_context_data(self, **kwargs):
+		context = super(ScriptUrls, self).get_context_data(**kwargs)
+		url_dict = {}
+		from django.core.urlresolvers import reverse
+		from django.utils.regex_helper import normalize
+		from feedreader_api.views.api0 import urls as api_urls
+		for url in api_urls.urlpatterns:
+			url_dict[url.name] = normalize(url.regex.pattern)[0][0]
+		context['urls'] = url_dict
+		#context['latest_articles'] = Article.objects.all()[:5]
+		return context
