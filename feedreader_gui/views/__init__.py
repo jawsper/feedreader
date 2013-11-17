@@ -74,7 +74,7 @@ class ScriptUrls(SecureTemplateView):
 		url_dict = {}
 		from django.core.urlresolvers import reverse
 		from django.utils.regex_helper import normalize
-		from feedreader_api.views.api0 import urls as api_urls
+		from feedreader_api.api0 import urls as api_urls
 		for url in api_urls.urlpatterns:
 			url_dict[url.name] = normalize(url.regex.pattern)[0][0]
 		context['urls'] = url_dict
