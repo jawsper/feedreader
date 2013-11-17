@@ -1,6 +1,3 @@
-<ul id="outlines2" class="feeds">
-</ul>
-{% if outline_list %}
 <ul id="outlines" class="feeds{% if config.showOnlyUnread %} show-only-unread{% endif %}">
     {% for outline in outline_list %}
 	<li data-unread-count="{{ outline.unread_count }}" class="outline {% if outline.unread_count > 0 %}has-unread {% endif %}{% if outline.feed_id %}feed{% else %}folder{% if not outline.folder_opened %} folder-closed{% endif %}{% endif %}" id="outline-{{ outline.id }}">
@@ -24,10 +21,6 @@
 	</li>
     {% endfor %}
 </ul>
-
-{% else %}
-    <p>No outlines are available.</p>
-{% endif %}
 
 <script type="text/template" id="templateNavigationItem">
 	<li class="outline" id="outline-${outline.id}">
