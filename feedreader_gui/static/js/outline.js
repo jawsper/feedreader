@@ -227,7 +227,8 @@ function post_attach_handlers( post_id )
 	.find( '.footer .action.read' ).click(function()
 	{
 		set_post_read_state( post_id, $(this).is(':checked') ? 1 : 0 );
-	});
+	}).end()
+	.find('.body .content a').attr('target', '_blank');
 }
 
 function post_build_html( post, is_feed )
