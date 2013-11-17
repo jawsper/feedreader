@@ -15,23 +15,28 @@ from feedreader.functions import main_navigation
 
 import urllib2
 
-@login_required
-def index( request ):
-	return render( request, 'feedreader/index.html', {
-		'config': ConfigStore.getUserConfig( user = request.user ),
-		'outline_list': main_navigation( request, False )
-	} )
+class SecureTemplateView(TemplateView):
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(SecureTemplateView, self).dispatch(*args, **kwargs)
 
-@login_required
-def outline( request, outline_id ):
-	try:
-		return render( request, 'feedreader/outline.html', {
-			'outline': Outline.objects.get( pk = outline_id ),
-			'config': ConfigStore.getUserConfig( user = request.user ),
-			'outline_list': main_navigation( request, False )
-		} )
-	except Outline.DoesNotExist:
-		raise Http404
+class IndexView(SecureTemplateView):
+    template_name = 'feedreader/index.html'
+    def get_context_data(self, **kwargs):
+        context = super(IndexView, self).get_context_data(**kwargs)
+        context['config'] = ConfigStore.getUserConfig(user=self.request.user)
+        context['outline_list'] = main_navigation(self.request, False)
+        return context
+
+class OutlineView(IndexView):
+    template_name = 'feedreader/outline.html'
+    def get_context_data(self, outline_id, **kwargs):
+        context = super(OutlineView, self).get_context_data(**kwargs)
+        try:
+            context['outline'] = Outline.objects.get(pk=outline_id)
+        except Outline.DoesNotExist:
+            raise Http404
+        return context
 
 class FeedFaviconView( View ):
 	def get( self, request, feed_id ):
@@ -60,13 +65,9 @@ class FeedFaviconView( View ):
 	def default_icon( self ):
 		return HttpResponse( open( settings.STATIC_ROOT + 'images/icons/silk/feed.png', 'r' ).read(), content_type = 'image/png' )
 
-class ScriptUrls(TemplateView):
+class ScriptUrls(SecureTemplateView):
 	template_name = 'feedreader/urls.js.html'
 	content_type = 'application/javascript'
-
-	@method_decorator(login_required)
-	def dispatch(self, *args, **kwargs):
-		return super(ScriptUrls, self).dispatch(*args, **kwargs)
 
 	def get_context_data(self, **kwargs):
 		context = super(ScriptUrls, self).get_context_data(**kwargs)
