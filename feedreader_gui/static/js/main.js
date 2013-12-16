@@ -242,7 +242,7 @@ $(function()
 	// if is outline url, then set the outline
 	
 	
-	url_change( location.pathname );
+	//url_change( location.pathname );
 	window.addEventListener( 'popstate', on_popstate );
 	
 	load_navigation();
