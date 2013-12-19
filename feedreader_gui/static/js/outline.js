@@ -114,7 +114,7 @@ function get_outline_data( a_outline_id )
 function load_outline( a_outline_id, forced_refresh )
 {
 	if( !a_outline_id ) return;
-	api_request( '/outline/get_posts/', { outline: a_outline_id, forced_refresh: forced_refresh }, function( data )
+	api_request( '/outline/get_posts/', { limit: 50, outline: a_outline_id, forced_refresh: forced_refresh }, function( data )
 	{
 		if( !data.error )
 		{
