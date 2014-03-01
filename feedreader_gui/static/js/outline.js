@@ -6,6 +6,7 @@
 
 /* globals */
 var g_outline_id = null;
+var g_outline_data = null;
 var g_current_post = null;
 var g_limit = 50;
 
@@ -94,6 +95,7 @@ function set_outline_param( a_outline_id, key, value, no_load )
 function set_outline_data( a_outline_id, data )
 {
 	console.debug( data );
+	g_outline_data = data;
 	$( '#outline_title > a' ).text( data.title ).attr( 'href', data.htmlUrl );
 	$( '#button_show_only_new' ).button( 'option', 'label', data.show_only_new ? data.unread_count + ' new item' + ( data.unread_count != 1 ? 's' : '' ) : 'All items' );
 	$( '#button_sort_order' ).button( 'option', 'label', data.sort_order == 'ASC' ? 'Oldest first' : 'Newest first' );
@@ -111,6 +113,14 @@ function get_outline_data( a_outline_id )
 			set_outline_data( a_outline_id, data );
 		}
 	});
+}
+
+function count_visible_unread_posts()
+{
+	// get all unchecked posts and skip those
+	// or just all posts
+	var count = $(g_outline_data.show_only_new ? '#posts .post .action.read:not(:checked)' : '#posts .post').length;
+	return count;
 }
 
 function load_outline( a_outline_id, forced_refresh )
@@ -166,7 +176,7 @@ function load_more_posts( a_outline_id, on_complete )
 	$('#load_more_posts').hide();
 	$('#no_more_posts').hide();
 
-	skip = $('#posts .post').length;
+	skip = count_visible_unread_posts();
 
 	api_request( '/outline/get_posts/', { outline: a_outline_id, skip: skip, limit: g_limit }, function( data )
 	{
