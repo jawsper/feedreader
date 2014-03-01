@@ -83,7 +83,7 @@ def get_posts(request):
         'LIMIT %s,%s', [ request.user.id, outline.id, skip, limit ] )
 
     return HttpJsonResponse(
-        title = outline.feed.title if outline.feed else outline.title,
+        title = outline.feed.display_title if outline.feed else outline.display_title,
         htmlUrl = outline.feed.htmlUrl if outline.feed else None,
         is_feed = bool( outline.feed ),
         show_only_new = show_only_new,
