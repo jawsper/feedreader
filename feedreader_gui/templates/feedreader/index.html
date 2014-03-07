@@ -4,11 +4,15 @@
 {% endblock head %}
 
 {% block content_header %}
-<button id="button_refresh">Refresh</button>
+<button id="button_refresh" title="Refresh"><span class="ui-icon ui-icon-arrowrefresh-1-e"></span></button>
 <button id="button_mark_all_as_read">Mark all as read</button>
 <button id="button_show_only_new"></button>
 <button id="button_sort_order"></button>
 <span id="scroll_pos"></span>
+<div style="float:right">
+	<button id="button_prev_post" title="Previous post"><span class="ui-icon ui-icon-triangle-1-n"></span></button>
+	<button id="button_next_post" title="Next post"><span class="ui-icon ui-icon-triangle-1-s"></span></button>
+</div>
 {% endblock content_header %}
 
 {% block content %}
@@ -27,7 +31,7 @@
 	</div>
 </div>
 </script>
-<h3 id="outline_title"><a target="_blank"></a></h3>
+<h3 id="outline_title"><a target="_blank">{% if outline %}{{ outline }}{% endif %}</a></h3>
 <div id="posts"></div>
 <div id="load_more_posts"><a class="button">Load more posts</a></div>
 <div id="no_more_posts">No more posts.</div>

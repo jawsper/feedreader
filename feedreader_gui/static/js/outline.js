@@ -65,6 +65,8 @@ $(function()
 	$( '#button_mark_all_as_read' ).click( function() { mark_all_as_read( g_outline_id ); } );
 	$( '#button_show_only_new' ).click( function() { set_outline_param( g_outline_id, 'show_only_new' ); } );
 	$( '#button_sort_order' ).click( function() { set_outline_param( g_outline_id, 'sort_order' ); } );
+	$('#button_prev_post').click(function(){ move_post(-1) });
+	$('#button_bext_post').click(function(){ move_post(+1) });
 	$( '#load_more_posts a' ).click( function() { load_more_posts( g_outline_id, null ); } );
 });
 
