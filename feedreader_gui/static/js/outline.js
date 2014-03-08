@@ -307,10 +307,7 @@ function move_post( direction )
 			
 			if( g_current_post.next( '.post' ).length == 0 )
 			{
-				if($('#load_more_posts').is(':visible'))
-				{
-					load_more_posts( g_outline_id, function(){ move_post(+1) }, null );
-				}
+				load_more_posts( g_outline_id, function(){ move_post(+1) }, null );
 			}
 		}
 	}
