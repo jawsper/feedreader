@@ -67,7 +67,7 @@ $(function()
 	$( '#button_sort_order' ).click( function() { set_outline_param( g_outline_id, 'sort_order' ); } );
 	$('#button_prev_post').click(function(){ move_post(-1) });
 	$('#button_next_post').click(function(){ move_post(+1) });
-	$( '#load_more_posts a' ).click( function() { load_more_posts( g_outline_id, null ); } );
+	$( '#load_more_posts a' ).click( function() { load_more_posts( g_outline_id, null, null ); } );
 });
 
 /* outline functions */
@@ -171,7 +171,7 @@ function mark_all_as_read( a_outline_id )
 	});
 }
 
-function load_more_posts( a_outline_id, on_complete )
+function load_more_posts( a_outline_id, on_success, on_failure )
 {
 	if( !a_outline_id ) return;
 
@@ -193,13 +193,14 @@ function load_more_posts( a_outline_id, on_complete )
 				});
 				$('#load_more_posts').show();
 				$('#no_more_posts').hide();
+				if( on_success ) on_success();
 			}
 			else
 			{
 				$('#load_more_posts').hide();
 				$('#no_more_posts').show();
+				if( on_failure ) on_failure();
 			}
-			if( on_complete ) on_complete();
 		}
 	});
 }
@@ -306,7 +307,10 @@ function move_post( direction )
 			
 			if( g_current_post.next( '.post' ).length == 0 )
 			{
-				//load_more_posts( g_outline_id, $('#posts .post').length );
+				if($('#load_more_posts').is(':visible'))
+				{
+					load_more_posts( g_outline_id, function(){ move_post(+1) }, null );
+				}
 			}
 		}
 	}
