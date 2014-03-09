@@ -303,9 +303,15 @@ function move_post( direction )
 		else
 		{
 			var next_post = g_current_post.next( '.post' );
-			if( next_post.length > 0 ) select_post( next_post );
-			
-			if( g_current_post.next( '.post' ).length == 0 )
+			if( next_post.length > 0 )
+			{
+				select_post( next_post );
+				if( g_current_post.next( '.post' ).length == 0 )
+				{
+					load_more_posts( g_outline_id, null, null );
+				}
+			}
+			else
 			{
 				load_more_posts( g_outline_id, function(){ move_post(+1) }, null );
 			}
