@@ -6,18 +6,59 @@
 
 var base_path = '//' + document.location.host + '/feedreader/';
 
+var g_DEBUG = false;
+
+var g_request_id = 0;
+
+var g_requests = {}
+
+function log_request_start(id, path, args)
+{
+	if(!g_DEBUG) return;
+	console.debug('REQ ' + id + '; ' + path);
+	console.trace();
+	var currentFunction = arguments.callee.caller;
+	while(currentFunction)
+	{
+		var fn = currentFunction.toString();
+		var fname = fn.substring(fn.indexOf("function")+9, fn.indexOf("(")) || "anonymous";
+		//console.debug(fn);
+		console.debug(fname);
+		currentFunction = currentFunction.caller;
+	}
+	
+	g_requests[id] = [path, args]
+	
+	var dinges = $('<div>')
+		.attr('id', 'request-'+id)
+		.css('background-color', '#00ffff')
+		.html(path);
+	
+	$('#debug').append(dinges);
+}
+
+function log_request_end(id)
+{
+	if(!g_DEBUG) return;
+	$('#request-'+id).css('background-color', '#ffffff');
+}
+
 function api_request( path, args, callback )
 {
+	var request_id = ++g_request_id;
+	log_request_start(request_id, path, args);
     $.ajax({
 		type: 'POST',
 		url: get_api_url( path ),
 		data: args,
 		success: function( result )
 		{
+			log_request_end(request_id);
 			callback( result );
 		},
 		error: function(xhr, textStatus, errorThrown)
 		{
+			log_request_end(request_id);
 			show_result({
 				caption: 'Error',
 				message: errorThrown == 'FORBIDDEN' ? 'Your login has expired. Please refresh the page to re-login' : errorThrown,
@@ -242,7 +283,7 @@ $(function()
 	// if is outline url, then set the outline
 	
 	
-	url_change( location.pathname );
+	//url_change( location.pathname );
 	window.addEventListener( 'popstate', on_popstate );
 	
 	load_navigation();

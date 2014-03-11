@@ -6,6 +6,17 @@
 <meta name="viewport" content="width=device-width">
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/main.css">
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/smoothness/jquery-ui-1.10.3.custom.min.css">
+<style type="text/css">
+#debug { position: absolute; top: 75px; width: 25%; left: auto; right: 0; }
+#debug div
+{
+	border: 1px solid black;
+	border-radius: 4px;
+	padding: .5em;
+	margin-bottom: .5em;
+}
+#body { right: 25%; }
+</style>
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-2.0.2.min.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.cookie.js"></script>
 <script type="text/javascript">jQuery.uiBackCompat = false;</script>
@@ -53,11 +64,12 @@
 	{% endif %}
 </div>
 <div id="body" class="right col">
-	<div class="content_header row">{% block content_header %}{% endblock content_header %} <img id="spinner" src="{{ STATIC_URL }}images/spinner.gif" alt="loading..."></div>
+	<div class="content_header row">{% block content_header %}{% endblock content_header %} <!--img id="spinner" src="{{ STATIC_URL }}images/spinner.gif" alt="loading..."--></div>
 	<div id="content" class="content row scroll-y" tabindex="0">
 		{% block content %}{% endblock content %}
 		<div style="height: 50%"></div>
 	</div>
 </div>
+<div id="debug" class="row scroll-y"></div>
 </body>
 </html>
