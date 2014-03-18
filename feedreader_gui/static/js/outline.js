@@ -207,8 +207,14 @@ function load_more_posts( a_outline_id, on_success, on_failure )
 
 /* post functions */
 
-function post_get_id( post ) { return post && post.attr('id').replace( /[^\d]/g, '' ); }
-function id_get_post( post_id ) { return $('#post_' + post_id ); }
+function post_get_id( post )
+{
+	return post && post.attr('id').replace( /[^\d]/g, '' );
+}
+function id_get_post( post_id )
+{
+	return $('#post_' + post_id );
+}
 
 function set_post_read_state( post_id, state )
 {
