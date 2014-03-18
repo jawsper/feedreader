@@ -84,7 +84,7 @@ function set_outline_param( a_outline_id, key, value, no_load )
 	data = { outline: a_outline_id, 'action': key };
 	if( value ) data['value'] = value;
 	
-	$.post( get_api_url( '/outline/set/' ), data, function( data )
+	api_request( '/outline/set/', data, function( data )
 	{
 		if( !data.error )
 		{
