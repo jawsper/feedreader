@@ -37,7 +37,9 @@ function log_request_start(id, path, args)
 		.css('background-color', '#00ffff')
 		.html(path);
 	
-	$('#debug').append(dinges);
+	$('#debug').prepend(dinges);
+
+	while($('#debug > div').length > 20) $('#debug > div').last().remove();
 }
 
 function log_request_end(id)
