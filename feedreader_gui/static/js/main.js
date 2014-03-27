@@ -6,15 +6,18 @@
 
 var base_path = '//' + document.location.host + '/feedreader/';
 
-var g_DEBUG = false;
-
 var g_request_id = 0;
 
 var g_requests = {}
 
+function debug_enabled()
+{
+	return $('body').hasClass('debug');
+}
+
 function log_request_start(id, path, args)
 {
-	if(!g_DEBUG) return;
+	if(!debug_enabled()) return;
 	console.debug('REQ ' + id + '; ' + path);
 	console.trace();
 	var currentFunction = arguments.callee.caller;
@@ -39,7 +42,7 @@ function log_request_start(id, path, args)
 
 function log_request_end(id)
 {
-	if(!g_DEBUG) return;
+	if(!debug_enabled()) return;
 	$('#request-'+id).css('background-color', '#ffffff');
 }
 
