@@ -213,6 +213,9 @@ ul.clean li
 {
 }
 
+#load_more_posts { display: none; }
+#no_more_posts { display: none; }
+
 .post
 {
 	border: 1px solid lightgray;

@@ -17,6 +17,11 @@ class Feed( models.Model ):
 	def __unicode__( self ):
 		return self.title
 
+	def _get_display_title(self):
+		return self.title if len(self.title) > 0 else '(no title)'
+
+	display_title = property(_get_display_title)
+
 class Outline( models.Model ):
 	user 	= models.ForeignKey( User )
 	parent 	= models.ForeignKey( 'self', null = True, blank = True )
@@ -32,6 +37,11 @@ class Outline( models.Model ):
 
 	def __unicode__( self ):
 		return self.title
+
+	def _get_display_title(self):
+		return self.title if len(self.title) > 0 else '(no title)'
+
+	display_title = property(_get_display_title)
 
 class Post( models.Model ):
 	feed 				= models.ForeignKey( Feed )
@@ -52,6 +62,7 @@ class Post( models.Model ):
 		data = {}
 		for k in ( 'id', 'link', 'title', 'author' ):
 			data[ k ] = ( getattr( self, k ) )
+		if len(data['title']) == 0: data['title'] = '(no title)'
 		data[ 'feedTitle' ] = str( self.feed.title )
 		data[ 'pubDate' ] = str( self.pubDate )
 		data[ 'content'] = ( self.content if self.content else self.description )

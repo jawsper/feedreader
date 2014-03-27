@@ -6,7 +6,9 @@
 
 /* globals */
 var g_outline_id = null;
+var g_outline_data = null;
 var g_current_post = null;
+var g_limit = 50;
 
 /* directly after load init everything */
 
@@ -63,6 +65,9 @@ $(function()
 	$( '#button_mark_all_as_read' ).click( function() { mark_all_as_read( g_outline_id ); } );
 	$( '#button_show_only_new' ).click( function() { set_outline_param( g_outline_id, 'show_only_new' ); } );
 	$( '#button_sort_order' ).click( function() { set_outline_param( g_outline_id, 'sort_order' ); } );
+	$('#button_prev_post').click(function(){ move_post(-1) });
+	$('#button_next_post').click(function(){ move_post(+1) });
+	$( '#load_more_posts a' ).click( function() { load_more_posts( g_outline_id, null, null ); } );
 });
 
 /* outline functions */
@@ -91,7 +96,7 @@ function set_outline_param( a_outline_id, key, value, no_load )
 
 function set_outline_data( a_outline_id, data )
 {
-	//console.debug( data );
+	g_outline_data = data;
 	$( '#outline_title > a' ).text( data.title ).attr( 'href', data.htmlUrl );
 	$( '#button_show_only_new' ).button( 'option', 'label', data.show_only_new ? data.unread_count + ' new item' + ( data.unread_count != 1 ? 's' : '' ) : 'All items' );
 	$( '#button_sort_order' ).button( 'option', 'label', data.sort_order == 'ASC' ? 'Oldest first' : 'Newest first' );
@@ -111,10 +116,22 @@ function get_outline_data( a_outline_id )
 	});
 }
 
+function count_visible_unread_posts()
+{
+	// get all unchecked posts and skip those
+	// or just all posts
+	var count = $(g_outline_data.show_only_new ? '#posts .post .action.read:not(:checked)' : '#posts .post').length;
+	return count;
+}
+
 function load_outline( a_outline_id, forced_refresh )
 {
 	if( !a_outline_id ) return;
-	api_request( '/outline/get_posts/', { outline: a_outline_id, forced_refresh: forced_refresh }, function( data )
+
+	$('#load_more_posts').hide();
+	$('#no_more_posts').hide();
+
+	api_request( '/outline/get_posts/', { limit: g_limit, outline: a_outline_id, forced_refresh: forced_refresh }, function( data )
 	{
 		if( !data.error )
 		{
@@ -124,11 +141,21 @@ function load_outline( a_outline_id, forced_refresh )
 			$( '#content' ).scrollTop( 0 );
 			$( '#posts' ).empty();
 			g_current_post = null;
-			$.each( data.posts, function( k, post )
+			if( data.posts.length > 0 )
 			{
-				$( '#posts' ).append( post_build_html( post, data.is_feed ) );
-				post_attach_handlers( post.id );
-			});
+				$.each( data.posts, function( k, post )
+				{
+					$( '#posts' ).append( post_build_html( post, data.is_feed ) );
+					post_attach_handlers( post.id );
+				});
+				$('#load_more_posts').show();
+				$('#no_more_posts').hide();
+			}
+			else
+			{
+				$('#load_more_posts').hide();
+				$('#no_more_posts').show();
+			}
 		}
 	});
 }
@@ -143,19 +170,36 @@ function mark_all_as_read( a_outline_id )
 	});
 }
 
-function load_more_posts( a_outline_id, skip, on_complete )
+function load_more_posts( a_outline_id, on_success, on_failure )
 {
 	if( !a_outline_id ) return;
-	api_request( '/outline/get_posts/', { outline: a_outline_id, skip: skip }, function( data )
+
+	$('#load_more_posts').hide();
+	$('#no_more_posts').hide();
+
+	skip = count_visible_unread_posts();
+
+	api_request( '/outline/get_posts/', { outline: a_outline_id, skip: skip, limit: g_limit }, function( data )
 	{
 		if( !data.error )
 		{
-			$.each( data.posts, function( k, post )
+			if( data.posts.length > 0 )
 			{
-				$( '#posts' ).append( post_build_html( post, data.is_feed ) );
-				post_attach_handlers( post.id );
-			});
-			if( on_complete ) on_complete();
+				$.each( data.posts, function( k, post )
+				{
+					$( '#posts' ).append( post_build_html( post, data.is_feed ) );
+					post_attach_handlers( post.id );
+				});
+				$('#load_more_posts').show();
+				$('#no_more_posts').hide();
+				if( on_success ) on_success();
+			}
+			else
+			{
+				$('#load_more_posts').hide();
+				$('#no_more_posts').show();
+				if( on_failure ) on_failure();
+			}
 		}
 	});
 }
@@ -258,11 +302,17 @@ function move_post( direction )
 		else
 		{
 			var next_post = g_current_post.next( '.post' );
-			if( next_post.length > 0 ) select_post( next_post );
-			
-			if( g_current_post.next( '.post' ).length == 0 )
+			if( next_post.length > 0 )
 			{
-				//load_more_posts( g_outline_id, $('#posts .post').length );
+				select_post( next_post );
+				if( g_current_post.next( '.post' ).length == 0 )
+				{
+					load_more_posts( g_outline_id, null, null );
+				}
+			}
+			else
+			{
+				load_more_posts( g_outline_id, function(){ move_post(+1) }, null );
 			}
 		}
 	}

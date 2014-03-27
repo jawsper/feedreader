@@ -65,7 +65,7 @@ def outline_to_dict_with_children( request, outline, use_short_keys = False ):
 	return dict( zip(
 		short_keys if use_short_keys else long_keys, [
 			outline.id,
-			outline.title,
+			outline.display_title,
 			outline.feed.id if outline.feed else None,
 			outline.feed.faviconUrl if outline.feed else None,
 			outline.folder_opened,

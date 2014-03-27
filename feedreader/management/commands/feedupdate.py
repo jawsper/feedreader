@@ -157,6 +157,9 @@ class Command(BaseCommand):
 
 			try:
 				test = Post.objects.get( guid__exact = insert_data['guid'] )
+			except Post.MultipleObjectsReturned:
+				self.stdout.write( 'Duplicate post!' )
+				self.stdout.write( str( insert_data ) )
 			except Post.DoesNotExist:
 				insert_data['feed'] = feed
 				post = Post( **insert_data )

@@ -29,7 +29,6 @@ class IndexView(SecureTemplateView):
         return context
 
 class OutlineView(IndexView):
-    template_name = 'feedreader/outline.html'
     def get_context_data(self, outline_id, **kwargs):
         context = super(OutlineView, self).get_context_data(**kwargs)
         try:

@@ -60,7 +60,7 @@ def get_posts(request):
     sort_order = 'ASC' if outline.sort_order_asc else 'DESC'
     show_only_new = outline.show_only_new
     skip = int( request.POST['skip'] ) if 'skip' in request.POST else 0
-    limit = int( request.POST['count'] ) if 'count' in request.POST else 20
+    limit = int(request.POST['limit']) if 'limit' in request.POST else 20
 
     if show_only_new:
         query_user_post_where = ' and ( UserPost.read is null or UserPost.read = 0 ) '
@@ -83,7 +83,7 @@ def get_posts(request):
         'LIMIT %s,%s', [ request.user.id, outline.id, skip, limit ] )
 
     return HttpJsonResponse(
-        title = outline.feed.title if outline.feed else outline.title,
+        title = outline.feed.display_title if outline.feed else outline.display_title,
         htmlUrl = outline.feed.htmlUrl if outline.feed else None,
         is_feed = bool( outline.feed ),
         show_only_new = show_only_new,
