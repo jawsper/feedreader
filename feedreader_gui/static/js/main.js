@@ -35,7 +35,7 @@ function log_request_start(id, path, args)
 	var dinges = $('<div>')
 		.attr('id', 'request-'+id)
 		.css('background-color', '#00ffff')
-		.html(path);
+		.html('#' + id + ': ' + path);
 	
 	$('#debug').prepend(dinges);
 
