@@ -95,7 +95,8 @@ function add_new_feed( url )
 
 var outline_regex = /^outline-(\d+)$/
 
-$(function(){
+$(function()
+{
 	$('input:submit, button, a.button').button();
 });
 

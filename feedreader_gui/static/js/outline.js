@@ -84,7 +84,7 @@ function set_outline_param( a_outline_id, key, value, no_load )
 	data = { outline: a_outline_id, 'action': key };
 	if( value ) data['value'] = value;
 	
-	$.post( get_api_url( '/outline/set/' ), data, function( data )
+	api_request( '/outline/set/', data, function( data )
 	{
 		if( !data.error )
 		{
@@ -206,8 +206,14 @@ function load_more_posts( a_outline_id, on_success, on_failure )
 
 /* post functions */
 
-function post_get_id( post ) { return post && post.attr('id').replace( /[^\d]/g, '' ); }
-function id_get_post( post_id ) { return $('#post_' + post_id ); }
+function post_get_id( post )
+{
+	return post && post.attr('id').replace( /[^\d]/g, '' );
+}
+function id_get_post( post_id )
+{
+	return $('#post_' + post_id );
+}
 
 function set_post_read_state( post_id, state )
 {
