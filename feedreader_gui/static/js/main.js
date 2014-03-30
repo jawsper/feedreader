@@ -32,12 +32,13 @@ function log_request_start(id, path, args)
 	
 	g_requests[id] = [path, args]
 	
-	var dinges = $('<div>')
+	var debug_item = $('<div>')
 		.attr('id', 'request-'+id)
 		.css('background-color', '#00ffff')
 		.html('#' + id + ': ' + path);
 	
-	$('#debug').prepend(dinges);
+	$('#debug').prepend(debug_item);
+	debug_item[0].scrollIntoView(true);
 
 	while($('#debug > div').length > 20) $('#debug > div').last().remove();
 }

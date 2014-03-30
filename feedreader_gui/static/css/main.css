@@ -271,7 +271,19 @@ body.fullscreen #navigation { display: none; }
 body.fullscreen #body { left: 5px; top: 5px; }
 
 /* debug mode */
-body.debug #debug { position: absolute; top: 75px; width: 25%; left: auto; right: 0; }
+body.debug #body
+{
+	right: 25%;
+}
+body.debug #debug
+{
+	position: absolute;
+	width: 25%;
+	top: 0;
+	bottom: 0;
+	left: auto;
+	right: 0;
+}
 body.debug #debug div
 {
 	border: 1px solid black;
@@ -279,4 +291,3 @@ body.debug #debug div
 	padding: .5em;
 	margin-bottom: .5em;
 }
-body.debug #body { right: 25%; }
