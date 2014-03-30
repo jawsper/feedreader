@@ -10,6 +10,14 @@ var g_request_id = 0;
 
 var g_requests = {}
 
+$(function()
+{
+	if(localStorage["debug"] == "true")
+	{
+		$('body').addClass('debug');
+	}
+});
+
 function debug_enabled()
 {
 	return $('body').hasClass('debug');
