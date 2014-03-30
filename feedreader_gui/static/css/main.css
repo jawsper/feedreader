@@ -275,8 +275,13 @@ body.debug #body
 {
 	right: 25%;
 }
+#debug
+{
+	display: none;
+}
 body.debug #debug
 {
+	display: block;
 	position: absolute;
 	width: 25%;
 	top: 0;
