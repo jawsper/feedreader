@@ -18,6 +18,12 @@ $(function()
 	}
 });
 
+function set_debug(enabled)
+{
+	localStorage['debug'] = enabled;
+	$('body').toggleClass('debug', enabled);
+}
+
 function debug_enabled()
 {
 	return $('body').hasClass('debug');
