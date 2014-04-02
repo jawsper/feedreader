@@ -151,6 +151,7 @@ function get_unread_counts( outline_id )
 		document.title = data.total > 0 ? 'Feedreader (' + data.total + ')' : 'Feedreader';
 		if( !data.counts ) return;
 		$.each( data.counts, set_unread_count );
+		set_outline_unread_count(data.counts[''+outline_id]);
 	});
 }
 
