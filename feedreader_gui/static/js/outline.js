@@ -158,14 +158,13 @@ function load_outline( a_outline_id, forced_refresh )
 					$( '#posts' ).append( post_build_html( post, data.is_feed ) );
 					post_attach_handlers( post.id );
 				});
-				$('#load_more_posts').show();
 				$('#no_more_posts').hide();
 			}
 			else
 			{
-				$('#load_more_posts').hide();
 				$('#no_more_posts').show();
 			}
+			$('#load_more_posts').show();
 		}
 	});
 }
@@ -200,16 +199,15 @@ function load_more_posts( a_outline_id, on_success, on_failure )
 					$( '#posts' ).append( post_build_html( post, data.is_feed ) );
 					post_attach_handlers( post.id );
 				});
-				$('#load_more_posts').show();
 				$('#no_more_posts').hide();
 				if( on_success ) on_success();
 			}
 			else
 			{
-				$('#load_more_posts').hide();
 				$('#no_more_posts').show();
 				if( on_failure ) on_failure();
 			}
+			$('#load_more_posts').show();
 		}
 	});
 }
