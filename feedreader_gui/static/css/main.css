@@ -21,7 +21,7 @@ body { margin: 0; -webkit-text-size-adjust: 100%; }
 .left.col { left: 5px; width: 250px; top: 75px }
 .right.col { left: 260px; right: 5px; top: 75px; }
 .header.row { height: 75px; line-height: 75px; }
-.content_header.row { height: 40px; }
+.content_header.row { padding-bottom: .5em; }
 .content.row { top: 40px; bottom: 0; }
 .footer.row { height: 50px; bottom: 0; line-height: 50px; }
 
