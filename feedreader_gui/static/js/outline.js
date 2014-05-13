@@ -14,52 +14,48 @@ var g_limit = 50;
 
 $(function()
 {
-	$('body').keypress(function( e )
+	$('body').keypress(function(e)
 	{
-		switch( e.which )
+		switch(String.fromCharCode(e.which))
 		{
-			case 'r'.charCodeAt(0):
-				$( '#button_refresh' ).click();
+			case 'r':
+				$('#button_refresh').click();
 				break;
-			case 'j'.charCodeAt(0):
-				move_post( +1 );
+			case 'j':
+				move_post(+1);
 				break;
-			case 'k'.charCodeAt(0):
-				move_post( -1 );
+			case 'k':
+				move_post(-1);
 				break;
-			case 'f'.charCodeAt(0):
-				$('body').toggleClass( 'fullscreen' );
-				if( $( 'body' ).hasClass( 'fullscreen' ) ) $( '#content' ).focus();
+			case 'f':
+				$('body').toggleClass('fullscreen');
+				if($('body').hasClass('fullscreen')) $('#content').focus();
 				break;
-			case 'm'.charCodeAt(0):
-				if( g_current_post != null )
+			case 'm':
+				if(g_current_post != null)
 				{
-					var cb = g_current_post.find( '.footer .action.read' );
-					cb.prop( 'checked', !cb.prop('checked' ) );
-					set_post_read_state( post_get_id( g_current_post ), cb.is(':checked') ? 1 : 0 );
+					var cb = g_current_post.find('.footer .action.read');
+					cb.prop('checked', !cb.prop('checked'));
+					set_post_read_state(post_get_id(g_current_post), cb.is(':checked') ? 1 : 0);
 				}
 				break;
-			case 's'.charCodeAt(0):
-				if( g_current_post != null )
+			case 's':
+				if(g_current_post != null)
 				{
-					var cb = g_current_post.find( '.footer .action.starred' );
-					cb.prop( 'checked', !cb.prop('checked' ) );
-					set_post_starred_state( post_get_id( g_current_post ), cb.is(':checked') ? 1 : 0 );
+					var cb = g_current_post.find('.footer .action.starred');
+					cb.prop('checked', !cb.prop('checked'));
+					set_post_starred_state(post_get_id(g_current_post), cb.is(':checked') ? 1 : 0);
 				}
 				break;
-			case 'v'.charCodeAt(0):
-				if( g_current_post != null )
+			case 'v':
+				if(g_current_post != null)
 				{
-					window.open( g_current_post.find( '.link a' ).attr( 'href' ), '_blank' );
+					window.open(g_current_post.find('.link a').attr('href'), '_blank');
 				}
 				break;
 			default: return true; // don't care
 		}
 		//e.preventDefault();
-	});
-	$( '#content' ).scroll( function()
-	{
-		$( '#scroll_pos' ).text( $( '#content' ).scrollTop() );
 	});
 	$( '#button_refresh' ).click( function() { load_outline( g_outline_id, true ); } );
 	$( '#button_mark_all_as_read' ).click( function() { mark_all_as_read( g_outline_id ); } );
@@ -103,10 +99,20 @@ function set_outline_data( a_outline_id, data )
 {
 	g_outline_data = data;
 	$( '#outline_title > a' ).text( data.title ).attr( 'href', data.htmlUrl );
-	$( '#button_show_only_new' ).button( 'option', 'label', data.show_only_new ? data.unread_count + ' new item' + ( data.unread_count != 1 ? 's' : '' ) : 'All items' );
+	update_outline_unread_count();
 	$( '#button_sort_order' ).button( 'option', 'label', data.sort_order == 'ASC' ? 'Oldest first' : 'Newest first' );
 	
 	get_unread_counts( a_outline_id );
+}
+
+function set_outline_unread_count(count)
+{
+	g_outline_data.unread_count = count;
+	update_outline_unread_count();
+}
+function update_outline_unread_count()
+{
+	$('#button_show_only_new').button('option', 'label', g_outline_data.show_only_new ? g_outline_data.unread_count + ' new item' + ( g_outline_data.unread_count != 1 ? 's' : '' ) : 'All items' );
 }
 
 function get_outline_data( a_outline_id )
@@ -153,14 +159,13 @@ function load_outline( a_outline_id, forced_refresh )
 					$( '#posts' ).append( post_build_html( post, data.is_feed ) );
 					post_attach_handlers( post.id );
 				});
-				$('#load_more_posts').show();
 				$('#no_more_posts').hide();
 			}
 			else
 			{
-				$('#load_more_posts').hide();
 				$('#no_more_posts').show();
 			}
+			$('#load_more_posts').show();
 		}
 	});
 }
@@ -195,16 +200,15 @@ function load_more_posts( a_outline_id, on_success, on_failure )
 					$( '#posts' ).append( post_build_html( post, data.is_feed ) );
 					post_attach_handlers( post.id );
 				});
-				$('#load_more_posts').show();
 				$('#no_more_posts').hide();
 				if( on_success ) on_success();
 			}
 			else
 			{
-				$('#load_more_posts').hide();
 				$('#no_more_posts').show();
 				if( on_failure ) on_failure();
 			}
+			$('#load_more_posts').show();
 		}
 	});
 }
@@ -238,7 +242,7 @@ function set_post_attr_state( post_id, attr, state )
 	api_request( '/post/action/', { post: post_id, action: attr, state: state }, function( data )
 	{
 		show_result( data );
-		get_outline_data( g_outline_id );
+		get_unread_counts( g_outline_id );
 	});
 }
 
