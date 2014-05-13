@@ -4,7 +4,7 @@
 {% endblock head %}
 
 {% block content_header %}
-<button id="button_refresh" title="Refresh"><span class="ui-icon ui-icon-arrowrefresh-1-e"></span></button>
+<button id="button_refresh" title="Refresh"><span class="ui-icon ui-icon-refresh"></span></button>
 <button id="button_mark_all_as_read">Mark all as read</button>
 <button id="button_show_only_new"></button>
 <button id="button_sort_order"></button>
@@ -34,8 +34,7 @@
 </script>
 <h3 id="outline_title"><a target="_blank">{% if outline %}{{ outline }}{% endif %}</a></h3>
 <div id="posts"></div>
-<div style="height: 50%">
-	<div id="load_more_posts"><a class="button">Load more posts</a></div>
-	<div id="no_more_posts">No more posts.</div>
-</div>
+<div id="load_more_posts"><a class="button">Load more posts</a></div>
+<div id="no_more_posts">No more posts.</div>
+<div style="height: 50%"></div>
 {% endblock content %}
