@@ -60,17 +60,26 @@ class Command(BaseCommand):
 	def load_feed( self, feed ):
 		self.stdout.write( '{0:03} {1} '.format( feed.id, feed.xmlUrl ), ending='' )
 		self.stdout.flush()
-		data = feedparser.parse( str( feed.xmlUrl ) )
+		data = feedparser.parse(str(feed.xmlUrl), etag=str(feed.lastETag))
 		
-		if 'status' in data and data['status'] >= 400:
-			self.stdout.write( 'Failed: status error {0}'.format( data['status'] ) )
-			return 'Error: {0}'.format( data['status'] )
+		if 'status' in data:
+			if data['status'] >= 400:
+				self.stdout.write( 'Failed: status error {0}'.format( data['status'] ) )
+				return 'Error: {0}'.format( data['status'] )
+			elif data.status == 304:
+				self.stdout.write('304 Not changed')
+				return '304'
+
 		if 'bozo_exception' in data:
 			self.stdout.write( 'Failed: {0}'.format( data['bozo_exception'] ) )
 			return 'Error: {0}'.format( data['bozo_exception'] )
 		if not data:
 			self.stdout.write( 'Failed: no data' )
 			return 'Error: no data'
+
+		if feed.lastETag != data.etag:
+			feed.lastETag = data.etag
+			feed.save()
 		
 		self.stdout.write( 'ok!' )
 		

@@ -11,6 +11,7 @@ class Feed( models.Model ):
 	lastPubDate = models.DateTimeField( null = True, blank = True )
 	lastUpdated = models.DateTimeField( null = True, blank = True )
 	lastStatus 	= models.CharField( max_length = 1000, null = True, blank = True )
+	lastETag	= models.CharField(max_length=100, null=True, blank=True)
 	
 	disabled	= models.BooleanField( default = False )
 	
