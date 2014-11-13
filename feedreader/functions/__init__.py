@@ -95,9 +95,9 @@ def verify_token( username, token ):
 
 
 import re
-import urllib2, urlparse
+import urllib.request, urllib.error, urllib.parse, urllib.parse
 from PIL import Image
-from StringIO import StringIO
+from io import BytesIO
 
 class FaviconFinder:
 	def __init__( self, feed, stdout ):
@@ -128,15 +128,15 @@ class FaviconFinder:
 	
 	def load_icon( self, url ):
 		try:
-			result = urllib2.urlopen( urllib2.Request( url, headers = { 'User-Agent': 'Chrome' } ) )
+			result = urllib.request.urlopen( urllib.request.Request( url, headers = { 'User-Agent': 'Chrome' } ) )
 			data = result.read()
 			content_type = result.headers.get( 'content-type' ) if 'content-type' in result.headers else 'text/html'
-			img = Image.open( StringIO( data ) )
+			img = Image.open( BytesIO( data ) )
 			if False and ( content_type == 'image/x-icon' or not img.size == (16,16) ):
 				if not img.size == (16,16):
 					print( 'resizing' )
 					img = img.resize( ( 16, 16 ) )
-				raw = StringIO()
+				raw = BytesIO()
 				img.save( raw, 'PNG' )
 				data = raw.getvalue()
 				content_type = 'image/png'
@@ -148,7 +148,7 @@ class FaviconFinder:
 	def find_icon_in_page( self ):
 		# load associated html page
 		try:
-			data = urllib2.urlopen( urllib2.Request( self.feed.htmlUrl, headers = { 'User-Agent': 'Chrome' } ) ).read()
+			data = urllib.request.urlopen( urllib.request.Request( self.feed.htmlUrl, headers = { 'User-Agent': 'Chrome' } ) ).read()
 			matches = re.findall( '<link ([^>]+)>', data )
 			for match in matches:
 				if re.search( 'rel="(shortcut )?icon"', match ):
@@ -158,12 +158,12 @@ class FaviconFinder:
 				
 					favicon_url = m.groups(1)[0]
 				
-					p_favicon_url = urlparse.urlparse( favicon_url )
+					p_favicon_url = urllib.parse.urlparse( favicon_url )
 				
 					# relative url, add hostname of site
 					if not p_favicon_url.hostname:
-						p_url = urlparse.urlparse( self.feed.htmlUrl )
-						favicon_url = urlparse.urlunparse( p_url[0:2] + p_favicon_url[2:] )
+						p_url = urllib.parse.urlparse( self.feed.htmlUrl )
+						favicon_url = urllib.parse.urlunparse( p_url[0:2] + p_favicon_url[2:] )
 				
 					return self.load_icon( favicon_url )
 		except:
@@ -171,7 +171,7 @@ class FaviconFinder:
 		return False
 	
 	def try_force_favicon( self ):
-		p_url = urlparse.urlparse( self.feed.htmlUrl )
+		p_url = urllib.parse.urlparse( self.feed.htmlUrl )
 		return self.load_icon( '{0}://{1}/favicon.ico'.format( p_url[0], p_url[1] ) )
 	
 	def default_icon( self ):
