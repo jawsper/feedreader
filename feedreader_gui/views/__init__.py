@@ -13,7 +13,7 @@ from feedreader.models import Feed, ConfigStore, Outline
 
 from feedreader.functions import main_navigation
 
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 class SecureTemplateView(TemplateView):
     @method_decorator(login_required)
@@ -53,18 +53,19 @@ class FeedFaviconView( View ):
 	
 	def load_icon( self, url ):
 		try:
-			result = urllib2.urlopen( urllib2.Request( url, headers = { 'User-Agent': 'Chrome' } ) )
+			result = urllib.request.urlopen( urllib.request.Request( url, headers = { 'User-Agent': 'Chrome' } ) )
 			data = result.read()
 			content_type = result.headers.get( 'content-type' ) if 'content-type' in result.headers else 'text/html'
 			return ( data, content_type, url )
 		except Exception as e:
-			print( "Exception in load_icon: {0}".format( e ) )
+			print("Exception in load_icon: {0}".format(e))
 			return False
 	
 	def default_icon( self ):
-		return HttpResponse( open( settings.STATIC_ROOT + 'images/icons/silk/feed.png', 'r' ).read(), content_type = 'image/png' )
+		return HttpResponse( open( settings.STATIC_ROOT + 'images/icons/silk/feed.png', 'rb' ).read(), content_type = 'image/png' )
 
-class ScriptUrls(SecureTemplateView):
+#class ScriptUrls(SecureTemplateView):
+class ScriptUrls(TemplateView):
 	template_name = 'feedreader/urls.js.html'
 	content_type = 'application/javascript'
 
