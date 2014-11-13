@@ -60,7 +60,7 @@ class Command(BaseCommand):
 	def load_feed( self, feed ):
 		self.stdout.write( '{0:03} {1} '.format( feed.id, feed.xmlUrl ), ending='' )
 		self.stdout.flush()
-		data = feedparser.parse(str(feed.xmlUrl), etag=str(feed.lastETag))
+		data = feedparser.parse(str(feed.xmlUrl), etag=str(feed.lastETag), modified=str(feed.lastPubDate if feed.lastPubDate else feed.lastUpdated))
 		
 		if 'status' in data:
 			if data['status'] >= 400:
