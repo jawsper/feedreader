@@ -49,7 +49,7 @@ class Post( models.Model ):
 	link 				= models.CharField( max_length = 1000 )
 	category 			= models.CharField( max_length = 1000, null = True, blank = True )
 	pubDate 			= models.DateTimeField()
-	guid 				= models.CharField( max_length = 1000 )
+	guid 				= models.CharField( max_length = 1000, db_index = True )
 	guid_is_permalink 	= models.BooleanField( default = False )
 	author				= models.CharField( max_length = 1000, null = True, blank = True )
 	content 			= models.TextField()
