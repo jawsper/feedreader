@@ -77,9 +77,10 @@ class Command(BaseCommand):
 			self.stdout.write( 'Failed: no data' )
 			return 'Error: no data'
 
-		if feed.lastETag != data.etag:
-			feed.lastETag = data.etag
-			feed.save()
+		if 'etag' in data:
+			if feed.lastETag != data.etag:
+				feed.lastETag = data.etag
+				feed.save()
 		
 		self.stdout.write( 'ok!' )
 		
