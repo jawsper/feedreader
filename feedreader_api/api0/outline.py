@@ -38,7 +38,6 @@ def get_starred_posts(request):
     return HttpJsonResponse(posts=[up.toJsonDict() for up in userposts])
 
 def __get_outline(request):
-    print '__check_outline_id'
     if 'outline' in request.POST:
         try:
             outline_id = int(request.POST['outline'])

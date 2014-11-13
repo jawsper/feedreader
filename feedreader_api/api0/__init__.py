@@ -45,7 +45,7 @@ def get_option( request ):
 def set_option( request ):
 	if len( request.POST ) == 0:
 		return HttpResponse( 'ERROR: no data' )
-	for key, value in request.POST.iteritems():
+	for key, value in request.POST.items():
 		ConfigStore( user = request.user, key = key, value = value ).save()
 	return HttpResponse( 'OK' )
 	
