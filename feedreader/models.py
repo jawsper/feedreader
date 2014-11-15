@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from bs4 import BeautifulSoup
 
 # Create your models here.
 
@@ -66,7 +67,9 @@ class Post( models.Model ):
 		if len(data['title']) == 0: data['title'] = '(no title)'
 		data[ 'feedTitle' ] = str( self.feed.title )
 		data[ 'pubDate' ] = str( self.pubDate )
-		data[ 'content'] = ( self.content if self.content else self.description )
+		soup = BeautifulSoup(self.content if self.content else self.description)
+		[s.extract() for s in soup('script')]
+		data[ 'content'] = str(soup)
 		if hasattr(self, 'starred'): data[ 'starred' ] = bool( int( self.starred ) ) if self.starred != None else False
 		if hasattr(self, 'read'): data[ 'read' ] = bool( int( self.read ) ) if self.read != None else False
 		return data
