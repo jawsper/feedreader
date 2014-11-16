@@ -14,13 +14,14 @@ from feedreader.models import Feed, ConfigStore, Outline
 from feedreader.functions import main_navigation
 
 import urllib.request, urllib.error, urllib.parse
+import os
 
-class SecureTemplateView(TemplateView):
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(SecureTemplateView, self).dispatch(*args, **kwargs)
+class SecureDispatchMixIn:
+	@method_decorator(login_required)
+	def dispatch(self, *args, **kwargs):
+		return super().dispatch(*args, **kwargs)
 
-class IndexView(SecureTemplateView):
+class IndexView(SecureDispatchMixIn, TemplateView):
     template_name = 'feedreader/index.html'
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
@@ -37,7 +38,7 @@ class OutlineView(IndexView):
             raise Http404
         return context
 
-class FeedFaviconView( View ):
+class FeedFaviconView(SecureDispatchMixIn, View):
 	def get( self, request, feed_id ):
 		try:
 			feed = Feed.objects.get( pk = feed_id )
@@ -62,9 +63,8 @@ class FeedFaviconView( View ):
 			return False
 	
 	def default_icon( self ):
-		return HttpResponse( open( settings.STATIC_ROOT + 'images/icons/silk/feed.png', 'rb' ).read(), content_type = 'image/png' )
+		return HttpResponse( open( os.path.join(settings.STATIC_ROOT, 'images/icons/silk/feed.png'), 'rb' ).read(), content_type = 'image/png' )
 
-#class ScriptUrls(SecureTemplateView):
 class ScriptUrls(TemplateView):
 	template_name = 'feedreader/urls.js.html'
 	content_type = 'application/javascript'
