@@ -85,7 +85,7 @@ function set_outline_param( a_outline_id, key, value, no_load )
 	data = { outline: a_outline_id, 'action': key };
 	if( value ) data['value'] = value;
 	
-	api_request( '/outline/set/', data, function( data )
+	api_request( 'outline_set', data, function( data )
 	{
 		if( !data.error )
 		{
@@ -118,7 +118,7 @@ function update_outline_unread_count()
 function get_outline_data( a_outline_id )
 {
 	if( !a_outline_id ) return;
-	api_request( '/outline/get_data/', { outline: a_outline_id }, function( data )
+	api_request( 'get_outline_data', { outline: a_outline_id }, function( data )
 	{
 		if( !data.error )
 		{
@@ -142,7 +142,7 @@ function load_outline( a_outline_id, forced_refresh )
 	$('#load_more_posts').hide();
 	$('#no_more_posts').hide();
 
-	api_request( '/outline/get_posts/', { limit: g_limit, outline: a_outline_id, forced_refresh: forced_refresh }, function( data )
+	api_request( 'get_posts', { limit: g_limit, outline: a_outline_id, forced_refresh: forced_refresh }, function( data )
 	{
 		if( !data.error )
 		{
@@ -174,7 +174,7 @@ function load_outline( a_outline_id, forced_refresh )
 function mark_all_as_read( a_outline_id )
 {
 	if( !a_outline_id ) return;
-	api_request( '/outline/mark_as_read/', { outline: a_outline_id }, function( data )
+	api_request( 'outline_mark_read', { outline: a_outline_id }, function( data )
 	{
 		if( !data.error ) load_outline( a_outline_id, true );
 	});
@@ -189,7 +189,7 @@ function load_more_posts( a_outline_id, on_success, on_failure )
 
 	skip = count_visible_unread_posts();
 
-	api_request( '/outline/get_posts/', { outline: a_outline_id, skip: skip, limit: g_limit }, function( data )
+	api_request( 'get_posts', { outline: a_outline_id, skip: skip, limit: g_limit }, function( data )
 	{
 		if( !data.error )
 		{
@@ -239,7 +239,7 @@ function set_post_starred_state( post_id, state )
 }
 function set_post_attr_state( post_id, attr, state )
 {
-	api_request( '/post/action/', { post: post_id, action: attr, state: state }, function( data )
+	api_request( 'post_action', { post: post_id, action: attr, state: state }, function( data )
 	{
 		show_result( data );
 		get_unread_counts( g_outline_id );

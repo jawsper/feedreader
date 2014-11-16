@@ -32,24 +32,29 @@ function debug_enabled()
 function log_request_start(id, path, args)
 {
 	if(!debug_enabled()) return;
-	console.debug('REQ ' + id + '; ' + path);
-	console.trace();
-	var currentFunction = arguments.callee.caller;
-	while(currentFunction)
-	{
-		var fn = currentFunction.toString();
-		var fname = fn.substring(fn.indexOf("function")+9, fn.indexOf("(")) || "anonymous";
-		//console.debug(fn);
-		console.debug(fname);
-		currentFunction = currentFunction.caller;
-	}
+	url = urls[path]
+	console.debug('REQ ' + id + '; ' + url.url + ' ' + JSON.stringify(args));
+	// console.trace();
+	// var currentFunction = arguments.callee.caller;
+	// while(currentFunction)
+	// {
+	// 	var fn = currentFunction.toString();
+	// 	var fname = fn.substring(fn.indexOf("function")+9, fn.indexOf("(")) || "anonymous";
+	// 	//console.debug(fn);
+	// 	console.debug(fname);
+	// 	currentFunction = currentFunction.caller;
+	// }
 	
 	g_requests[id] = [path, args]
+
+	// argstr = ''
+	// console.debug(args);
+	// $.each(args, function(x){ console.debug(this); });
 	
 	var debug_item = $('<div>')
 		.attr('id', 'request-'+id)
 		.css('background-color', '#00ffff')
-		.html('#' + id + ': ' + path);
+		.html('#' + id + ': ' + path + ' ' + JSON.stringify(args));
 	
 	$('#debug').prepend(debug_item);
 	debug_item[0].scrollIntoView(true);
@@ -69,7 +74,7 @@ function api_request( path, args, callback )
 	log_request_start(request_id, path, args);
     $.ajax({
 		type: 'POST',
-		url: get_api_url( path ),
+		url: urls[path].url,
 		data: args,
 		success: function( result )
 		{
@@ -94,14 +99,10 @@ function get_url( path )
 	//if( path.substr( 0, 1 ) == '/' ) path = path.substr( 1 );
 	return base_path + path;
 }
-function get_api_url( path )
-{
-	return get_url( 'api/0' + path );
-}
 
 function add_new_feed( url )
 {
-	api_request( '/feed/add/', { url: url }, function( result )
+	api_request( 'feed_add', { url: url }, function( result )
 	{
 		if( result.success )
 		{
@@ -146,7 +147,7 @@ function show_result( data )
 
 function get_unread_counts( outline_id )
 {
-	api_request( '/get_unread_count/', { 'outline_id': outline_id }, function( data )
+	api_request( 'get_unread', { 'outline_id': outline_id }, function( data )
 	{
 		document.title = data.total > 0 ? 'Feedreader (' + data.total + ')' : 'Feedreader';
 		if( !data.counts ) return;
@@ -178,7 +179,7 @@ function load_options()
 {
 	var opts = [];
 	$.each( options, function( k ) { opts.push( k ) } );
-	api_request( '/get_option/', { keys: opts }, function( result )
+	api_request( 'get_option', { keys: opts }, function( result )
 	{
 		$.each( options, function( name, data )
 		{
@@ -214,7 +215,7 @@ function save_option( name, value )
 {
 	var data = {};
 	data[ name ] = value;
-	api_request( '/set_option/', data, function( result )
+	api_request( 'set_option', data, function( result )
 	{
 		if( result == 'OK' )
 		{
@@ -309,11 +310,13 @@ $(function()
 	window.addEventListener( 'popstate', on_popstate );
 	
 	load_navigation();
+
+	url_change(location.pathname)
 });
 
 function load_navigation()
 {
-	api_request( '/outlines/', { use_long_keys: 1 }, function( data )
+	api_request( 'outline_get_all_outlines', { use_long_keys: 1 }, function( data )
 	{
 		render_navigation( data.outlines );
 	});
