@@ -4,7 +4,12 @@ from bs4 import BeautifulSoup
 
 # Create your models here.
 
-class Feed(models.Model):
+class DisplayTitleMixIn:
+	@property
+	def display_title(self):
+		return self.title if self.title else '(no title)'
+
+class Feed(models.Model, DisplayTitleMixIn):
 	title 		= models.CharField(max_length=1000)
 	xmlUrl 		= models.CharField(max_length=1000)
 	htmlUrl 	= models.CharField(max_length=1000)
@@ -16,14 +21,10 @@ class Feed(models.Model):
 	
 	disabled	= models.BooleanField(default=False)
 	
-	def __unicode__(self):
+	def __str__(self):
 		return self.display_title
 
-	@property
-	def display_title(self):
-		return self.title if len(self.title) > 0 else '(no title)'
-
-class Outline(models.Model):
+class Outline(models.Model, DisplayTitleMixIn):
 	user 	= models.ForeignKey(User)
 	parent 	= models.ForeignKey('self', null=True, blank=True)
 	title	= models.CharField(max_length=1000)
@@ -36,14 +37,10 @@ class Outline(models.Model):
 
 	folder_opened	= models.BooleanField(default=True)
 
-	def __unicode__(self):
+	def __str__(self):
 		return self.display_title
 
-	@property
-	def display_title(self):
-		return self.title if len(self.title) > 0 else '(no title)'
-
-class Post(models.Model):
+class Post(models.Model, DisplayTitleMixIn):
 	feed 				= models.ForeignKey(Feed)
 	title 				= models.CharField(max_length=1000)
 	link 				= models.CharField(max_length=1000)
@@ -55,12 +52,8 @@ class Post(models.Model):
 	content 			= models.TextField()
 	description 		= models.TextField()
 
-	def __unicode__(self):
-		return self.title
-
-	@property
-	def display_title(self):
-		return self.title if len(self.title) > 0 else '(no title)'
+	def __str__(self):
+		return self.display_title
 		
 	def toJsonDict(self):
 		data = {}
