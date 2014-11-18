@@ -18,6 +18,8 @@ class Feed(models.Model, DisplayTitleMixIn):
 	lastUpdated = models.DateTimeField(null=True, blank=True)
 	lastStatus 	= models.CharField(max_length=1000, null=True, blank=True)
 	lastETag	= models.CharField(max_length=100, null=True, blank=True)
+
+	quirkFixNotXml = models.BooleanField(default=False)
 	
 	disabled	= models.BooleanField(default=False)
 	
