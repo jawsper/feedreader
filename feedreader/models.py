@@ -77,7 +77,7 @@ class UserPost(models.Model):
 	user 	= models.ForeignKey(User)
 	post 	= models.ForeignKey(Post)
 	starred = models.BooleanField(default=False)
-	read 	= models.BooleanField(default=False)
+	read 	= models.BooleanField(default=False, db_index=True)
 	
 	class Meta:
 		unique_together = (('user', 'post'))
