@@ -10,7 +10,7 @@ class DisplayTitleMixIn:
 		return self.title if self.title else '(no title)'
 
 class Feed(models.Model, DisplayTitleMixIn):
-	title 		= models.CharField(max_length=1000)
+	title 		= models.CharField(max_length=500)
 	xmlUrl 		= models.CharField(max_length=1000)
 	htmlUrl 	= models.CharField(max_length=1000)
 	faviconUrl  = models.CharField(max_length=1000, null=True, blank=True)
@@ -29,10 +29,10 @@ class Feed(models.Model, DisplayTitleMixIn):
 class Outline(models.Model, DisplayTitleMixIn):
 	user 	= models.ForeignKey(User)
 	parent 	= models.ForeignKey('self', null=True, blank=True)
-	title	= models.CharField(max_length=1000)
+	title	= models.CharField(max_length=500, db_index=True)
 	feed 	= models.ForeignKey(Feed, null=True, blank=True)
 	
-	sort_position	= models.IntegerField(null=True, blank=True)
+	sort_position	= models.IntegerField(null=True, blank=True, db_index=True)
 	
 	sort_order_asc	= models.BooleanField(default=True)
 	show_only_new	= models.BooleanField(default=True)
