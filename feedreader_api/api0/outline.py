@@ -54,42 +54,40 @@ def get_posts(request):
     try:
         outline = __get_outline(request)
     except Exception as e:
-        return HttpJsonResponse(error=e.message)
+        return HttpJsonResponse(error=str(e))
 
     sort_order = 'ASC' if outline.sort_order_asc else 'DESC'
+    order_by = 'post__pubDate' if outline.sort_order_asc else '-post__pubDate'
     show_only_new = outline.show_only_new
     skip = int( request.POST['skip'] ) if 'skip' in request.POST else 0
     limit = int(request.POST['limit']) if 'limit' in request.POST else 20
 
+    params = {
+        'user': request.user
+    }
+
     if show_only_new:
-        query_user_post_where = ' and ( UserPost.read is null or UserPost.read = 0 ) '
-    else:
-        query_user_post_where = ''
+        params['read'] = False
 
     if outline.feed:
-        posts = Post.objects.raw(
-        'select Post.*, UserPost.starred, UserPost.read ' +
-        'from feedreader_post Post left outer join feedreader_userpost UserPost on ( Post.id = UserPost.post_id and UserPost.user_id = %s ) ' +
-        'where Post.feed_id = %s ' + query_user_post_where + ' ' +
-        'order by Post.pubDate ' + sort_order + ' ' +
-        'LIMIT %s,%s', [ request.user.id, outline.feed.id, skip, limit ] )
+        params['post__feed'] = outline.feed
     else:
-        posts = Post.objects.raw(
-        'select Post.*, UserPost.starred, UserPost.read ' +
-        'from feedreader_post Post left outer join feedreader_userpost UserPost on ( Post.id = UserPost.post_id and UserPost.user_id = %s ) ' +
-        'where Post.feed_id in ( select feed_id from feedreader_outline where parent_id = %s ) ' + query_user_post_where + ' ' +
-        'order by Post.pubDate ' + sort_order + ' ' +
-        'LIMIT %s,%s', [ request.user.id, outline.id, skip, limit ] )
+        feeds = Outline.objects.filter(parent=outline)
+        feeds = [ o.feed for o in feeds ]
+        params['post__feed__in'] = feeds
+
+    posts = UserPost.objects.filter(**params).select_related('post').order_by(order_by)[skip:limit]
+    posts = [ post.toJsonDict() for post in posts ]
 
     return HttpJsonResponse(
-        title = outline.feed.display_title if outline.feed else outline.display_title,
+        title = outline.display_title,
         htmlUrl = outline.feed.htmlUrl if outline.feed else None,
         is_feed = bool( outline.feed ),
         show_only_new = show_only_new,
         sort_order = sort_order,
         skip = skip,
         limit = limit,
-        posts = [ post.toJsonDict() for post in posts ],
+        posts = posts,
         unread_count = get_unread_count( request.user, outline )
     )
 
