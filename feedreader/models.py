@@ -61,7 +61,10 @@ class Post(models.Model, DisplayTitleMixIn):
 		soup = BeautifulSoup(self.content if self.content else self.description)
 		[s.extract() for s in soup('script')]
 		for iframe in soup('iframe'):
-			iframe.replace_with(soup.new_string('iframe'))
+			a = soup.new_tag('a')
+			a.string = 'iframe'
+			a['href'] = iframe['src']
+			iframe.replace_with(a)
 		return str(soup)
 		
 	def toJsonDict(self):
