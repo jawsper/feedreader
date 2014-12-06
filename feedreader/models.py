@@ -56,6 +56,13 @@ class Post(models.Model, DisplayTitleMixIn):
 
 	def __str__(self):
 		return self.display_title
+
+	def processedContent(self):
+		soup = BeautifulSoup(self.content if self.content else self.description)
+		[s.extract() for s in soup('script')]
+		for iframe in soup('iframe'):
+			iframe.replace_with(soup.new_string('iframe'))
+		return str(soup)
 		
 	def toJsonDict(self):
 		data = {}
@@ -64,9 +71,7 @@ class Post(models.Model, DisplayTitleMixIn):
 		data['title'] = self.display_title
 		data['feedTitle'] = self.feed.display_title
 		data['pubDate'] = str(self.pubDate)
-		soup = BeautifulSoup(self.content if self.content else self.description)
-		[s.extract() for s in soup('script')]
-		data['content'] = str(soup)
+		data['content'] = self.processedContent()
 		if hasattr(self, 'starred'):
 			data['starred'] = bool(int(self.starred)) if self.starred != None else False
 		if hasattr(self, 'read'):
