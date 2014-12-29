@@ -39,6 +39,8 @@ class Outline(models.Model, DisplayTitleMixIn):
 
 	folder_opened	= models.BooleanField(default=True)
 
+	unread_count	= models.IntegerField(default=0, db_index=True)
+
 	def __str__(self):
 		return self.display_title
 
