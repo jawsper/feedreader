@@ -8,7 +8,7 @@
 var g_outline_id = null;
 var g_outline_data = null;
 var g_current_post = null;
-var g_limit = 50;
+var g_limit = 10;
 
 /* directly after load init everything */
 
