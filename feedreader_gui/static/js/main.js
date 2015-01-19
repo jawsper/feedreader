@@ -158,7 +158,14 @@ function get_unread_counts( outline_id )
 
 function set_unread_count( outline_id, unread_count )
 {
-	$( '#outline-' + outline_id ).toggleClass( 'has-unread', unread_count > 0 );
+	var outline = $( '#outline-' + outline_id );
+	outline.toggleClass( 'has-unread', unread_count > 0 );
+	var outline_obj = outline.data('outline');
+	if(outline_obj)
+	{
+		outline_obj.unread_count = unread_count;
+		outline.data('outline', outline_obj);
+	}
 	$( '#outline-unread-count-' + outline_id ).text( unread_count );
 }
 
@@ -376,6 +383,7 @@ function apply_template( template, data_name, data )
 function make_outline( template, outline )
 {
 	var html = $( apply_template( template, 'outline', outline ) );
+	html.data('outline', outline);
 	html.addClass( outline.feed_id ? 'feed' : 'folder' );
 	if( !outline.folder_opened )
 	{

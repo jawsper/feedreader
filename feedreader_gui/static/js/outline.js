@@ -224,6 +224,18 @@ function id_get_post( post_id )
 	return $('#post_' + post_id );
 }
 
+function outline_change_unread_count(outline_id, diff)
+{
+	var outline = $('#outline-' + outline_id);
+	var outline_obj = outline.data('outline');
+	outline_obj.unread_count += diff;
+	outline.data('outline', outline_obj);
+	$('#outline-unread-count-' + outline_id).text(outline_obj.unread_count);
+	var parent = outline.parents('.outline');
+	if(parent.length > 0)
+		outline_change_unread_count(parent.data('outline')['id'], diff);
+}
+
 function set_post_read_state( post_id, state )
 {
 	set_post_attr_state( post_id, 'read', state );
@@ -235,7 +247,9 @@ function set_post_read_state( post_id, state )
 	// only visually update the unread count.
 	// TODO: every now and then actually do API hit...?
 	// Maybe better on a timer...
+	outline_change_unread_count(g_outline_id, state ? -1 : 1);
 	g_outline_data.unread_count += state ? -1 : 1;
+
 	update_outline_unread_count();
 }
 function set_post_starred_state( post_id, state )
