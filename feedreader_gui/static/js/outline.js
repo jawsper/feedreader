@@ -230,6 +230,7 @@ function outline_change_unread_count(outline_id, diff)
 	var outline_obj = outline.data('outline');
 	outline_obj.unread_count += diff;
 	outline.data('outline', outline_obj);
+	outline.toggleClass('has-unread', outline_obj.unread_count > 0);
 	$('#outline-unread-count-' + outline_id).text(outline_obj.unread_count);
 	var parent = outline.parents('.outline');
 	if(parent.length > 0)
