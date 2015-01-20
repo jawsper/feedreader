@@ -76,7 +76,7 @@ def get_posts(request):
         feeds = [ o.feed for o in feeds ]
         params['post__feed__in'] = feeds
 
-    posts = UserPost.objects.filter(**params).select_related('post').order_by(order_by)[skip:limit]
+    posts = UserPost.objects.filter(**params).select_related('post').order_by(order_by)[skip:skip+limit]
     posts = [ post.toJsonDict() for post in posts ]
 
     return HttpJsonResponse(
