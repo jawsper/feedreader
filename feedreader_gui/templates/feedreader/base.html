@@ -33,10 +33,8 @@
 	<label for="new-feed-url">URL: <input id="new-feed-url" type="text"></label>
 </div>
 {% endif %}
-<div id="header" class="header row">
-<h1>Feedreader</h1>
-</div>
 <div id="navigation" class="left col scroll-y">
+	<h1>Feedreader</h1>
 	{% if user.is_authenticated %}
 		<p>Welcome, {{ user.username }} [<a href="{% url 'logout' %}">Logout</a>]</p>
 		<p>
@@ -54,7 +52,7 @@
 	{% endif %}
 </div>
 <div id="body" class="right col">
-	<div class="content_header row">{% block content_header %}{% endblock content_header %} <!--img id="spinner" src="{{ STATIC_URL }}images/spinner.gif" alt="loading..."--></div>
+	{% if user.is_authenticated %}<div class="content_header row">{% block content_header %}{% endblock content_header %} <!--img id="spinner" src="{{ STATIC_URL }}images/spinner.gif" alt="loading..."--></div>{% endif %}
 	<div id="content" class="content row scroll-y" tabindex="0">
 		{% block content %}{% endblock content %}
 	</div>
