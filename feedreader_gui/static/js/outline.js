@@ -252,10 +252,10 @@ function set_post_read_state( post_id, state )
 	// only visually update the unread count.
 	// TODO: every now and then actually do API hit...?
 	// Maybe better on a timer...
-	outline_change_unread_count(g_outline_id, state ? -1 : 1);
-	g_outline_data.unread_count += state ? -1 : 1;
+	// outline_change_unread_count(g_outline_id, state ? -1 : 1);
+	// g_outline_data.unread_count += state ? -1 : 1;
 
-	update_outline_unread_count();
+	// update_outline_unread_count();
 }
 function set_post_starred_state( post_id, state )
 {
@@ -266,6 +266,7 @@ function set_post_attr_state( post_id, attr, state )
 	api_request( 'post_action', { post: post_id, action: attr, state: state }, function( data )
 	{
 		show_result( data );
+		get_unread_counts(g_outline_id);
 	});
 }
 
