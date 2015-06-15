@@ -14,21 +14,10 @@ import re
 import json
 import datetime
 
-# tricky code that allows adding an sql aggregate without changing django
-from django.db.models.sql.aggregates import Aggregate
-class IsNullBackend( Aggregate ):
-	sql_function = ''
-	sql_template = 'case when %(field)s is null then 1 else 0 end'
-class IsNull( object ):
+from django.db.models.aggregates import Aggregate
+class NewIsNull(Aggregate):
+	function = 'ISNULL'
 	name = 'IsNull'
-	def __init__( self, lookup, **extra ):
-		self.lookup = lookup
-		self.extra = extra
-	def _default_alias(self):
-		return '%s__%s' % (self.lookup, self.name.lower())
-	default_alias = property(_default_alias)
-	def add_to_query(self, query, alias, col, source, is_summary):
-		query.aggregates[alias] = IsNullBackend(col, source=source, is_summary=is_summary, **self.extra)
 
 class HttpJsonResponse( HttpResponse ):
 	def __init__( self, data = None, **kwargs ):
@@ -78,7 +67,7 @@ def main_navigation( request, use_short_keys = True ):
 	if 'use_long_keys' in request.POST:
 		use_short_keys = False
 	return [ outline_to_dict_with_children( request, outline, use_short_keys ) for outline in 
-		Outline.objects.annotate( feed_is_null = IsNull( 'feed' ) ).order_by( 'sort_position', '-feed_is_null', 'title' ).select_related().filter( parent = None, user = request.user ) ]
+		Outline.objects.annotate( feed_is_null = NewIsNull( 'feed' ) ).order_by( 'sort_position', '-feed_is_null', 'title' ).select_related().filter( parent = None, user = request.user ) ]
 
 def verify_token( username, token ):
 	if not username or not token:
