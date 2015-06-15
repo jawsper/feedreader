@@ -298,7 +298,7 @@ function select_post( post )
 
 function post_attach_handlers( post_id )
 {
-	id_get_post( post_id ).click( function()
+	id_get_post( post_id ).mouseup( function()
 	{
 		select_post_by_id( post_id );
 	} )
