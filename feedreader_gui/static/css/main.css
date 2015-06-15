@@ -64,11 +64,10 @@ body
 {
 	display: none;
 	position:fixed;
-	top:0;
+	bottom:0;
 	right:0;
 	z-index:100;
-	margin:.5em;
-	margin-right:1em
+	margin: 1.5em;
 } 
 #result_container
 {
