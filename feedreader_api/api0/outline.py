@@ -5,7 +5,7 @@
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.db import connection, transaction
-from feedreader.functions import HttpJsonResponse, get_unread_count
+from feedreader.functions import HttpJsonResponse
 from feedreader.models import Outline, Post, Feed, UserPost
 import feedreader.functions as func
 from feedreader.functions import main_navigation
@@ -88,7 +88,7 @@ def get_posts(request):
         skip = skip,
         limit = limit,
         posts = posts,
-        unread_count = get_unread_count( request.user, outline )
+        unread_count = outline.unread_count
     )
 
 @login_required
@@ -105,7 +105,7 @@ def get_outline_data(request):
         title = outline.feed.title if outline.feed else outline.title,
         show_only_new = show_only_new,
         sort_order = sort_order,
-        unread_count = get_unread_count( request.user, outline )
+        unread_count = outline.unread_count
     )
 
 @login_required
@@ -142,6 +142,8 @@ def outline_set( request ):
 
     return HttpJsonResponse(message='OK')
 
+
+# TODO: unread_count update!!
 @login_required
 def outline_mark_as_read( request ):
     try:

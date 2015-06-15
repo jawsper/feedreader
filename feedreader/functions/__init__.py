@@ -69,7 +69,7 @@ def outline_to_dict_with_children( request, outline, use_short_keys = False ):
 			outline.feed.id if outline.feed else None,
 			outline.feed.faviconUrl if outline.feed else None,
 			outline.folder_opened,
-			get_unread_count( request.user, outline ),
+			outline.unread_count,
 			[ outline_to_dict_with_children( request, child, use_short_keys ) for child in Outline.objects.order_by( 'sort_position', 'feed', 'title' ).select_related().filter( parent = outline, user = request.user ) ]
 		]
 	) )
@@ -94,7 +94,6 @@ def verify_token( username, token ):
 	return False
 
 
-import re
 import urllib.request, urllib.error, urllib.parse, urllib.parse
 from PIL import Image
 from io import BytesIO

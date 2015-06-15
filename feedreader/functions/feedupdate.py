@@ -178,8 +178,8 @@ class FeedUpdater:
 				try:
 					post.save()
 					for outline in Outline.objects.filter( feed = feed ):
-						# outline.unread_count += 1
-						# outline.save()
+						outline.unread_count += 1
+						outline.save()
 						UserPost( user = outline.user, post = post ).save() # make userposts for all users who have this feed
 					imported += 1
 				except IntegrityError:
