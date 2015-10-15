@@ -2,3 +2,4 @@ django
 Pillow
 feedparser
 beautifulsoup4
+pymysql
