@@ -3,6 +3,7 @@
 # Date: 2013-06-24
 
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from feedreader.functions import HttpJsonResponse
 from feedreader.models import Outline, Post, UserPost
 
@@ -26,29 +27,40 @@ def _update_unread_count(userpost, num):
 @login_required
 def action(request):
     try:
-        post_id = int(request.POST['post'])
-        action = request.POST['action']
-        post = Post.objects.get( pk = post_id )
+        post_id = request.POST.get('post', None)
+        post = Post.objects.get(id=post_id)
     except Post.DoesNotExist:
-        raise Http404
-    except:
-        raise Http404
-        
-    try:
-        user_post = UserPost.objects.get( user = request.user, post = post )
-    except UserPost.DoesNotExist:
-        user_post = UserPost( user = request.user, post = post )
-        
-    params = request.POST
+        return JsonResponse({'error': True, 'caption': 'Error', 'message': 'Post not found.'})
 
-    state = None
-    if 'state' in params:
-        state = bool( int( params['state'] ) )
-    if action in ( 'starred', 'read' ):
-        if state != None:
-            setattr( user_post, action, state )
-            user_post.save()
+    action = request.POST.get('action', None)
+    state = request.POST.get('state', None)
+    try:
+        state = bool(int(state))
+    except ValueError:
+        state = None
+    if action not in ('starred', 'read') or state is None:
+        return JsonResponse({'error': True, 'caption': 'Error', 'message': 'Invalid parameters.'})
+
+    try:
+        user_post = UserPost.objects.get(user=request.user, post=post)
+    except UserPost.DoesNotExist:
+        user_post = UserPost(user=request.user, post=post)
+
+    changed = False
+    if user_post.pk is None:
+        changed = True
+    else:
+        current_value = getattr(user_post, action)
+        if current_value != state:
+            changed = True
+
+    if changed:
+        setattr(user_post, action, state)
+        user_post.save()
         if action == 'read':
             _update_unread_count(user_post, -1 if state else +1)
-        return HttpJsonResponse( caption = 'Result', message = 'Post {} marked as {}'.format( post_id, action if state else 'not ' + action ), error = False )
-    raise Http404
+
+        result_message = 'Post {} marked as {}'.format(post_id, action if state else 'not ' + action)
+        return JsonResponse({'error': False, 'caption': 'Result', 'message': result_message})
+
+    return JsonResponse({'error': False, 'caption': 'Result', 'message': 'Post[{}].{} not changed'.format(post.id, action)})

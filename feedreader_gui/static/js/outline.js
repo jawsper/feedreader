@@ -266,7 +266,8 @@ function set_post_attr_state( post_id, attr, state )
 	api_request( 'post_action', { post: post_id, action: attr, state: state }, function( data )
 	{
 		show_result( data );
-		get_unread_counts(g_outline_id);
+		if(!data['error'])
+			get_unread_counts(g_outline_id);
 	});
 }
 
