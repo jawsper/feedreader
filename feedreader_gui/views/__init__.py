@@ -40,12 +40,7 @@ class OutlineView(IndexView):
 
 class FeedFaviconView(SecureDispatchMixIn, View):
     def get( self, request, feed_id ):
-        load_favicon = True
-        try:
-            load_favicon = settings.LOAD_FAVICON
-        except:
-            pass
-        if load_favicon:
+        if getattr(settings, 'LOAD_FAVICON', True):
             try:
                 feed = Feed.objects.get( pk = feed_id )
                 if feed.faviconUrl:
