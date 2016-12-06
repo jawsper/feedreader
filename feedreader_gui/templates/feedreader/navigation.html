@@ -9,7 +9,7 @@
 		<ul>
 			{% for child in outline.children %}
 			<li data-unread-count="{{ outline.unread_count }}" class="outline {% if child.unread_count > 0 %}has-unread {% endif %}feed" id="outline-{{ child.id }}">
-				<div class="outline-line" style="background-image:url('{% url 'feed_favicon' child.feed_id %}')">
+				<div class="outline-line"{% if child.feed_id %} style="background-image:url('{% url 'feed_favicon' child.feed_id %}')"{% endif %}>
 					<a class="outline-text" href="outline/{{ child.id }}/">{{ child.title }}</a>
 					<span class="outline-unread-count" id="outline-unread-count-{{ child.id }}">{{ child.unread_count }}</span>
 				</div>
