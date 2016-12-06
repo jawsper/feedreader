@@ -12,7 +12,7 @@ def _find_post_outline(userpost):
     return Outline.objects.get(user=user, feed=post.feed)
 
 def _update_unread_count_cascade(outline, num):
-    print(outline, num)
+    # print(outline, num)
     outline.unread_count += num
     outline.save()
     if outline.parent:

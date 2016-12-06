@@ -1,5 +1,5 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 
-urlpatterns = patterns( 'feedreader_api',
+urlpatterns = [
 	url(r'^0/', include('feedreader_api.api0.urls'), name='api0')
-)
+]

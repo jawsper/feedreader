@@ -2,7 +2,7 @@
 # Author: Jasper Seidel
 # Date: 2013-06-29
 
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.db import connection
 from django.utils.timezone import utc
 from feedreader.models import Outline, UserToken, Feed
@@ -22,6 +22,10 @@ class IsNull(Aggregate):
 class HttpJsonResponse( HttpResponse ):
 	def __init__( self, data = None, **kwargs ):
 		HttpResponse.__init__( self, json.dumps( data if data else kwargs ), content_type = 'application/json' )
+
+class JsonErrorResponse(JsonResponse):
+	def __init__(self, message):
+		super().__init__({'error': True, 'caption': 'Error', 'message': message})
 
 def get_unread_count( user, outline ):
 	cursor = connection.cursor()
