@@ -60,7 +60,7 @@ class Post(models.Model, DisplayTitleMixIn):
 		return self.display_title
 
 	def processedContent(self):
-		soup = BeautifulSoup(self.content if self.content else self.description)
+		soup = BeautifulSoup(self.content if self.content else self.description, 'html.parser')
 		[s.extract() for s in soup('script')]
 		for iframe in soup('iframe'):
 			a = soup.new_tag('a')
