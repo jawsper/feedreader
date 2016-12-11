@@ -5,6 +5,8 @@
 from django.http import HttpResponse, JsonResponse
 from django.db import connection
 from django.utils.timezone import utc
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from feedreader.models import Outline, UserToken, Feed
 
 # subfunctions
@@ -18,6 +20,11 @@ from django.db.models.aggregates import Aggregate
 class IsNull(Aggregate):
 	function = 'ISNULL'
 	name = 'IsNull'
+
+class SecureDispatchMixIn:
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
 
 class HttpJsonResponse( HttpResponse ):
 	def __init__( self, data = None, **kwargs ):

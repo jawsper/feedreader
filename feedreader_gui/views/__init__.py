@@ -4,22 +4,15 @@
 
 from django.http import HttpResponse, Http404
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 from django.conf import settings
 from django.views.generic.base import View, TemplateView
 
 from feedreader.models import Feed, ConfigStore, Outline
 
-from feedreader.functions import main_navigation
+from feedreader.functions import main_navigation, SecureDispatchMixIn
 
 import urllib.request, urllib.error, urllib.parse
 import os
-
-class SecureDispatchMixIn:
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
 
 class IndexView(SecureDispatchMixIn, TemplateView):
     template_name = 'feedreader/index.html'
