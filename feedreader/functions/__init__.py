@@ -7,10 +7,7 @@ from django.db import connection
 from django.utils.timezone import utc
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from feedreader.models import Outline, UserToken, Feed
-
-# subfunctions
-from feedreader.functions.feeds import add_feed
+from feedreader.models import Outline, UserToken
 
 import re
 import json
@@ -25,6 +22,7 @@ class SecureDispatchMixIn:
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
+
 
 class HttpJsonResponse( HttpResponse ):
 	def __init__( self, data = None, **kwargs ):
@@ -59,26 +57,23 @@ def get_total_unread_count( user ):
 	cursor.close()
 	return count[0] if count else None
 
-def outline_to_dict_with_children( request, outline, use_short_keys = False ):
-	short_keys = ( 'i', 't', 'f', 'fi', 'o', 'u', 'c' )
-	long_keys = ( 'id', 'title', 'feed_id', 'faviconUrl', 'folder_opened', 'unread_count', 'children' )
-	return dict( zip(
-		short_keys if use_short_keys else long_keys, [
-			outline.id,
-			outline.display_title,
-			outline.feed.id if outline.feed else None,
-			outline.feed.faviconUrl if outline.feed else None,
-			outline.folder_opened,
-			outline.unread_count,
-			[ outline_to_dict_with_children( request, child, use_short_keys ) for child in Outline.objects.order_by( 'sort_position', 'feed', 'title' ).select_related().filter( parent = outline, user = request.user ) ]
-		]
-	) )
+def _outline_to_dict_with_children(user, outline):
+	return dict(
+		id=outline.id,
+		title=outline.display_title,
+		feed_id=outline.feed.id if outline.feed else None,
+		faviconUrl=outline.feed.faviconUrl if outline.feed else None,
+		folder_opened=outline.folder_opened,
+		unread_count=outline.unread_count,
+		children=[_outline_to_dict_with_children(user, child) for child in Outline.objects.order_by('sort_position', 'feed', 'title').select_related().filter(parent=outline, user=user)]
+	)
 
-def main_navigation( request, use_short_keys = True ):
-	if 'use_long_keys' in request.POST:
-		use_short_keys = False
-	return [ outline_to_dict_with_children( request, outline, use_short_keys ) for outline in 
-		Outline.objects.annotate( feed_is_null = IsNull( 'feed' ) ).order_by( 'sort_position', '-feed_is_null', 'title' ).select_related().filter( parent = None, user = request.user ) ]
+def main_navigation(user):
+	return [
+		_outline_to_dict_with_children(user, outline)
+		for outline
+		in Outline.objects.annotate(feed_is_null=IsNull('feed')).order_by('sort_position', '-feed_is_null', 'title').select_related().filter(parent=None, user=user)
+	]
 
 def verify_token( username, token ):
 	if not username or not token:
@@ -94,7 +89,7 @@ def verify_token( username, token ):
 	return False
 
 
-import urllib.request, urllib.error, urllib.parse, urllib.parse
+import urllib.request, urllib.error, urllib.parse
 from PIL import Image
 from io import BytesIO
 
