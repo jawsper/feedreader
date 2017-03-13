@@ -13,7 +13,8 @@ def _find_post_outline(userpost):
 
 
 def _update_unread_count_cascade(outline, num):
-    outline.update(unread_count=F('unread_count') + num)
+    outline.unread_count=F('unread_count') + num
+    outline.save(update_fields=['unread_count'])
     if outline.parent:
         _update_unread_count_cascade(outline.parent, num)
 
