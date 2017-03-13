@@ -34,22 +34,8 @@ function log_request_start(id, path, args)
 	if(!debug_enabled()) return;
 	url = urls[path]
 	console.debug('REQ ' + id + '; ' + url.url + ' ' + JSON.stringify(args));
-	// console.trace();
-	// var currentFunction = arguments.callee.caller;
-	// while(currentFunction)
-	// {
-	// 	var fn = currentFunction.toString();
-	// 	var fname = fn.substring(fn.indexOf("function")+9, fn.indexOf("(")) || "anonymous";
-	// 	//console.debug(fn);
-	// 	console.debug(fname);
-	// 	currentFunction = currentFunction.caller;
-	// }
 	
 	g_requests[id] = [path, args]
-
-	// argstr = ''
-	// console.debug(args);
-	// $.each(args, function(x){ console.debug(this); });
 	
 	var debug_item = $('<div>')
 		.attr('id', 'request-'+id)
@@ -72,7 +58,7 @@ function api_request( path, args, callback )
 {
 	var request_id = ++g_request_id;
 	log_request_start(request_id, path, args);
-    $.ajax({
+	$.ajax({
 		type: 'POST',
 		url: urls[path].url,
 		data: args,
@@ -87,7 +73,7 @@ function api_request( path, args, callback )
 			show_result({
 				caption: 'Error',
 				message: errorThrown == 'FORBIDDEN' ? 'Your login has expired. Please refresh the page to re-login' : errorThrown,
-				error: true,
+				success: false,
 			});
 		}
 	});
@@ -135,14 +121,14 @@ $(function()
 	});
 });
 
-function show_result( data )
+function show_result(data)
 {
 	$('#result_text').text( data.message );
-	if( data.caption ) $('#result_caption_text').text( data.caption );
-	$('#result_caption').toggle( data.caption ? true : false );
-	$('#result_container').toggleClass( 'ui-state-error', data.error ).toggleClass('ui-state-highlight', !data.error);
-	$('#result_icon').toggleClass('ui-icon-alert', data.error).toggleClass('ui-icon-info', !data.error);
-	$('#result').stop(true,true).fadeIn().delay(5000).fadeOut();
+	if(data.caption) $('#result_caption_text').text( data.caption);
+	$('#result_caption').toggle(data.caption ? true : false);
+	$('#result_container').toggleClass('ui-state-error', !data.success).toggleClass('ui-state-highlight', data.success);
+	$('#result_icon').toggleClass('ui-icon-alert', !data.success).toggleClass('ui-icon-info', data.success);
+	$('#result').stop(true, true).fadeIn().delay(5000).fadeOut();
 }
 
 function get_unread_counts( outline_id )
@@ -198,7 +184,7 @@ function load_options()
 			{
 				if( data['type'] == 'boolean' )
 				{
-					data['value'] = result.options[ name ] == 'true';
+					data['value'] = result.options[ name ].toLowerCase() == 'true';
 				}
 				else
 				{
@@ -224,7 +210,7 @@ function save_option( name, value )
 	data[ name ] = value;
 	api_request( 'set_option', data, function( result )
 	{
-		if( result == 'OK' )
+		if(result.success)
 		{
 			load_options();
 		}
@@ -323,7 +309,7 @@ $(function()
 
 function load_navigation()
 {
-	api_request( 'outline_get_all_outlines', { use_long_keys: 1 }, function( data )
+	api_request( 'outline_get_all_outlines', {}, function( data )
 	{
 		render_navigation( data.outlines );
 	});

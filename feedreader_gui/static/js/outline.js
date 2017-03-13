@@ -85,15 +85,15 @@ function set_outline( a_outline_id )
 
 function set_outline_param( a_outline_id, key, value, no_load )
 {
-	if( !a_outline_id ) return;
-	data = { outline: a_outline_id, 'action': key };
+	if(!a_outline_id) return;
+	data = {outline: a_outline_id, action: key};
 	if( value ) data['value'] = value;
 	
 	api_request( 'outline_set', data, function( data )
 	{
-		if( !data.error )
+		if(data.success)
 		{
-			if( !no_load ) load_outline( a_outline_id, true );
+			if(!no_load) load_outline(a_outline_id, true);
 		}
 	});
 }
@@ -148,7 +148,7 @@ function load_outline( a_outline_id, forced_refresh )
 
 	api_request( 'get_posts', { limit: g_limit, outline: a_outline_id, forced_refresh: forced_refresh }, function( data )
 	{
-		if( !data.error )
+		if(data.success)
 		{
 			if( g_outline_id != a_outline_id ) return; // attempt to prevent slow loads from overwriting the current outline
 			set_outline_data( a_outline_id, data );
@@ -261,12 +261,12 @@ function set_post_starred_state( post_id, state )
 {
 	set_post_attr_state( post_id, 'starred', state );
 }
-function set_post_attr_state( post_id, attr, state )
+function set_post_attr_state(post_id, attr, state)
 {
-	api_request( 'post_action', { post: post_id, action: attr, state: state }, function( data )
+	api_request('post_action', {post: post_id, action: attr, state: state}, function(data)
 	{
-		show_result( data );
-		if(!data['error'])
+		show_result(data);
+		if(data.success)
 			get_unread_counts(g_outline_id);
 	});
 }
