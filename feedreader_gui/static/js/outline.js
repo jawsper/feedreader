@@ -16,7 +16,12 @@ $(function()
 {
 	$('body').keypress(function(e)
 	{
-		switch(String.fromCharCode(e.which))
+		var key = e.key.toLowerCase();
+		if(e.shiftKey) key = 'shift+' + key;
+		if(e.metaKey) key = 'meta+' + key;
+		if(e.ctrlKey) key = 'ctrl+' + key;
+		if(e.altKey) key = 'alt+' + key;
+		switch(key)
 		{
 			case 'r':
 				$('#button_refresh').click();
