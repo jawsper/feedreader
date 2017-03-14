@@ -58,7 +58,7 @@ class PostActionView(JsonResponseView):
 
         if changed:
             setattr(user_post, action, state)
-            user_post.save()
+            user_post.save(update_fields=[action])
             if action == 'read':
                 _update_unread_count(user_post, -1 if state else +1)
 

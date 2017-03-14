@@ -7,7 +7,6 @@ from feedreader.functions import main_navigation, get_total_unread_count
 from feedreader.functions.feeds import add_feed
 from feedreader_api.functions import JsonResponseView
 
-
 DEFAULT_SKIP = 0
 DEFAULT_LIMIT = 20
 
@@ -90,12 +89,11 @@ class GetPostsView(JsonResponseView):
         if outline.feed:
             params['post__feed'] = outline.feed
         else:
-            feeds = Outline.objects.filter(parent=outline)
-            feeds = [o.feed for o in feeds]
-            params['post__feed__in'] = feeds
+            params['post__feed__in'] = Outline.objects.filter(user=user, parent=outline).values_list('feed_id', flat=True)
+            # basically: select * from userpost where post_id in (select post_id from feeds where feed_id in (select feed_id from outlines where parent = outline_id))
 
-        posts = UserPost.objects.filter(**params).select_related('post').order_by(order_by)[skip:skip+limit]
-        posts = [post.toJsonDict() for post in posts]
+        posts_queryset = UserPost.objects.filter(**params).select_related('post', 'post__feed').order_by(order_by)[skip:skip+limit]
+        posts = [post.toJsonDict() for post in posts_queryset]
 
         return dict(
             success=True,
