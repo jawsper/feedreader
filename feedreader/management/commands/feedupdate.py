@@ -5,9 +5,8 @@ from optparse import make_option
 from feedreader.functions.feedupdate import FeedUpdater
 
 class Command(BaseCommand):
-	option_list = BaseCommand.option_list + (
-		make_option('--debug', action='store_true', dest='debug', default=False, help='Debug'),
-	)
+	def add_arguments(self, parser):
+		parser.add_argument('--debug', action='store_true', dest='debug', default=False, help='Debug')
 
 	def handle( self, *args, **options ):
 		self.stdout.write('[Feed updater]')
