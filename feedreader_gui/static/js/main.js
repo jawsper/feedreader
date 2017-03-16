@@ -152,7 +152,7 @@ function set_unread_count( outline_id, unread_count )
 		outline_obj.unread_count = unread_count;
 		outline.data('outline', outline_obj);
 	}
-	$( '#outline-unread-count-' + outline_id ).text( unread_count );
+	$('> .outline-line > .outline-unread-count', outline).text(unread_count);
 }
 
 var options = 
