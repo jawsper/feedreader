@@ -1,5 +1,6 @@
-django
+Django<=1.9.99
 Pillow
 feedparser
 beautifulsoup4
-pymysql
+PyMySQL
+django-mptt
