@@ -7,7 +7,7 @@ from django.db import connection
 from django.utils.timezone import utc
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from feedreader.models import Outline, UserToken
+from feedreader.models import UserToken
 
 import re
 import json
@@ -51,29 +51,12 @@ def get_total_unread_count( user ):
 	cursor = connection.cursor()
 	cursor.execute( 'select count(Post.id) ' +
 		'from feedreader_post Post left outer join feedreader_userpost UserPost on ( Post.id = UserPost.post_id and UserPost.user_id = %s )' +
-		'where Post.feed_id in ( select feed_id from feedreader_outline Outline where feed_id is not null and user_id = %s ) ' +
+		'where Post.feed_id in ( select feed_id from feedreader_outline where feed_id is not null and user_id = %s ) ' +
 		' and ( UserPost.read is null or UserPost.read = 0 )', [ user.id, user.id ] )
 	count = cursor.fetchone()
 	cursor.close()
 	return count[0] if count else None
 
-def _outline_to_dict_with_children(user, outline):
-	return dict(
-		id=outline.id,
-		title=outline.display_title,
-		feed_id=outline.feed.id if outline.feed else None,
-		faviconUrl=outline.feed.faviconUrl if outline.feed else None,
-		folder_opened=outline.folder_opened,
-		unread_count=outline.unread_count,
-		children=[_outline_to_dict_with_children(user, child) for child in Outline.objects.order_by('sort_position', 'feed', 'title').select_related().filter(parent=outline, user=user)]
-	)
-
-def main_navigation(user):
-	return [
-		_outline_to_dict_with_children(user, outline)
-		for outline
-		in Outline.objects.annotate(feed_is_null=IsNull('feed')).order_by('sort_position', '-feed_is_null', 'title').select_related().filter(parent=None, user=user)
-	]
 
 def verify_token( username, token ):
 	if not username or not token:

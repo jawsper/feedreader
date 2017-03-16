@@ -3,7 +3,7 @@
 # Date: 2013-06-24
 
 from feedreader.models import Outline, Post, Feed, UserPost
-from feedreader.functions import main_navigation, get_total_unread_count
+from feedreader.functions import get_total_unread_count
 from feedreader.functions.feeds import add_feed
 from feedreader_api.functions import JsonResponseView
 
@@ -46,7 +46,7 @@ class GetUnreadCountView(JsonResponseView):
 
 class GetAllOutlinesView(JsonResponseView):
     def get_response(self, user, args):
-        return dict(outlines=main_navigation(user))
+        return dict(error=True, message='NotImplemented')
 
 
 class GetAllPostsView(JsonResponseView):

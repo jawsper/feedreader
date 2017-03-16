@@ -8,7 +8,7 @@ from django.views.generic.base import View, TemplateView
 
 from feedreader.models import Feed, ConfigStore, Outline
 
-from feedreader.functions import main_navigation, SecureDispatchMixIn
+from feedreader.functions import SecureDispatchMixIn
 
 import urllib.request
 import urllib.error
@@ -22,7 +22,7 @@ class IndexView(SecureDispatchMixIn, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
         context['config'] = ConfigStore.getUserConfig(user=self.request.user)
-        context['outline_list'] = main_navigation(self.request.user)
+        context['nodes'] = Outline.objects.filter(user=self.request.user)
         return context
 
 

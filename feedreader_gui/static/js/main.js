@@ -385,6 +385,7 @@ function make_outline( template, outline )
 
 function render_navigation( navigation )
 {
+	return;
 	var template = get_template( '#templateNavigationItem' );
 	
 	var main_ul = $( '#outlines' );

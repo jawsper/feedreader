@@ -1,26 +1,20 @@
+{% load mptt_tags %}
 <ul id="outlines" class="feeds{% if config.showOnlyUnread %} show-only-unread{% endif %}">
-    {% for outline in outline_list %}
-	<li data-unread-count="{{ outline.unread_count }}" class="outline {% if outline.unread_count > 0 %}has-unread {% endif %}{% if outline.feed_id %}feed{% else %}folder{% if not outline.folder_opened %} folder-closed{% endif %}{% endif %}" id="outline-{{ outline.id }}">
-		<div class="outline-line"{% if outline.feed_id %} style="background-image:url('{% url 'feed_favicon' outline.feed_id %}')"{% endif %}>
-			<a class="outline-text" href="outline/{{ outline.id }}/">{{ outline.title }}</a>
-			<span class="outline-unread-count" id="outline-unread-count-{{ outline.id }}">{{ outline.unread_count }}</span>
-		</div>
-		{% if outline.children %}
-		<ul>
-			{% for child in outline.children %}
-			<li data-unread-count="{{ outline.unread_count }}" class="outline {% if child.unread_count > 0 %}has-unread {% endif %}feed" id="outline-{{ child.id }}">
-				<div class="outline-line"{% if child.feed_id %} style="background-image:url('{% url 'feed_favicon' child.feed_id %}')"{% endif %}>
-					<a class="outline-text" href="outline/{{ child.id }}/">{{ child.title }}</a>
-					<span class="outline-unread-count" id="outline-unread-count-{{ child.id }}">{{ child.unread_count }}</span>
-				</div>
-				
-			</li>
-			{% endfor %}
-		</ul>
-		{% endif %}
-	</li>
-    {% endfor %}
+    {% recursetree nodes %}
+        <li data-unread-count="{{ node.unread_count }}" class="outline {% if node.unread_count > 0 %}has-unread {% endif %}{% if node.feed_id %}feed{% else %}folder{% if not node.folder_opened %} folder-closed{% endif %}{% endif %}" id="outline-{{ node.id }}">
+            <div class="outline-line"{% if node.feed_id %} style="background-image:url('{% url 'feed_favicon' node.feed_id %}')"{% endif %}>
+                <a class="outline-text" href="outline/{{ node.id }}/">{{ node.title }}</a>
+                <span class="outline-unread-count">{{ node.unread_count }}</span>
+            </div>
+            {% if not node.is_leaf_node %}
+                <ul>
+                    {{ children }}
+                </ul>
+            {% endif %}
+        </li>
+    {% endrecursetree %}
 </ul>
+
 
 <script type="text/template" id="templateNavigationItem">
 	<li class="outline" id="outline-${outline.id}">
