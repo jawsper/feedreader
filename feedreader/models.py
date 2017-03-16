@@ -45,23 +45,6 @@ class Outline(MPTTModel, DisplayTitleMixIn):
 	def __str__(self):
 		return self.display_title
 
-class OldOutline(models.Model, DisplayTitleMixIn):
-	user 	= models.ForeignKey(User)
-	parent 	= models.ForeignKey('self', null=True, blank=True, related_name='children')
-	title	= models.CharField(max_length=500, db_index=True)
-	feed 	= models.ForeignKey(Feed, null=True, blank=True)
-	
-	sort_position	= models.IntegerField(null=True, blank=True, db_index=True)
-	
-	sort_order_asc	= models.BooleanField(default=True)
-	show_only_new	= models.BooleanField(default=True)
-
-	folder_opened	= models.BooleanField(default=True)
-
-	unread_count	= models.IntegerField(default=0, db_index=True)
-
-	def __str__(self):
-		return self.display_title
 
 class Post(models.Model, DisplayTitleMixIn):
 	feed 				= models.ForeignKey(Feed)
