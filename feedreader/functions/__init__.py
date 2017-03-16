@@ -3,11 +3,10 @@
 # Date: 2013-06-29
 
 from django.http import HttpResponse, JsonResponse
-from django.db import connection
 from django.utils.timezone import utc
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from feedreader.models import UserToken
+from feedreader.models import UserToken, Outline, Post, UserPost
 
 import re
 import json
@@ -32,30 +31,33 @@ class JsonErrorResponse(JsonResponse):
 	def __init__(self, message):
 		super().__init__({'error': True, 'caption': 'Error', 'message': message})
 
-def get_unread_count( user, outline ):
-	cursor = connection.cursor()
+def get_unread_count(user, outline):
 	if outline.feed:
-		cursor.execute( 'select count(Post.id) ' + 
-		'from feedreader_post Post left outer join feedreader_userpost UserPost on ( Post.id = UserPost.post_id and UserPost.user_id = %s ) ' + 
-		'where Post.feed_id = %s and ( UserPost.read is null or UserPost.read = 0 )', [ user.id, outline.feed.id ]  )
-		unread_count = cursor.fetchone()
+		query = UserPost.objects.filter(
+			user=outline.user,
+			post__feed=outline.feed,
+			read=False
+		)
 	else:
-		cursor.execute( 'select count(Post.id) ' + 
-		'from feedreader_post Post left outer join feedreader_userpost UserPost on ( Post.id = UserPost.post_id and UserPost.user_id = %s ) ' + 
-		'where Post.feed_id in ( select feed_id from feedreader_outline where parent_id = %s ) and ( UserPost.read is null or UserPost.read = 0 )', [ user.id, outline.id ] )
-		unread_count = cursor.fetchone()
-	cursor.close()
-	return unread_count[0] if unread_count else None
+		feed_query = Outline.objects.filter(
+			parent=outline
+		).values_list('feed', flat=True)
+		post_query = Post.objects.filter(
+			feed__in=feed_query
+		)
+		query = UserPost.objects.filter(
+			user=outline.user,
+			post__in=post_query,
+			read=False
+		)
+	return len(query)
 
-def get_total_unread_count( user ):
-	cursor = connection.cursor()
-	cursor.execute( 'select count(Post.id) ' +
-		'from feedreader_post Post left outer join feedreader_userpost UserPost on ( Post.id = UserPost.post_id and UserPost.user_id = %s )' +
-		'where Post.feed_id in ( select feed_id from feedreader_outline where feed_id is not null and user_id = %s ) ' +
-		' and ( UserPost.read is null or UserPost.read = 0 )', [ user.id, user.id ] )
-	count = cursor.fetchone()
-	cursor.close()
-	return count[0] if count else None
+
+def get_total_unread_count(user):
+	query = UserPost.objects.filter(
+		user=user, read=False
+	)
+	return len(query)
 
 
 def verify_token( username, token ):
