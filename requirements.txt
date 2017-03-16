@@ -1,6 +1,6 @@
-Django<=1.9.99
+Django<=1.10.99
 Pillow
 feedparser
 beautifulsoup4
-PyMySQL
+mysqlclient
 django-mptt

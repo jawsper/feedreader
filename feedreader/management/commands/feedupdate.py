@@ -1,6 +1,4 @@
-
 from django.core.management.base import BaseCommand, CommandError
-from optparse import make_option
 
 from feedreader.functions.feedupdate import FeedUpdater
 
