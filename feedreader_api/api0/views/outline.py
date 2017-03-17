@@ -6,6 +6,7 @@ from feedreader.models import Outline, Post, Feed, UserPost
 from feedreader.functions import get_total_unread_count
 from feedreader.functions.feeds import add_feed
 from feedreader_api.functions import JsonResponseView
+from django.views.generic.base import TemplateView
 
 DEFAULT_SKIP = 0
 DEFAULT_LIMIT = 20
@@ -44,9 +45,17 @@ class GetUnreadCountView(JsonResponseView):
         return dict(success=True, counts=counts, total=total)
 
 
-class GetAllOutlinesView(JsonResponseView):
-    def get_response(self, user, args):
-        return dict(error=True, message='NotImplemented')
+class GetAllOutlinesView(TemplateView):
+    template_name = 'api0/navigation.html'
+    content_type = 'application/json'
+
+    def post(self, *args, **kwargs):
+        return self.get(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['nodes'] = Outline.objects.filter(user=self.request.user)
+        return context
 
 
 class GetAllPostsView(JsonResponseView):

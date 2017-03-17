@@ -309,9 +309,9 @@ $(function()
 
 function load_navigation()
 {
-	api_request( 'outline_get_all_outlines', {}, function( data )
+	api_request('outline_get_all_outlines', {}, function(data)
 	{
-		render_navigation( data.outlines );
+		render_navigation(data.outlines);
 	});
 }
 
@@ -368,9 +368,9 @@ function apply_template( template, data_name, data )
 
 function make_outline( template, outline )
 {
-	var html = $( apply_template( template, 'outline', outline ) );
+	var html = $(apply_template(template, 'outline', outline));
 	html.data('outline', outline);
-	html.addClass( outline.feed_id ? 'feed' : 'folder' );
+	html.addClass(outline.feed_id ? 'feed' : 'folder');
 	if( !outline.folder_opened )
 	{
 		html.addClass( 'folder-closed' );
@@ -385,13 +385,13 @@ function make_outline( template, outline )
 
 function render_navigation( navigation )
 {
-	return;
 	var template = get_template( '#templateNavigationItem' );
 	
 	var main_ul = $( '#outlines' );
 	main_ul.empty();
 	$.each( navigation, function( k, outline )
 	{
+		if(!outline) return;
 		var outline_html = make_outline( template, outline );
 		
 		if( outline.children && outline.children.length > 0 )
@@ -399,6 +399,7 @@ function render_navigation( navigation )
 			var children = $( '<ul>' );
 			$.each( outline.children, function( k, child )
 			{
+				if(!child) return;
 				var child = make_outline( template, child );
 				children.append( child );
 			});
