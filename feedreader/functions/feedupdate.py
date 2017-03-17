@@ -32,7 +32,7 @@ class FeedUpdater:
 		if feed is None and range is None:
 			for feed in Feed.objects.filter(disabled=False):
 				self.update_feed(feed)
-		if feed is None:
+		elif feed is None:
 			import re
 			if re.match('^\d+$', range):
 				self.update_feed(feed=Feed.objects.get(pk=int(range)))
@@ -51,7 +51,14 @@ class FeedUpdater:
 		if self.stdout:
 			self.stdout.write( '{0:03} {1} '.format( feed.id, feed.xmlUrl ), ending='' )
 			self.stdout.flush()
-		data = feedparser.parse(str(feed.xmlUrl), etag=str(feed.lastETag), modified=str(feed.lastPubDate if feed.lastPubDate else feed.lastUpdated))
+		args = dict(
+			etag=str(feed.lastETag),
+			modified=str(feed.lastPubDate if feed.lastPubDate else feed.lastUpdated)
+		)
+		if feed.quirkFixNotXml:
+			args['response_headers'] = {}
+			args['response_headers']['Content-type'] = 'text/xml'
+		data = feedparser.parse(str(feed.xmlUrl), **args)
 		
 		if 'status' in data:
 			if data['status'] >= 400:
@@ -63,7 +70,7 @@ class FeedUpdater:
 					self.stdout.write('304 Not changed')
 				return '304'
 
-		if 'bozo_exception' in data:
+		if data['bozo']:
 			if self.stdout:
 				self.stdout.write( 'Failed: {0}'.format( data['bozo_exception'] ) )
 			return 'Error: {0}'.format( data['bozo_exception'] )
