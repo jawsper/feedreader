@@ -5,7 +5,7 @@ from feedreader.functions.feedupdate import FeedUpdater
 class Command(BaseCommand):
 	def add_arguments(self, parser):
 		parser.add_argument('--debug', action='store_true', dest='debug', default=False, help='Debug')
-		parser.add_argument('range')
+		parser.add_argument('range', nargs='?')
 
 	def handle(self, *args, **options):
 		self.stdout.write('[Feed updater]')
