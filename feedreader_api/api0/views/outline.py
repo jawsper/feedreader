@@ -83,7 +83,7 @@ class GetPostsView(JsonResponseView):
             return dict(success=False, message='Outline does not exist.')
 
         sort_order = 'ASC' if outline.sort_order_asc else 'DESC'
-        order_by = 'post__pubDate' if outline.sort_order_asc else '-post__pubDate'
+        order_by = ('post__pubDate' if outline.sort_order_asc else '-post__pubDate', 'post_id')
         show_only_new = outline.show_only_new
         skip = int(args.get('skip', DEFAULT_SKIP))
         limit = int(args.get('limit', DEFAULT_LIMIT))
@@ -101,7 +101,7 @@ class GetPostsView(JsonResponseView):
             params['post__feed__in'] = Outline.objects.filter(user=user, parent=outline).values_list('feed_id', flat=True)
             # basically: select * from userpost where post_id in (select post_id from feeds where feed_id in (select feed_id from outlines where parent = outline_id))
 
-        posts_queryset = UserPost.objects.filter(**params).select_related('post', 'post__feed').order_by(order_by)[skip:skip+limit]
+        posts_queryset = UserPost.objects.filter(**params).select_related('post', 'post__feed').order_by(*order_by)[skip:skip+limit]
         posts = [post.toJsonDict() for post in posts_queryset]
 
         return dict(
