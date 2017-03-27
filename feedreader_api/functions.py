@@ -1,9 +1,9 @@
 from django.http import JsonResponse
 from django.views.generic.base import View
-from feedreader.functions import SecureDispatchMixIn
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-class JsonResponseView(SecureDispatchMixIn, View):
+class JsonResponseView(LoginRequiredMixin, View):
     def get_response(self, user, args):
         raise NotImplementedError
 

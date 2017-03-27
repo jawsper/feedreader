@@ -5,10 +5,9 @@
 from django.http import HttpResponse, Http404
 from django.conf import settings
 from django.views.generic.base import View, TemplateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from feedreader.models import Feed, ConfigStore, Outline
-
-from feedreader.functions import SecureDispatchMixIn
 
 import urllib.request
 import urllib.error
@@ -16,7 +15,7 @@ import urllib.parse
 import os
 
 
-class IndexView(SecureDispatchMixIn, TemplateView):
+class IndexView(LoginRequiredMixin, TemplateView):
     template_name = 'feedreader/index.html'
 
     def get_context_data(self, **kwargs):
@@ -36,7 +35,7 @@ class OutlineView(IndexView):
         return context
 
 
-class FeedFaviconView(SecureDispatchMixIn, View):
+class FeedFaviconView(LoginRequiredMixin, View):
     def get(self, request, feed_id):
         if getattr(settings, 'LOAD_FAVICON', True):
             try:

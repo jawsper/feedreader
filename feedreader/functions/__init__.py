@@ -17,11 +17,6 @@ class IsNull(Aggregate):
 	function = 'ISNULL'
 	name = 'IsNull'
 
-class SecureDispatchMixIn:
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
-
 
 class HttpJsonResponse( HttpResponse ):
 	def __init__( self, data = None, **kwargs ):
