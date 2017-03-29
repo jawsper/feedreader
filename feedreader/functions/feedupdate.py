@@ -24,9 +24,16 @@ class UTC(datetime.tzinfo):
 		return datetime.timedelta(0)
 
 class FeedUpdater:
-	def __init__(self, stdout=None):
+	def __init__(self, stdout=None, **options):
 		self.stdout = stdout
 		self.imported = 0
+		self.options = options
+
+	def run(self):
+		if 'range' in self.options:
+			self.update_feed(range=self.options['range'])
+		else:
+			self.update_feed()
 
 	def update_feed( self, feed=None, range=None):
 		if feed is None and range is None:
@@ -59,7 +66,7 @@ class FeedUpdater:
 			args['response_headers'] = {}
 			args['response_headers']['Content-type'] = 'text/xml'
 		data = feedparser.parse(str(feed.xmlUrl), **args)
-		
+
 		if 'status' in data:
 			if data['status'] >= 400:
 				if self.stdout:
@@ -68,7 +75,8 @@ class FeedUpdater:
 			elif data.status == 304:
 				if self.stdout:
 					self.stdout.write('304 Not changed')
-				return '304'
+				if not self.options.get('force', False):
+					return '304'
 
 		if data['bozo']:
 			if self.stdout:
@@ -83,13 +91,13 @@ class FeedUpdater:
 			if feed.lastETag != data.etag:
 				feed.lastETag = data.etag
 				feed.save()
-		
+
 		if self.stdout:
 			self.stdout.write( 'ok!' )
-		
+
 		changed = True
 		last_updated = None
-		
+
 		if 'feed' in data and 'updated_parsed' in data['feed']:
 			last_updated = data['feed']['updated_parsed']
 		elif 'feed' in data and 'published_parsed' in data['feed']:
@@ -98,30 +106,31 @@ class FeedUpdater:
 			last_updated = data['updated_parsed']
 		elif 'published_parsed' in data:
 			last_updated = data['published_parsed']
-		
+
 		if feed.lastPubDate and last_updated and compare_datetime_to_struct_time( feed.lastPubDate, last_updated ):
 			changed = False
 		elif last_updated:
 			feed.lastPubDate = time.strftime( MYSQL_DATETIME_FORMAT, last_updated )
-		
+
 		if not changed:
 			if self.stdout:
 				self.stdout.write( ' - No changes detected' )
-			return None
-		
+			if not self.options.get('force', False):
+				return None
+
 		if self.stdout:
 			self.stdout.write( ' - scanning {0} posts, please have patience...'.format( len( data['entries'] ) ) )
-		
+
 		imported = 0
-		
+
 		for entry in data['entries']:
 			insert_data = {}
 			if 'title' in entry:
 				insert_data['title'] = entry['title']
-			
+
 			if 'author_detail' in entry and 'name' in entry['author_detail']:
 				insert_data['author'] = entry['author_detail']['name']
-			
+
 			if 'links' in entry:
 				if len( entry['links'] ) == 0:
 					pass
@@ -132,7 +141,7 @@ class FeedUpdater:
 						if link['rel'] == 'self':
 							insert_data['link'] = link['href']
 							break
-						
+
 			if not 'link' in insert_data:
 				if 'link' in entry:
 					insert_data['link'] = entry['link']
@@ -140,7 +149,7 @@ class FeedUpdater:
 					if self.stdout:
 						self.stdout.write( 'Can\'t determine a link' )
 					continue
-			
+
 			if 'content' in entry:
 				insert_data['content'] = entry['content'][0]['value']
 			if 'description' in entry:
@@ -193,7 +202,7 @@ class FeedUpdater:
 					if self.stdout:
 						self.stdout.write( str( entry ) )
 					raise CommandError( 'Invalid post' )
-		
+
 		if self.stdout:
 			self.stdout.write( ' - Inserted {0} new posts'.format( imported ) )
 		self.imported += imported
