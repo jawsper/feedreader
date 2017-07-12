@@ -45,14 +45,14 @@ def get_unread_count(user, outline):
 			post__in=post_query,
 			read=False
 		)
-	return len(query)
+	return query.count()
 
 
 def get_total_unread_count(user):
 	query = UserPost.objects.filter(
 		user=user, read=False
 	)
-	return len(query)
+	return query.count()
 
 
 def verify_token( username, token ):
