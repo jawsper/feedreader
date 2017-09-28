@@ -63,7 +63,8 @@ class Post(models.Model, DisplayTitleMixIn):
 		for iframe in soup('iframe'):
 			a = soup.new_tag('a')
 			a.string = 'iframe'
-			a['href'] = iframe['src']
+			if 'src' in iframe:
+				a['href'] = iframe['src']
 			iframe.replace_with(a)
 		return str(soup)
 		
