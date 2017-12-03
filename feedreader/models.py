@@ -21,18 +21,18 @@ class Feed(models.Model, DisplayTitleMixIn):
 	lastETag	= models.CharField(max_length=100, null=True, blank=True)
 
 	quirkFixNotXml = models.BooleanField(default=False)
-	
+
 	disabled	= models.BooleanField(default=False)
-	
+
 	def __str__(self):
 		return self.display_title
 
 
 class Outline(MPTTModel, DisplayTitleMixIn):
-	user = models.ForeignKey(User)
-	parent = TreeForeignKey('self', null=True, blank=True, related_name='children', db_index=True)
+	user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='outlines')
+	parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children', db_index=True)
 	title = models.CharField(max_length=500, db_index=True)
-	feed = models.ForeignKey(Feed, null=True, blank=True)
+	feed = models.ForeignKey(Feed, on_delete=models.CASCADE, null=True, blank=True)
 	sort_order_asc = models.BooleanField(default=True)
 	show_only_new = models.BooleanField(default=True)
 	folder_opened = models.BooleanField(default=True)
@@ -43,7 +43,7 @@ class Outline(MPTTModel, DisplayTitleMixIn):
 
 
 class Post(models.Model, DisplayTitleMixIn):
-	feed 				= models.ForeignKey(Feed)
+	feed 				= models.ForeignKey(Feed, on_delete=models.CASCADE)
 	title 				= models.CharField(max_length=1000)
 	link 				= models.CharField(max_length=1000)
 	category 			= models.CharField(max_length=1000, null=True, blank=True)
@@ -67,7 +67,7 @@ class Post(models.Model, DisplayTitleMixIn):
 				a['href'] = iframe['src']
 			iframe.replace_with(a)
 		return str(soup)
-		
+
 	def toJsonDict(self):
 		data = {}
 		for k in ('id', 'link', 'author'):
@@ -83,11 +83,11 @@ class Post(models.Model, DisplayTitleMixIn):
 		return data
 
 class UserPost(models.Model):
-	user 	= models.ForeignKey(User)
-	post 	= models.ForeignKey(Post)
+	user 	= models.ForeignKey(User, on_delete=models.CASCADE)
+	post 	= models.ForeignKey(Post, on_delete=models.CASCADE)
 	starred = models.BooleanField(default=False)
 	read 	= models.BooleanField(default=False, db_index=True)
-	
+
 	class Meta:
 		unique_together = (('user', 'post'))
 
@@ -101,11 +101,11 @@ class UserPost(models.Model):
 
 class ConfigStore(models.Model):
 	key		= models.CharField(max_length=255, primary_key=True)
-	user	= models.ForeignKey(User)
+	user	= models.ForeignKey(User, on_delete=models.CASCADE)
 	value	= models.CharField(max_length=255)
 	class Meta:
 		unique_together = ('key', 'user')
-		
+
 	@staticmethod
 	def getUserConfig(user):
 		config = {}
@@ -117,7 +117,7 @@ from django.utils.timezone import utc
 import datetime
 
 class UserToken(models.Model):
-	user	= models.ForeignKey(User)
+	user	= models.ForeignKey(User, on_delete=models.CASCADE)
 	token	= models.CharField(max_length=255)
 	expire	= models.DateTimeField()
 
