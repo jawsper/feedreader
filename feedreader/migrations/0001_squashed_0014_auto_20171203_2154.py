@@ -11,8 +11,6 @@ import mptt.fields
 
 class Migration(migrations.Migration):
 
-    replaces = [('feedreader', '0001_initial'), ('feedreader', '0002_auto_20141113_2108'), ('feedreader', '0003_feed_lastetag'), ('feedreader', '0004_feed_quirkfixnotxml'), ('feedreader', '0005_auto_20141119_1355'), ('feedreader', '0006_auto_20141119_1516'), ('feedreader', '0007_outline_unread_count'), ('feedreader', '0008_treeoutline'), ('feedreader', '0009_auto_20170315_1638'), ('feedreader', '0010_auto_20170315_1722'), ('feedreader', '0011_auto_20170316_0950'), ('feedreader', '0012_auto_20170316_1413'), ('feedreader', '0013_remove_outline_sort_position'), ('feedreader', '0014_auto_20171203_2154')]
-
     initial = True
 
     dependencies = [
