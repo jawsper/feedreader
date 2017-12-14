@@ -11,19 +11,13 @@ def _find_post_outline(userpost):
     user, post = userpost.user, userpost.post
     return Outline.objects.get(user=user, feed=post.feed)
 
-
-def _update_unread_count_cascade(outline, num):
-    outline.unread_count=F('unread_count') + num
-    outline.save(update_fields=['unread_count'])
-    if outline.parent:
-        _update_unread_count_cascade(outline.parent, num)
-
-
 def _update_unread_count(userpost, num):
     outline = _find_post_outline(userpost)
     if not outline:
         return
-    _update_unread_count_cascade(outline, num)
+    outline.get_ancestors(include_self=True).update(
+        unread_count=F('unread_count') + num
+    )
 
 
 class PostActionView(JsonResponseView):
