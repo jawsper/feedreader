@@ -19,7 +19,7 @@ class IndexView(LoginRequiredMixin, TemplateView):
     template_name = 'feedreader/index.html'
 
     def get_context_data(self, **kwargs):
-        context = super(IndexView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['config'] = ConfigStore.getUserConfig(user=self.request.user)
         context['nodes'] = Outline.objects.filter(user=self.request.user)
         return context
@@ -27,7 +27,7 @@ class IndexView(LoginRequiredMixin, TemplateView):
 
 class OutlineView(IndexView):
     def get_context_data(self, outline_id, **kwargs):
-        context = super(OutlineView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         try:
             context['outline'] = Outline.objects.get(pk=outline_id)
         except Outline.DoesNotExist:
@@ -68,11 +68,7 @@ class ScriptUrls(TemplateView):
     content_type = 'application/javascript'
 
     def get_context_data(self, **kwargs):
-        context = super(ScriptUrls, self).get_context_data(**kwargs)
-        url_dict = {}
-        from django.utils.regex_helper import normalize
+        context = super().get_context_data(**kwargs)
         from feedreader_api.api0 import urls as api_urls
-        for url in api_urls.urlpatterns:
-            url_dict[url.name] = normalize(url.regex.pattern)[0][0]
-        context['urls'] = url_dict
+        context['urls'] = { url.name: url.pattern for url in api_urls.urlpatterns }
         return context

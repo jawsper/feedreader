@@ -1,6 +1,6 @@
-from django.conf.urls import include, url
+from django.urls import include, path
 
 urlpatterns = [
-	url(r'^api/', include('feedreader_api.urls')),
-	url(r'^', include('feedreader_gui.urls'))
+	path('api/', include('feedreader_api.urls')),
+	path('', include('feedreader_gui.urls'))
 ]
