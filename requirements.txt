@@ -1,6 +1,9 @@
-Django<=1.10.99
-Pillow
-feedparser
-beautifulsoup4
-mysqlclient
-django-mptt
+Django==2.0
+Pillow==4.3.0
+feedparser==5.2.1
+beautifulsoup4==4.6.0
+django-mptt==0.9.0
+psycopg2==2.7.3.2
+celery==4.1.0
+django-celery-beat==1.1.0
+
