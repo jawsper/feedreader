@@ -59,8 +59,8 @@ class FeedUpdater:
                 feed.save()
 
     def load_feed( self, feed ):
-        prefix = ' ' * len(f'{feed.id:03}')
-        log_message = f'{feed.id:03} {feed.xmlUrl} '
+        prefix = ' ' * len('{:03}'.format(feed.id))
+        log_message = '{:03} {} '.format(feed.id, feed.xmlUrl)
         logger.info(log_message)
         args = dict(
             etag=str(feed.lastETag),
@@ -73,18 +73,18 @@ class FeedUpdater:
 
         if 'status' in data:
             if data['status'] >= 400:
-                logger.warn(f'{prefix}Failed: status error {data["status"]}')
+                logger.warn('{}Failed: status error {}'.format(prefix, data['status']))
                 return 'Error: {0}'.format( data['status'] )
             elif data.status == 304:
-                logger.info(f'{prefix}304 Not Changed')
+                logger.info('{}304 Not Changed'.format(prefix))
                 if not self.options.get('force', False):
                     return '304'
 
         if data['bozo']:
-            logger.warn(f'{prefix}Failed: {data["bozo_exception"]}')
-            return 'Error: {0}'.format( data['bozo_exception'] )
+            logger.warn('{}Failed: {}'.format(prefix, data["bozo_exception"]))
+            return 'Error: {}'.format( data['bozo_exception'] )
         if not data:
-            logger.warn(f'{prefix}Failed: no data')
+            logger.warn('{}Failed: no data'.format(prefix))
             return 'Error: no data'
 
         if 'etag' in data:
@@ -110,11 +110,11 @@ class FeedUpdater:
             feed.lastPubDate = time.strftime( MYSQL_DATETIME_FORMAT, last_updated )
 
         if not changed:
-            logger.info(f'{prefix}No changes detected')
+            logger.info('{}No changes detected'.format(prefix))
             if not self.options.get('force', False):
                 return None
 
-        logger.info(f'{prefix}scanning {len(data["entries"])} posts, please have patience...')
+        logger.info('{}scanning {} posts, please have patience...'.format(prefix, len(data["entries"])))
 
         imported = 0
 
@@ -141,7 +141,7 @@ class FeedUpdater:
                 if 'link' in entry:
                     insert_data['link'] = entry['link']
                 else:
-                    logger.warn('{prefix}Can\'t find a link.')
+                    logger.warn('{}Can\'t find a link.'.format(prefix))
                     continue
 
             if 'content' in entry:
@@ -152,7 +152,7 @@ class FeedUpdater:
                 try:
                     insert_data['pubDate'] = time.strftime( MYSQL_DATETIME_FORMAT, entry['published_parsed'] )
                 except TypeError:
-                    logger.warn('{prefix}Invalid date: {entry["published_parsed"]}')
+                    logger.warn('{}Invalid date: {}'.format(prefix, entry["published_parsed"]))
                     continue
             elif 'updated_parsed' in entry and entry['updated_parsed']:
                 insert_data['pubDate'] = time.strftime( MYSQL_DATETIME_FORMAT, entry['updated_parsed'] )
@@ -167,7 +167,7 @@ class FeedUpdater:
                 elif 'description' in insert_data:
                     insert_data['guid'] = insert_data['description']
                 else:
-                    logger.warn(f'{prefix} Cannot find a good unique ID {entry} {insert_data}')
+                    logger.warn('{} Cannot find a good unique ID {} {}'.format(prefix, entry, insert_data))
                     raise CommandError( 'See above' )
             if not 'pubDate' in insert_data:
                 insert_data['pubDate'] = datetime.datetime.utcnow().replace(tzinfo=UTC())
@@ -175,7 +175,7 @@ class FeedUpdater:
             try:
                 test = Post.objects.get( guid__exact = insert_data['guid'] )
             except Post.MultipleObjectsReturned:
-                logger.info(f'{prefix}Duplicate post! {insert_data}')
+                logger.info('{}Duplicate post! {}'.format(prefix, insert_data))
             except Post.DoesNotExist:
                 insert_data['feed'] = feed
                 post = Post( **insert_data )
@@ -187,9 +187,9 @@ class FeedUpdater:
                         UserPost( user = outline.user, post = post ).save() # make userposts for all users who have this feed
                     imported += 1
                 except IntegrityError:
-                    logger.warn(f'{prefix}IntegrityError: {entry}')
+                    logger.warn('{}IntegrityError: {}'.format(prefix, entry))
                     raise CommandError( 'Invalid post' )
 
-        logger.info(f'{prefix}Inserted {imported} new posts')
+        logger.info('{}Inserted {} new posts'.format(prefix, imported))
         self.imported += imported
         return 'OK'
