@@ -59,9 +59,8 @@ class FeedUpdater:
                 feed.save()
 
     def load_feed( self, feed ):
-        prefix = ' ' * len('{:03}'.format(feed.id))
-        log_message = '{:03} {} '.format(feed.id, feed.xmlUrl)
-        logger.info(log_message)
+        prefix = '{:03} '.format(feed.id)
+        logger.info('{}{} '.format(prefix, feed.xmlUrl))
         args = dict(
             etag=str(feed.lastETag),
             modified=str(feed.lastPubDate if feed.lastPubDate else feed.lastUpdated)
