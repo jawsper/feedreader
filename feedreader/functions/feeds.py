@@ -4,6 +4,7 @@
 
 from feedreader.models import Feed, Outline
 import feedparser
+from feedreader import tasks
 
 def load_feed( feedXmlUrl ):
 	data = feedparser.parse( feedXmlUrl )
@@ -30,4 +31,5 @@ def add_feed( user, feedXmlUrl ):
 	except Outline.DoesNotExist:
 		outline = Outline( user = user, feed = feed, title = feed.title )
 		outline.save()
+	tasks.update_feed.delay(feed.pk)
 	return { 'outline_id': outline.id }
