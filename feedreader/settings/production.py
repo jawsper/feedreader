@@ -30,5 +30,5 @@ MEDIA_URL = os.environ.get('MEDIA_URL', "/media/")
 
 RAVEN_CONFIG = {
     'dsn': os.environ.get('SENTRY_DSN'),
-    'release': raven.fetch_git_sha(PROJECT_PATH),
+    'release': raven.fetch_git_sha(BASE_DIR),
 }
