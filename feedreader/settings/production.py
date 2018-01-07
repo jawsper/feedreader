@@ -32,3 +32,5 @@ RAVEN_CONFIG = {
     'dsn': os.environ.get('SENTRY_DSN'),
     'release': raven.fetch_git_sha(BASE_DIR),
 }
+
+SESSION_COOKIE_SECURE = True
