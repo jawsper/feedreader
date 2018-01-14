@@ -3,7 +3,7 @@
 # Date: 2013-06-24
 
 from feedreader.models import Outline, Post, Feed, UserPost
-from feedreader.functions import get_total_unread_count
+from feedreader.functions import get_total_unread_count, base36_decode
 from feedreader.functions.feeds import add_feed
 from feedreader_api.functions import JsonResponseView
 from django.views.generic.base import TemplateView
@@ -90,17 +90,12 @@ class GetPostsView(JsonResponseView):
         limit = int(args.get('limit', DEFAULT_LIMIT))
 
         params = {
-            'user': user
+            'user': user,
+            'post__feed__in': outline.get_descendants(include_self=True).values_list('feed_id', flat=True)
         }
 
         if show_only_new:
             params['read'] = False
-
-        if outline.feed:
-            params['post__feed'] = outline.feed
-        else:
-            params['post__feed__in'] = Outline.objects.filter(user=user, parent=outline).values_list('feed_id', flat=True)
-            # basically: select * from userpost where post_id in (select post_id from feeds where feed_id in (select feed_id from outlines where parent = outline_id))
 
         posts_queryset = UserPost.objects.filter(**params).select_related('post', 'post__feed').order_by(*order_by)[skip:skip+limit]
         posts = [post.toJsonDict() for post in posts_queryset]
