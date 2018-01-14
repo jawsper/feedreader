@@ -3,7 +3,7 @@
 # Date: 2013-06-24
 
 from feedreader.models import Outline, Post, Feed, UserPost
-from feedreader.functions import get_total_unread_count, base36_decode
+from feedreader.functions import get_total_unread_count
 from feedreader.functions.feeds import add_feed
 from feedreader_api.functions import JsonResponseView
 from django.views.generic.base import TemplateView
