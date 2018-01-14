@@ -83,21 +83,24 @@ class GetPostsView(JsonResponseView):
         except Outline.DoesNotExist:
             return dict(success=False, message='Outline does not exist.')
 
-        sort_order = 'ASC' if outline.sort_order_asc else 'DESC'
-        order_by = ('post__pubDate' if outline.sort_order_asc else '-post__pubDate', 'post_id')
-        show_only_new = outline.show_only_new
-        skip = int(args.get('skip', DEFAULT_SKIP))
-        limit = int(args.get('limit', DEFAULT_LIMIT))
-
         params = {
             'user': user,
             'post__feed__in': outline.get_descendants(include_self=True).values_list('feed_id', flat=True)
         }
 
-        if show_only_new:
+        if outline.show_only_new:
             params['read'] = False
 
-        posts_queryset = UserPost.objects.filter(**params).select_related('post', 'post__feed').order_by(*order_by)[skip:skip+limit]
+        posts_queryset = UserPost.objects.filter(**params).select_related('post', 'post__feed').order_by('post__pubDate', 'post_id')
+
+        sort_order = 'ASC' if outline.sort_order_asc else 'DESC'
+        if not outline.sort_order_asc:
+            posts_queryset = posts_queryset.reverse()
+
+        skip = int(args.get('skip', DEFAULT_SKIP))
+        limit = int(args.get('limit', DEFAULT_LIMIT))
+        posts_queryset = posts_queryset[skip:skip+limit]
+
         posts = [post.toJsonDict() for post in posts_queryset]
 
         return dict(
@@ -105,7 +108,7 @@ class GetPostsView(JsonResponseView):
             title=outline.display_title,
             htmlUrl=outline.feed.htmlUrl if outline.feed else None,
             is_feed=bool(outline.feed),
-            show_only_new=show_only_new,
+            show_only_new=outline.show_only_new,
             sort_order=sort_order,
             skip=skip,
             limit=limit,
