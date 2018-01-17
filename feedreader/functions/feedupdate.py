@@ -81,7 +81,6 @@ class FeedUpdater:
 
         if data['bozo']:
             logger.warn('{}Failed: {}'.format(prefix, data["bozo_exception"]))
-            return 'Error: {}'.format( data['bozo_exception'] )
         if not data:
             logger.warn('{}Failed: no data'.format(prefix))
             return 'Error: no data'
