@@ -17,3 +17,13 @@ class OutlineAdmin(DraggableMPTTAdmin):
 @admin.register(Feed)
 class FeedAdmin(admin.ModelAdmin):
     list_display = ('title', 'lastUpdated', 'lastStatus', 'disabled', 'quirkFixNotXml')
+
+    actions = ['mark_as_enabled', 'mark_as_disabled']
+
+    def mark_as_enabled(self, request, queryset):
+        queryset.update(disabled=False)
+    mark_as_enabled.short_description = 'Enable selected feeds'
+
+    def mark_as_disabled(self, request, queryset):
+        queryset.update(disabled=True)
+    mark_as_disabled.short_description = 'Disable selected feeds'
