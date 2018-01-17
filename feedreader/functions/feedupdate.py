@@ -67,7 +67,7 @@ class FeedUpdater:
         )
         if feed.quirkFixNotXml:
             args['response_headers'] = {}
-            args['response_headers']['Content-type'] = 'text/xml'
+            args['response_headers']['Content-type'] = 'application/xml'
         data = feedparser.parse(str(feed.xmlUrl), **args)
 
         if 'status' in data:
