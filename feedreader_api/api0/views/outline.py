@@ -125,7 +125,10 @@ class GetPostsView(JsonResponseView):
 
         posts = [post.toJsonDict() for post in posts_queryset]
 
-        next_page = b64encode(f"{posts[-1]['pubDate']};{posts[-1]['id']}".encode('utf-8')).decode('utf-8')
+        if len(posts):
+            next_page = b64encode(f"{posts[-1]['pubDate']};{posts[-1]['id']}".encode('utf-8')).decode('utf-8')
+        else:
+            next_page = None
 
         return dict(
             success=True,
