@@ -9,6 +9,8 @@ from feedreader_api.functions import JsonResponseView
 from django.views.generic.base import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+from base64 import b64encode, b64decode
+
 DEFAULT_SKIP = 0
 DEFAULT_LIMIT = 20
 
@@ -83,6 +85,8 @@ class GetPostsView(JsonResponseView):
         except Outline.DoesNotExist:
             return dict(success=False, message='Outline does not exist.')
 
+        after = args.get('after', None)
+
         params = {
             'user': user,
             'post__feed__in': outline.get_descendants(include_self=True).values_list('feed_id', flat=True)
@@ -91,7 +95,21 @@ class GetPostsView(JsonResponseView):
         if outline.show_only_new:
             params['read'] = False
 
+        if after is not None:
+            # option 1: when ordering is done by post__pubDate, post_id
+            pubDate_operator = 'gte' if outline.sort_order_asc else 'lte'
+            operator = 'lt' if outline.sort_order_asc else 'gt'
+            pubDate, post_id = b64decode(after.encode('utf-8')).decode('utf-8').split(';')
+            params[f'post__pubDate__{pubDate_operator}'] = pubDate
+            params[f'post__id__{operator}'] = post_id
+            # option 2: this works when only sorting by post_id
+            # operator = 'gt' if outline.sort_order_asc else 'lt'
+            # params[f'post__id__{operator}'] = after
+
+        # option 1
         posts_queryset = UserPost.objects.filter(**params).select_related('post', 'post__feed').order_by('post__pubDate', 'post_id')
+        # option 2
+        # posts_queryset = UserPost.objects.filter(**params).select_related('post', 'post__feed').order_by('post_id')
 
         sort_order = 'ASC' if outline.sort_order_asc else 'DESC'
         if not outline.sort_order_asc:
@@ -99,9 +117,15 @@ class GetPostsView(JsonResponseView):
 
         skip = int(args.get('skip', DEFAULT_SKIP))
         limit = int(args.get('limit', DEFAULT_LIMIT))
-        posts_queryset = posts_queryset[skip:skip+limit]
+
+        if after is not None:
+            posts_queryset = posts_queryset[:limit]
+        else:
+            posts_queryset = posts_queryset[skip:skip+limit]
 
         posts = [post.toJsonDict() for post in posts_queryset]
+
+        next_page = b64encode(f"{posts[-1]['pubDate']};{posts[-1]['id']}".encode('utf-8')).decode('utf-8')
 
         return dict(
             success=True,
@@ -113,7 +137,8 @@ class GetPostsView(JsonResponseView):
             skip=skip,
             limit=limit,
             posts=posts,
-            unread_count=outline.unread_count
+            unread_count=outline.unread_count,
+            next_page=next_page,
         )
 
 
