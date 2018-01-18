@@ -16,7 +16,7 @@ ADMINS = ((
 
 DATABASES = {
    'default': {
-       'ENGINE': 'django.db.backends.postgresql_psycopg2',
+       'ENGINE': 'django.db.backends.postgresql',
        'NAME': os.environ.get('DB_NAME', ''),
        'USER': os.environ.get('DB_USER', '')
    }
@@ -27,6 +27,8 @@ STATIC_URL = os.environ.get('STATIC_URL', STATIC_URL)
 
 MEDIA_ROOT = os.path.join(BASE_DIR, os.environ.get('MEDIA_ROOT', "media/"))
 MEDIA_URL = os.environ.get('MEDIA_URL', "/media/")
+
+INSTALLED_APPS += ('raven.contrib.django.raven_compat',)
 
 RAVEN_CONFIG = {
     'dsn': os.environ.get('SENTRY_DSN'),
