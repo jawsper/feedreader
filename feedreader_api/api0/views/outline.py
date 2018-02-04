@@ -78,6 +78,7 @@ class GetStarredPostsView(JsonResponseView):
 
 
 class GetPostsView(JsonResponseView):
+    OLD_SORTING = False
     def get_response(self, user, args):
         try:
             outline_id = args.get('outline', None)
@@ -96,20 +97,24 @@ class GetPostsView(JsonResponseView):
             params['read'] = False
 
         if after is not None:
-            # option 1: when ordering is done by post__pubDate, post_id
-            pubDate_operator = 'gte' if outline.sort_order_asc else 'lte'
-            operator = 'lt' if outline.sort_order_asc else 'gt'
-            pubDate, post_id = b64decode(after.encode('utf-8')).decode('utf-8').split(';')
-            params[f'post__pubDate__{pubDate_operator}'] = pubDate
-            params[f'post__id__{operator}'] = post_id
-            # option 2: this works when only sorting by post_id
-            # operator = 'gt' if outline.sort_order_asc else 'lt'
-            # params[f'post__id__{operator}'] = after
+            if self.OLD_SORTING:
+                # option 1: when ordering is done by post__pubDate, post_id
+                pubDate_operator = 'gte' if outline.sort_order_asc else 'lte'
+                operator = 'lt' if outline.sort_order_asc else 'gt'
+                pubDate, post_id = b64decode(after.encode('utf-8')).decode('utf-8').split(';')
+                params[f'post__pubDate__{pubDate_operator}'] = pubDate
+                params[f'post__id__{operator}'] = post_id
+            else:
+                # option 2: this works when only sorting by post_id
+                operator = 'gt' if outline.sort_order_asc else 'lt'
+                params[f'post__id__{operator}'] = after
 
         # option 1
-        posts_queryset = UserPost.objects.filter(**params).select_related('post', 'post__feed').order_by('post__pubDate', 'post_id')
+        if self.OLD_SORTING:
+            posts_queryset = UserPost.objects.filter(**params).select_related('post', 'post__feed').order_by('post__pubDate', 'post_id')
         # option 2
-        # posts_queryset = UserPost.objects.filter(**params).select_related('post', 'post__feed').order_by('post_id')
+        else:
+            posts_queryset = UserPost.objects.filter(**params).select_related('post', 'post__feed').order_by('post_id')
 
         sort_order = 'ASC' if outline.sort_order_asc else 'DESC'
         if not outline.sort_order_asc:
@@ -126,7 +131,10 @@ class GetPostsView(JsonResponseView):
         posts = [post.toJsonDict() for post in posts_queryset]
 
         if len(posts):
-            next_page = b64encode(f"{posts[-1]['pubDate']};{posts[-1]['id']}".encode('utf-8')).decode('utf-8')
+            if self.OLD_SORTING:
+                next_page = b64encode(f"{posts[-1]['pubDate']};{posts[-1]['id']}".encode('utf-8')).decode('utf-8')
+            else:
+                next_page = posts[-1]['id']
         else:
             next_page = None
 
