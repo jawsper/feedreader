@@ -1,4 +1,4 @@
-Django==2.0
+Django==2.0.2
 Pillow==4.3.0
 feedparser==5.2.1
 beautifulsoup4==4.6.0
