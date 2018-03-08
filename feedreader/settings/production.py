@@ -32,7 +32,7 @@ INSTALLED_APPS += ('raven.contrib.django.raven_compat',)
 
 RAVEN_CONFIG = {
     'dsn': os.environ.get('SENTRY_DSN'),
-    'release': raven.fetch_git_sha(BASE_DIR),
+    'release': raven.fetch_package_version('feedreader'),
 }
 
 SESSION_COOKIE_SECURE = True
