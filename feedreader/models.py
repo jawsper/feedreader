@@ -47,6 +47,7 @@ class Post(models.Model, DisplayTitleMixIn):
 	title 				= models.CharField(max_length=1000)
 	link 				= models.CharField(max_length=1000)
 	category 			= models.CharField(max_length=1000, null=True, blank=True)
+	inserted_date       = models.DateTimeField(auto_now_add=True)
 	pubDate 			= models.DateTimeField()
 	guid 				= models.CharField(max_length=250, db_index=True)
 	guid_is_permalink 	= models.BooleanField(default=False)
