@@ -2,6 +2,7 @@ from .base import *
 
 import os
 import raven
+import pkg_resources
 
 DEBUG = False
 
@@ -30,9 +31,14 @@ MEDIA_URL = os.environ.get('MEDIA_URL', "/media/")
 
 INSTALLED_APPS += ('raven.contrib.django.raven_compat',)
 
+try:
+    release = raven.fetch_package_version('feedreader')
+except pkg_resources.DistributionNotFound:
+    release = raven.fetch_git_sha(BASE_DIR)
+
 RAVEN_CONFIG = {
     'dsn': os.environ.get('SENTRY_DSN'),
-    'release': raven.fetch_package_version('feedreader'),
+    'release': release,
 }
 
 SESSION_COOKIE_SECURE = True
