@@ -1,0 +1,2 @@
+recursive-include feedreader_gui/static *
+recursive-include feedreader_gui/templates *
