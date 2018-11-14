@@ -9,7 +9,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = [os.environ.get('DJANGO_ALLOWED_HOST')]
 
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = open('/var/run/secrets/secret_key', 'rt').read()
 
 ADMINS = ((
     os.environ.get('ADMIN_EMAIL_NAME', ''),
