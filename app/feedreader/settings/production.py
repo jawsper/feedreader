@@ -1,14 +1,15 @@
 from .base import *
 
 import os
-import raven
 import pkg_resources
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 DEBUG = False
 
 ALLOWED_HOSTS = [os.environ.get('DJANGO_ALLOWED_HOST')]
 
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 ADMINS = ((
     os.environ.get('ADMIN_EMAIL_NAME', ''),
@@ -16,30 +17,26 @@ ADMINS = ((
 ),)
 
 DATABASES = {
-   'default': {
-       'ENGINE': 'django.db.backends.postgresql',
-       'NAME': os.environ.get('DB_NAME', ''),
-       'USER': os.environ.get('DB_USER', '')
-   }
+  'default': {
+    'ENGINE': os.getenv('SQL_ENGINE', 'django.db.backends.sqlite3'),
+    'NAME': os.getenv('SQL_DATABASE', os.path.join(BASE_DIR, 'db.sqlite3')),
+    'USER': os.getenv('SQL_USER', 'user'),
+    'PASSWORD': os.getenv('SQL_PASSWORD', 'password'),
+    'HOST': os.getenv('SQL_HOST', 'localhost'),
+    'PORT': os.getenv('SQL_PORT', '5432'),
+  }
 }
 
 STATIC_ROOT = os.path.join(BASE_DIR, os.environ.get('STATIC_ROOT', "static/"))
 STATIC_URL = os.environ.get('STATIC_URL', STATIC_URL)
 
 MEDIA_ROOT = os.path.join(BASE_DIR, os.environ.get('MEDIA_ROOT', "media/"))
-MEDIA_URL = os.environ.get('MEDIA_URL', "/media/")
+MEDIA_URL = os.environ.get('MEDIA_URL', MEDIA_URL)
 
-INSTALLED_APPS += ('raven.contrib.django.raven_compat',)
-
-try:
-    release = raven.fetch_package_version('feedreader')
-except pkg_resources.DistributionNotFound:
-    release = raven.fetch_git_sha(BASE_DIR)
-
-RAVEN_CONFIG = {
-    'dsn': os.environ.get('SENTRY_DSN'),
-    'release': release,
-}
+sentry_sdk.init(
+  os.environ.get('SENTRY_DSN'),
+  integrations=[DjangoIntegration()]
+)
 
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
