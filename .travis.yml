@@ -8,4 +8,4 @@ install:
 env:
   - DJANGO_SETTINGS_MODULE=feedreader.settings.test
 script:
-  - 'python app/manage.py test feedreader'
+  - 'python manage.py test feedreader'
