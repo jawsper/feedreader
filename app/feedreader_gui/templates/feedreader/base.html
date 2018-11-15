@@ -1,3 +1,4 @@
+{% load app_version %}
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
@@ -57,6 +58,7 @@
 		{% block content %}{% endblock content %}
 	</div>
 </div>
+<div id="version" class="footer row">Feedreader v{% app_version %}</div>
 <div id="debug" class="row scroll-y"></div>
 </body>
 </html>
