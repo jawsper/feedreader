@@ -5,3 +5,7 @@ install:
   - 'pip install pipenv'
   - 'cd app'
   - 'pipenv sync'
+env:
+  - DJANGO_SETTINGS_MODULE=feedreader.settings.test
+script:
+  - 'python app/manage.py test feedreader'
