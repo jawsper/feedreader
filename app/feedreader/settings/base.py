@@ -54,6 +54,7 @@ ROOT_URLCONF = 'feedreader.urls'
 
 WSGI_APPLICATION = 'feedreader.wsgi.application'
 
+LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'index'
 
 # Static files (CSS, JavaScript, Images)
