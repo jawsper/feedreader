@@ -3,7 +3,7 @@
 
 update: insecure
 requirements:
-  - app/Pipfile
-    update: insecure
-  - app/Pipfile.lock
-    update: insecure
+  - app/Pipfile:
+      update: insecure
+  - app/Pipfile.lock:
+      update: insecure
