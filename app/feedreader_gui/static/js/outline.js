@@ -144,7 +144,7 @@ function count_visible_unread_posts()
 	return count;
 }
 
-function load_outline( a_outline_id, forced_refresh )
+var load_outline = _.debounce(function( a_outline_id, forced_refresh )
 {
 	if( !a_outline_id ) return;
 
@@ -177,7 +177,7 @@ function load_outline( a_outline_id, forced_refresh )
 			$('#load_more_posts').show();
 		}
 	});
-}
+}, 500, { leading: true });
 
 
 function mark_all_as_read( a_outline_id )
@@ -189,7 +189,7 @@ function mark_all_as_read( a_outline_id )
 	});
 }
 
-function load_more_posts( a_outline_id, on_success, on_failure )
+var load_more_posts = _.debounce(function( a_outline_id, on_success, on_failure )
 {
 	if( !a_outline_id ) return;
 
@@ -220,7 +220,7 @@ function load_more_posts( a_outline_id, on_success, on_failure )
 			$('#load_more_posts').show();
 		}
 	});
-}
+}, 500, { leading: true });
 
 /* post functions */
 

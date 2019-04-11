@@ -131,7 +131,7 @@ function show_result(data)
 	$('#result').stop(true, true).fadeIn().delay(5000).fadeOut();
 }
 
-function get_unread_counts( outline_id )
+var get_unread_counts = _.debounce(function( outline_id )
 {
 	api_request( 'get_unread', { 'outline_id': outline_id }, function( data )
 	{
@@ -140,7 +140,7 @@ function get_unread_counts( outline_id )
 		$.each( data.counts, set_unread_count );
 		set_outline_unread_count(data.counts[''+outline_id]);
 	});
-}
+}, 500, { trailing: true });
 
 function set_unread_count( outline_id, unread_count )
 {
