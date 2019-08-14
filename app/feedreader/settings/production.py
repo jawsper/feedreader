@@ -6,6 +6,7 @@ import os
 import pkg_resources
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.celery import CeleryIntegration
 
 DEBUG = False
 
@@ -37,7 +38,7 @@ MEDIA_URL = os.environ.get('MEDIA_URL', MEDIA_URL)
 
 sentry_sdk.init(
   os.environ.get('SENTRY_DSN'),
-  integrations=[DjangoIntegration()],
+  integrations=[DjangoIntegration(), CeleryIntegration()],
   release=f'feedreader@{__version__}'
 )
 
