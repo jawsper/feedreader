@@ -105,7 +105,5 @@ LOAD_FAVICON = True
 REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
 REDIS_PORT = int(os.environ.get('REDIS_PORT', 6379))
 
-CELERY = {
-    'broker_url': f'redis://{REDIS_HOST}:{REDIS_PORT}/0',
-    'beat_scheduler': 'django_celery_beat.schedulers:DatabaseScheduler',
-}
+CELERY_BROKER_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/0'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'

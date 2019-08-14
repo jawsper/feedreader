@@ -4,10 +4,8 @@ from celery.schedules import crontab
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'feedreader.settings.develop')
 
-from django.conf import settings
-
 app = Celery('feedreader')
-app.config_from_object(settings.CELERY)
+app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
 @app.task
