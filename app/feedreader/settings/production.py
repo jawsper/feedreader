@@ -1,5 +1,7 @@
 from .base import *
 
+from feedreader import __version__
+
 import os
 import pkg_resources
 import sentry_sdk
@@ -35,7 +37,8 @@ MEDIA_URL = os.environ.get('MEDIA_URL', MEDIA_URL)
 
 sentry_sdk.init(
   os.environ.get('SENTRY_DSN'),
-  integrations=[DjangoIntegration()]
+  integrations=[DjangoIntegration()],
+  release=f'feedreader@{__version__}'
 )
 
 SESSION_COOKIE_SECURE = True
