@@ -1,4 +1,5 @@
 from celery import shared_task
+import asyncio
 
 from feedreader.functions.feedupdate import FeedUpdater
 from feedreader.models import Outline, Feed
@@ -11,7 +12,7 @@ logger = logging.getLogger(__name__)
 def update():
     logger.info('Starting feedupdate')
     updater = FeedUpdater()
-    updater.run()
+    asyncio.run(updater.run())
     logger.info('Feedupdate completed, {} feeds updated'.format(updater.imported))
 
     logger.info('Starting update unread count')
@@ -31,4 +32,4 @@ def update_feed(feed_id):
     except Feed.DoesNotExist:
         return
     updater = FeedUpdater()
-    updater.update_feed(feed)
+    asyncio.run(updater.update_feed(feed))

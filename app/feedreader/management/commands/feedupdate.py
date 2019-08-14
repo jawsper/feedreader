@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 
 from feedreader.functions.feedupdate import FeedUpdater
+import asyncio
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
@@ -13,6 +14,6 @@ class Command(BaseCommand):
         self.debug = options['debug']
 
         updater = FeedUpdater(self.stdout, **options)
-        updater.run()
+        asyncio.run(updater.run())
 
         self.stdout.write('Done! Total posts imported: {0}'.format(updater.imported))

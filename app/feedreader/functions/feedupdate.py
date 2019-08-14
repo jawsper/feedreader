@@ -1,9 +1,15 @@
 from django.db import IntegrityError
 
+from feedreader import __version__
 from feedreader.models import Feed, Post, Outline, UserPost
 
 import feedparser
 import time
+import asyncio
+import aiohttp
+from time import mktime
+from wsgiref.handlers import format_date_time
+import re
 
 import datetime
 
@@ -32,52 +38,74 @@ class FeedUpdater:
         self.stdout = stdout
         self.imported = 0
         self.options = options
+        self.session = None
 
-    def run(self):
-        if 'range' in self.options:
-            self.update_feed(range=self.options['range'])
+    def get_session(self):
+        if not self.session:
+            self.session = aiohttp.ClientSession(headers={
+                'A-IM': 'feed', # RFC 3229 support
+                'User-Agent': f'feedreader/{__version__}+https://github.com/jawsper/feedreader'
+            })
+        return self.session
+
+    async def run(self):
+        range_ = self.options.get('range', None)
+        qs = None
+        if range_:
+            if re.match(r'^\d+$', range_):
+                qs = Feed.objects.filter(pk=int(range_))
+            else:
+                m = re.match(r'^(\d+),$', range_)
+                if m:
+                    qs = Feed.objects.filter(id__gte=int(m.group(1)))
         else:
-            self.update_feed()
+            qs = Feed.objects.filter(disabled=False)
+        if qs:
+            async with self.get_session() as self.session:
+                await asyncio.gather(*(self._update_feed(feed) for feed in qs))
 
-    def update_feed( self, feed=None, range=None):
-        if feed is None and range is None:
-            for feed in Feed.objects.filter(disabled=False):
-                self.update_feed(feed)
-        elif feed is None:
-            import re
-            if re.match('^\d+$', range):
-                self.update_feed(feed=Feed.objects.get(pk=int(range)))
-            m = re.match('^(\d+),$', range)
-            if m:
-                for feed in Feed.objects.filter(id__gte=int(m.groups(1)[0])):
-                    self.update_feed(feed=feed)
-        else:
-            result = self.load_feed(feed)
-            if result:
-                feed.lastUpdated = datetime.datetime.utcnow().replace( tzinfo = UTC() )
-                feed.lastStatus = result
-                feed.save()
+    async def update_feed(self, feed):
+        async with self.get_session() as self.session:
+            await self._update_feed(feed=feed)
 
-    def load_feed( self, feed ):
-        prefix = '{:03} '.format(feed.id)
-        logger.info('{}{} '.format(prefix, feed.xmlUrl))
-        args = dict(
-            etag=str(feed.lastETag),
-            modified=str(feed.lastPubDate if feed.lastPubDate else feed.lastUpdated)
-        )
-        if feed.quirkFixNotXml:
-            args['response_headers'] = {}
-            args['response_headers']['Content-type'] = 'application/xml'
-        data = feedparser.parse(str(feed.xmlUrl), **args)
+    async def _update_feed(self, feed):
+        result = await self.load_feed(feed=feed)
+        if result:
+            feed.lastUpdated = datetime.datetime.utcnow().replace( tzinfo = UTC() )
+            feed.lastStatus = result
+            feed.save()
 
-        if 'status' in data:
-            if data['status'] >= 400:
-                logger.warn('{}Failed: status error {}'.format(prefix, data['status']))
-                return 'Error: {0}'.format( data['status'] )
-            elif data.status == 304:
-                logger.info('{}304 Not Changed'.format(prefix))
-                if not self.options.get('force', False):
-                    return '304'
+    async def download_feed(self, feed):
+        try:
+            headers = {}
+            if feed.lastETag:
+                headers['If-None-Match'] = feed.lastETag
+            modified = feed.lastPubDate if feed.lastPubDate else feed.lastUpdated
+            if modified:
+                modified = mktime(modified.timetuple())
+                headers['If-Modified-Since'] = format_date_time(modified)
+            async with self.session.get(feed.xmlUrl, headers=headers) as response:
+                return (await response.text()), response
+        except aiohttp.client_exceptions.ClientConnectorError as e:
+            print(f'{feed.id:03} | error | {e}')
+            return None, None
+
+    async def load_feed(self, feed):
+        prefix = f'[{feed.id:03}] '
+        logger.info(f'{prefix}{feed.xmlUrl}')
+        raw_data, response = await self.download_feed(feed=feed)
+        if not response:
+            return None
+
+        if response.status >= 400:
+            logger.warn(f'{prefix}Failed: status error {response.status}')
+            return f'Error: {response.status}'
+        elif response.status == 304:
+            logger.info(f'{prefix}304 Not Changed')
+            if not self.options.get('force', False):
+                return '304'
+
+        data = feedparser.parse(raw_data)
 
         if data['bozo']:
             logger.warn('{}Failed: {}'.format(prefix, data["bozo_exception"]))
@@ -85,9 +113,9 @@ class FeedUpdater:
             logger.warn('{}Failed: no data'.format(prefix))
             return 'Error: no data'
 
-        if 'etag' in data:
-            if feed.lastETag != data.etag:
-                feed.lastETag = data.etag
+        if response.headers.get('etag'):
+            if feed.lastETag != response.headers.get('etag'):
+                feed.lastETag = response.headers.get('etag')
                 feed.save()
 
         changed = True
@@ -102,10 +130,12 @@ class FeedUpdater:
         elif 'published_parsed' in data:
             last_updated = data['published_parsed']
 
+        # TODO: improve date comparison...
         if feed.lastPubDate and last_updated and compare_datetime_to_struct_time( feed.lastPubDate, last_updated ):
             changed = False
         elif last_updated:
             feed.lastPubDate = time.strftime( MYSQL_DATETIME_FORMAT, last_updated )
+            feed.save()
 
         if not changed:
             logger.info('{}No changes detected'.format(prefix))
