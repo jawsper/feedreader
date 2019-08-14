@@ -16,6 +16,7 @@ psycopg2 = "~=2.8"
 pillow = "~=6.1"
 gunicorn = "==19.9.0"
 sentry-sdk = "==0.10.2"
+aiohttp = "==3.5.*"
 
 [dev-packages]
 
