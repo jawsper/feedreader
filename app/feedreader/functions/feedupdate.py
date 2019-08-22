@@ -86,7 +86,7 @@ class FeedUpdater:
                 headers['If-Modified-Since'] = format_date_time(modified)
             async with self.session.get(feed.xmlUrl, headers=headers) as response:
                 return (await response.text()), response
-        except aiohttp.client_exceptions.ClientConnectorError as e:
+        except aiohttp.ClientError as e:
             print(f'{feed.id:03} | error | {e}')
             return None, None
 
