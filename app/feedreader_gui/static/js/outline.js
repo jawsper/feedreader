@@ -206,8 +206,10 @@ var load_more_posts = _.debounce(function( a_outline_id, on_success, on_failure 
 			{
 				$.each( data.posts, function( k, post )
 				{
-					$( '#posts' ).append( post_build_html( post, data.is_feed ) );
-					post_attach_handlers( post.id );
+					if(id_get_post(post.id).length == 0) {
+						$( '#posts' ).append( post_build_html( post, data.is_feed ) );
+						post_attach_handlers( post.id );
+					}
 				});
 				$('#no_more_posts').hide();
 				if( on_success ) on_success();
