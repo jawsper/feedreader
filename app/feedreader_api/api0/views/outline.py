@@ -8,7 +8,8 @@ from feedreader.functions.feeds import add_feed
 from feedreader_api.functions import JsonResponseView
 from django.views.generic.base import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from mptt.templatetags.mptt_tags import cache_tree_children
+import json
 from base64 import b64encode, b64decode
 
 DEFAULT_SKIP = 0
@@ -48,17 +49,24 @@ class GetUnreadCountView(JsonResponseView):
         return dict(success=True, counts=counts, total=total)
 
 
-class GetAllOutlinesView(LoginRequiredMixin, TemplateView):
-    template_name = 'api0/navigation.html'
-    content_type = 'application/json'
+class GetAllOutlinesView(JsonResponseView):
+    @staticmethod
+    def recursive_node_to_dict(node):
+        result = {
+            'id': node.pk,
+            'title': node.title,
+            'unread_count': node.unread_count,
+            'feed_id': node.feed_id,
+            'folder_opened': node.folder_opened,
+            'children': [GetAllOutlinesView.recursive_node_to_dict(c) for c in node.get_children()]
+        }
+        return result
 
-    def post(self, *args, **kwargs):
-        return self.get(*args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['nodes'] = Outline.objects.filter(user=self.request.user)
-        return context
+    def get_response(self, user, args):
+        root_nodes = cache_tree_children(Outline.objects.filter(user=self.request.user))
+        return {'outlines': [
+            GetAllOutlinesView.recursive_node_to_dict(node) for node in root_nodes
+        ]}
 
 
 class GetAllPostsView(JsonResponseView):
