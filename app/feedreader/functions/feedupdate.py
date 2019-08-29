@@ -118,7 +118,7 @@ class FeedUpdater:
         if response.headers.get('etag'):
             if feed.lastETag != response.headers.get('etag'):
                 feed.lastETag = response.headers.get('etag')
-                feed.save()
+                feed.save(update_fields=('etag',))
 
         changed = True
         last_updated = None
@@ -137,7 +137,7 @@ class FeedUpdater:
             changed = False
         elif last_updated:
             feed.lastPubDate = time.strftime( MYSQL_DATETIME_FORMAT, last_updated )
-            feed.save()
+            feed.save(update_fields=["lastPubDate"])
 
         if not changed:
             logger.info('{}No changes detected'.format(prefix))
@@ -213,7 +213,7 @@ class FeedUpdater:
                     post.save()
                     for outline in Outline.objects.filter( feed = feed ):
                         outline.unread_count += 1
-                        outline.save()
+                        outline.save(update_fields=["unread_count"])
                         UserPost( user = outline.user, post = post ).save() # make userposts for all users who have this feed
                     imported += 1
                 except IntegrityError:
