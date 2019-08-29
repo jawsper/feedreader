@@ -44,7 +44,8 @@ class FeedUpdater:
         if not self.session:
             self.session = aiohttp.ClientSession(headers={
                 'A-IM': 'feed', # RFC 3229 support
-                'User-Agent': f'feedreader/{__version__}+https://github.com/jawsper/feedreader'
+                'User-Agent': f'feedreader/{__version__}+https://github.com/jawsper/feedreader',
+                "Accept": "application/atom+xml,application/rdf+xml,application/rss+xml,application/x-netcdf,application/xml;q=0.9,text/xml;q=0.2,*/*;q=0.1",
             })
         return self.session
 
