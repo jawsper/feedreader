@@ -18,7 +18,7 @@ body { margin: 0; -webkit-text-size-adjust: 100%; }
 /* EOF panes.css */
 
 /* Pane configuration */
-.left.col { left: 5px; width: 250px; top: 5px }
+.left.col { left: 5px; width: 250px; top: 5px; bottom: 30px; }
 .right.col { left: 260px; right: 5px; top: 5px; }
 .content_header.row { padding-bottom: .5em; position: relative; }
 .content.row { top: 40px; bottom: 0; }
