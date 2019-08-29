@@ -4,7 +4,7 @@
 	License: MIT
 */
 
-var base_path = '//' + document.location.host + '/feedreader/';
+var base_path = '//' + document.location.host + '/';
 
 var g_request_id = 0;
 
