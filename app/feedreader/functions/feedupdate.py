@@ -79,12 +79,13 @@ class FeedUpdater:
     async def download_feed(self, feed):
         try:
             headers = {}
-            if feed.lastETag:
-                headers['If-None-Match'] = feed.lastETag
-            modified = feed.lastPubDate if feed.lastPubDate else feed.lastUpdated
-            if modified:
-                modified = mktime(modified.timetuple())
-                headers['If-Modified-Since'] = format_date_time(modified)
+            if not self.options.get('force', False):
+                if feed.lastETag:
+                    headers['If-None-Match'] = feed.lastETag
+                modified = feed.lastPubDate if feed.lastPubDate else feed.lastUpdated
+                if modified:
+                    modified = mktime(modified.timetuple())
+                    headers['If-Modified-Since'] = format_date_time(modified)
             async with self.session.get(feed.xmlUrl, headers=headers) as response:
                 return (await response.text()), response
         except aiohttp.ClientError as e:
