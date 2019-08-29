@@ -44,5 +44,5 @@ sentry_sdk.init(
 
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_PATH = '/feedreader/'
-CSRF_COOKIE_PATH = '/feedreader/'
+SESSION_COOKIE_PATH = '/'
+CSRF_COOKIE_PATH = '/'
