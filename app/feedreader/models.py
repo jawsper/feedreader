@@ -21,6 +21,7 @@ class Feed(models.Model, DisplayTitleMixIn):
 	lastETag	= models.CharField(max_length=100, null=True, blank=True)
 
 	quirkFixNotXml = models.BooleanField(default=False)
+	quirk_fix_invalid_publication_date = models.BooleanField(default=False)
 
 	disabled	= models.BooleanField(default=False)
 
