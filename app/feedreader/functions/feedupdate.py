@@ -118,7 +118,7 @@ class FeedUpdater:
         if response.headers.get('etag'):
             if feed.lastETag != response.headers.get('etag'):
                 feed.lastETag = response.headers.get('etag')
-                feed.save(update_fields=('etag',))
+                feed.save(update_fields=['lastETag'])
 
         changed = True
         last_updated = None
