@@ -132,8 +132,10 @@ class FeedUpdater:
         elif 'published_parsed' in data:
             last_updated = data['published_parsed']
 
+        if feed.quirk_fix_invalid_publication_date:
+            pass
         # TODO: improve date comparison...
-        if feed.lastPubDate and last_updated and compare_datetime_to_struct_time( feed.lastPubDate, last_updated ):
+        elif feed.lastPubDate and last_updated and compare_datetime_to_struct_time( feed.lastPubDate, last_updated ):
             changed = False
         elif last_updated:
             feed.lastPubDate = time.strftime( MYSQL_DATETIME_FORMAT, last_updated )
@@ -219,6 +221,13 @@ class FeedUpdater:
                 except IntegrityError:
                     logger.warn('{}IntegrityError: {}'.format(prefix, entry))
                     raise CommandError( 'Invalid post' )
+
+        if feed.quirk_fix_invalid_publication_date:
+            try:
+                feed.lastPubDate = feed.post_set.order_by('-pubDate').values_list('pubDate')[0][0]
+                feed.save(update_fields=["lastPubDate"])
+            except IndexError:
+                pass
 
         logger.info('{}Inserted {} new posts'.format(prefix, imported))
         self.imported += imported
