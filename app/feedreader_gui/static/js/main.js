@@ -72,7 +72,7 @@ function api_request( path, args, callback )
 			log_request_end(request_id);
 			show_result({
 				caption: 'Error',
-				message: errorThrown == 'FORBIDDEN' ? 'Your login has expired. Please refresh the page to re-login' : errorThrown,
+				message: xhr.status == 403 ? 'Your login has expired. Please refresh the page to re-login' : errorThrown,
 				success: false,
 			});
 		}

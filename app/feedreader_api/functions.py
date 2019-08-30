@@ -4,6 +4,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class JsonResponseView(LoginRequiredMixin, View):
+    raise_exception = True
+
     def get_response(self, user, args):
         raise NotImplementedError
 
