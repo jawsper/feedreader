@@ -1,4 +1,5 @@
 from django.db import IntegrityError
+from django.utils import timezone
 
 from feedreader import __version__
 from feedreader.models import Feed, Post, Outline, UserPost
@@ -20,18 +21,10 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-MYSQL_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S%z'
-def compare_datetime_to_struct_time( dt, st ):
-    return dt.strftime( MYSQL_DATETIME_FORMAT ) == time.strftime( MYSQL_DATETIME_FORMAT, st )
 
-class UTC(datetime.tzinfo):
-    """UTC"""
-    def utcoffset(self, dt):
-        return datetime.timedelta(0)
-    def tzname(self, dt):
-        return "UTC"
-    def dst(self, dt):
-        return datetime.timedelta(0)
+def struct_time_to_aware_datetime(time):
+    return datetime.datetime(*time[:6]).replace(tzinfo=timezone.utc)
+
 
 class FeedUpdater:
     def __init__(self, stdout=None, **options):
@@ -72,7 +65,7 @@ class FeedUpdater:
     async def _update_feed(self, feed):
         result = await self.load_feed(feed=feed)
         if result:
-            feed.lastUpdated = datetime.datetime.utcnow().replace( tzinfo = UTC() )
+            feed.lastUpdated = timezone.now()
             feed.lastStatus = result
             feed.save()
 
@@ -132,13 +125,15 @@ class FeedUpdater:
         elif 'published_parsed' in data:
             last_updated = data['published_parsed']
 
+        if last_updated:
+            last_updated = struct_time_to_aware_datetime(last_updated)
+
         if feed.quirk_fix_invalid_publication_date:
             pass
-        # TODO: improve date comparison...
-        elif feed.lastPubDate and last_updated and compare_datetime_to_struct_time( feed.lastPubDate, last_updated ):
+        elif feed.lastPubDate and last_updated and feed.lastPubDate == last_updated:
             changed = False
         elif last_updated:
-            feed.lastPubDate = time.strftime( MYSQL_DATETIME_FORMAT, last_updated )
+            feed.lastPubDate = last_updated
             feed.save(update_fields=["lastPubDate"])
 
         if not changed:
@@ -182,12 +177,12 @@ class FeedUpdater:
                 insert_data['description'] = entry['description']
             if 'published_parsed' in entry and entry['published_parsed']:
                 try:
-                    insert_data['pubDate'] = time.strftime( MYSQL_DATETIME_FORMAT, entry['published_parsed'] )
+                    insert_data['pubDate'] = struct_time_to_aware_datetime(entry['published_parsed'])
                 except TypeError:
                     logger.warn('{}Invalid date: {}'.format(prefix, entry["published_parsed"]))
                     continue
             elif 'updated_parsed' in entry and entry['updated_parsed']:
-                insert_data['pubDate'] = time.strftime( MYSQL_DATETIME_FORMAT, entry['updated_parsed'] )
+                insert_data['pubDate'] = struct_time_to_aware_datetime(entry['updated_parsed'])
 
             if 'id' in entry:
                 insert_data['guid'] = entry['id']
@@ -202,7 +197,7 @@ class FeedUpdater:
                     logger.warn('{} Cannot find a good unique ID {} {}'.format(prefix, entry, insert_data))
                     raise CommandError( 'See above' )
             if not 'pubDate' in insert_data:
-                insert_data['pubDate'] = datetime.datetime.utcnow().replace(tzinfo=UTC())
+                insert_data['pubDate'] = timezone.now()
 
             try:
                 test = Post.objects.get( guid__exact = insert_data['guid'] )
