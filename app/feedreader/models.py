@@ -59,14 +59,15 @@ class Post(models.Model, DisplayTitleMixIn):
 	def __str__(self):
 		return self.display_title
 
-	def processedContent(self):
+	def processed_content(self):
 		soup = BeautifulSoup(self.content if self.content else self.description, 'html.parser')
 		[s.extract() for s in soup('script')]
 		for iframe in soup('iframe'):
 			a = soup.new_tag('a')
 			a.string = 'iframe'
-			if 'src' in iframe:
-				a['href'] = iframe['src']
+			src = iframe.get('src')
+			if src:
+				a['href'] = src
 			iframe.replace_with(a)
 		return str(soup)
 
@@ -77,7 +78,7 @@ class Post(models.Model, DisplayTitleMixIn):
 		data['title'] = self.display_title
 		data['feedTitle'] = self.feed.display_title
 		data['pubDate'] = str(self.pubDate)
-		data['content'] = self.processedContent()
+		data['content'] = self.processed_content()
 		if hasattr(self, 'starred'):
 			data['starred'] = bool(int(self.starred)) if self.starred != None else False
 		if hasattr(self, 'read'):
