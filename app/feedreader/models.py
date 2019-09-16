@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from bs4 import BeautifulSoup
 from mptt.models import MPTTModel, TreeForeignKey
+from urllib.parse import urljoin
 
 # Create your models here.
 
@@ -69,6 +70,9 @@ class Post(models.Model, DisplayTitleMixIn):
 			if src:
 				a['href'] = src
 			iframe.replace_with(a)
+		for a in soup('a'):
+			if a['href'].startswith('/') and not a['href'].startswith('//'):
+				a['href'] = urljoin(self.link, a['href'])
 		return str(soup)
 
 	def toJsonDict(self):
