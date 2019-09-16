@@ -11,6 +11,7 @@ import aiohttp
 from time import mktime
 from wsgiref.handlers import format_date_time
 import re
+from urllib.parse import urlparse
 
 import datetime
 
@@ -79,13 +80,16 @@ class FeedUpdater:
                 if modified:
                     modified = mktime(modified.timetuple())
                     headers['If-Modified-Since'] = format_date_time(modified)
+            hostname = urlparse(feed.xmlUrl).hostname
+            if hostname.endswith('.tumblr.com'):
+                headers['User-Agent'] = 'Mozilla/5.0 (compatible; Baiduspider; +http://www.baidu.com/search/spider.html)'
             async with self.session.get(feed.xmlUrl, headers=headers) as response:
                 return (await response.text()), response
         except aiohttp.ClientError as e:
             print(f'{feed.id:03} | error | {e}')
             return None, None
 
-    async def load_feed(self, feed):
+    async def load_feed(self, feed: Feed):
         prefix = f'[{feed.id:03}] '
         logger.info(f'{prefix}{feed.xmlUrl}')
         raw_data, response = await self.download_feed(feed=feed)
