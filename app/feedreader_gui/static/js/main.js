@@ -9,23 +9,29 @@ var base_path = '//' + document.location.host + '/';
 
 function api_request( path, args, callback )
 {
-	$.ajax({
-		type: 'POST',
-		url: urls[path].url,
-		data: args,
-		success: function( result )
-		{
-			callback( result );
+	var fetch_args = {
+		method: 'POST',
+		headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/json',
+			'X-CSRFToken': Cookies.get('csrftoken')
 		},
-		error: function(xhr, textStatus, errorThrown)
-		{
-			show_result({
-				caption: 'Error',
-				message: xhr.status == 403 ? 'Your login has expired. Please refresh the page to re-login' : errorThrown,
-				success: false,
-			});
-		}
-	});
+		credentials: 'include',
+	};
+	if(args) {
+		fetch_args['body'] = JSON.stringify(args);
+	};
+	fetch(urls[path].url, fetch_args)
+	.then(response => response.json())
+	.catch(error => {
+		show_result({
+			caption: 'Error',
+			message: error,
+			success: false,
+		});
+	})
+	.then(callback)
+	.catch(console.log)
 }
 
 function get_url( path )
@@ -51,23 +57,6 @@ var outline_regex = /^outline-(\d+)$/
 $(function()
 {
 	$('input:submit, button, a.button').button();
-});
-
-$(function()
-{
-	var csrftoken = Cookies.get('csrftoken');
-	function csrfSafeMethod(method) {
-		// these HTTP methods do not require CSRF protection
-		return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-	}
-	$.ajaxSetup({
-		crossDomain: false, // obviates need for sameOrigin test
-		beforeSend: function(xhr, settings) {
-			if (!csrfSafeMethod(settings.type)) {
-				xhr.setRequestHeader("X-CSRFToken", csrftoken);
-			}
-		}
-	});
 });
 
 function show_result(data)
