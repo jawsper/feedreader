@@ -6,70 +6,19 @@
 
 var base_path = '//' + document.location.host + '/';
 
-var g_request_id = 0;
-
-var g_requests = {}
-
-$(function()
-{
-	if(localStorage["debug"] == "true")
-	{
-		$('body').addClass('debug');
-	}
-});
-
-function set_debug(enabled)
-{
-	localStorage['debug'] = enabled;
-	$('body').toggleClass('debug', enabled);
-}
-
-function debug_enabled()
-{
-	return $('body').hasClass('debug');
-}
-
-function log_request_start(id, path, args)
-{
-	if(!debug_enabled()) return;
-	url = urls[path]
-	console.debug('REQ ' + id + '; ' + url.url + ' ' + JSON.stringify(args));
-	
-	g_requests[id] = [path, args]
-	
-	var debug_item = $('<div>')
-		.attr('id', 'request-'+id)
-		.css('background-color', '#00ffff')
-		.html('#' + id + ': ' + path + ' ' + JSON.stringify(args));
-	
-	$('#debug').prepend(debug_item);
-	debug_item[0].scrollIntoView(true);
-
-	while($('#debug > div').length > 20) $('#debug > div').last().remove();
-}
-
-function log_request_end(id)
-{
-	if(!debug_enabled()) return;
-	$('#request-'+id).css('background-color', '#ffffff');
-}
 
 function api_request( path, args, callback )
 {
-	var request_id = ++g_request_id;
-	log_request_start(request_id, path, args);
 	$.ajax({
 		type: 'POST',
 		url: urls[path].url,
 		data: args,
 		success: function( result )
 		{
-			log_request_end(request_id);
 			callback( result );
 		},
 		error: function(xhr, textStatus, errorThrown)
 		{
-			log_request_end(request_id);
 			show_result({
 				caption: 'Error',
 				message: xhr.status == 403 ? 'Your login has expired. Please refresh the page to re-login' : errorThrown,

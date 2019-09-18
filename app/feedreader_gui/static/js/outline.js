@@ -58,9 +58,6 @@ $(function()
 					window.open(g_current_post.find('.link a').attr('href'), '_blank');
 				}
 				break;
-			case 'd':
-				$('#button_toggle_debug').click();
-				break;
 			default: return true; // don't care
 		}
 		//e.preventDefault();
@@ -77,7 +74,6 @@ $(function()
 	$('#button_prev_post').click(function(){ move_post(-1) });
 	$('#button_next_post').click(function(){ move_post(+1) });
 	$( '#load_more_posts a' ).click( function() { load_more_posts( g_outline_id, null, null ); } );
-	$('#button_toggle_debug').click(function(){set_debug(!debug_enabled())});
 });
 
 /* outline functions */
