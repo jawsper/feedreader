@@ -71,6 +71,8 @@ class FeedUpdater:
             feed.save()
 
     async def download_feed(self, feed):
+        if not feed.xmlUrl:
+            return None, None
         try:
             headers = {}
             if not self.options.get('force', False):
@@ -85,7 +87,7 @@ class FeedUpdater:
                 headers['User-Agent'] = 'Mozilla/5.0 (compatible; Baiduspider; +http://www.baidu.com/search/spider.html)'
             async with self.session.get(feed.xmlUrl, headers=headers) as response:
                 return (await response.text()), response
-        except aiohttp.ClientError as e:
+        except (asyncio.TimeoutError, aiohttp.ClientError) as e:
             print(f'{feed.id:03} | error | {e}')
             return None, None
 
