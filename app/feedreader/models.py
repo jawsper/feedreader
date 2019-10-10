@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from bs4 import BeautifulSoup
+import re
 from mptt.models import MPTTModel, TreeForeignKey
 from urllib.parse import urljoin
 
@@ -62,17 +63,23 @@ class Post(models.Model, DisplayTitleMixIn):
 
 	def processed_content(self):
 		soup = BeautifulSoup(self.content if self.content else self.description, 'html.parser')
-		[s.extract() for s in soup('script')]
+		# Remove all scripts
+		[s.decompose() for s in soup('script')]
+		# Replace all iframes with links
 		for iframe in soup('iframe'):
-			a = soup.new_tag('a')
-			a.string = 'iframe'
 			src = iframe.get('src')
+			if not src:
+				src = iframe.get('data-src')
 			if src:
+				a = soup.new_tag('a')
+				a.string = 'iframe'
 				a['href'] = src
-			iframe.replace_with(a)
-		for a in soup('a'):
-			if a['href'].startswith('/') and not a['href'].startswith('//'):
-				a['href'] = urljoin(self.link, a['href'])
+				iframe.replace_with(a)
+			else:
+				iframe.decompose()
+		# Make all relative URLs absolute
+		for tag in soup(href=re.compile('^/[^/]')):
+			tag['href'] = urljoin(self.link, tag['href'])
 		return str(soup)
 
 	def toJsonDict(self):
