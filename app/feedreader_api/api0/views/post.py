@@ -38,7 +38,7 @@ class PostActionView(JsonResponseView):
             return {'success': False, 'caption': 'Error', 'message': 'Invalid parameters.'}
 
         try:
-            user_post = UserPost.objects.get(user=user, post=post)
+            user_post = UserPost.objects.select_related('user', 'post').get(user=user, post=post)
         except UserPost.DoesNotExist:
             user_post = UserPost(user=user, post=post)
 

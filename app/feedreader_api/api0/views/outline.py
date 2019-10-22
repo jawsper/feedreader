@@ -29,7 +29,7 @@ class GetUnreadCountView(JsonResponseView):
         counts = {}
         if 'outline_id' in args:
             try:
-                outline = Outline.objects.get(pk=int(args['outline_id']))
+                outline = Outline.objects.select_related('parent').get(pk=int(args['outline_id']))
             except Outline.DoesNotExist:
                 return dict(success=False, message='Invalid outline ID.')
 
@@ -84,7 +84,7 @@ class GetPostsView(JsonResponseView):
     def get_response(self, user, args):
         try:
             outline_id = args.get('outline', None)
-            outline = Outline.objects.get(user=user, id=outline_id)
+            outline = Outline.objects.select_related('feed').get(user=user, id=outline_id)
         except Outline.DoesNotExist:
             return dict(success=False, message='Outline does not exist.')
 
