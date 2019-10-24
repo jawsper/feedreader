@@ -41,6 +41,11 @@ function get_url( path )
 	return base_path + path;
 }
 
+function get_media_url(path)
+{
+	return document.body.dataset.mediaUrl + path;
+}
+
 function add_new_feed( url )
 {
 	api_request( 'feed_add', { url: url }, function( result )
@@ -314,9 +319,9 @@ function make_outline( template, outline )
 		html.addClass( 'folder-closed' );
 	}
 	html.toggleClass( 'has-unread', outline.unread_count > 0 );
-	if( outline.feed_id )
+	if(outline.icon)
 	{
-		$( '> .outline-line', html ).css( 'background-image', 'url(' + get_url( 'feed/' + outline.feed_id + '/favicon/' ) + ')' );
+		$('> .outline-line', html).css('background-image', `url(${get_media_url(outline.icon)})`);
 	}
 	return html;
 }
