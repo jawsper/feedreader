@@ -89,6 +89,11 @@ class Outline(MPTTModel, DisplayTitleMixIn):
 	def __str__(self):
 		return self.display_title
 
+	@property
+	def icon(self):
+		if self.feed:
+			return self.feed.favicon
+
 
 class Post(models.Model, DisplayTitleMixIn):
 	feed 				= models.ForeignKey(Feed, on_delete=models.CASCADE)
