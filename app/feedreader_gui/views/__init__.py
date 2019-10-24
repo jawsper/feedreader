@@ -35,34 +35,6 @@ class OutlineView(IndexView):
         return context
 
 
-class FeedFaviconView(LoginRequiredMixin, View):
-    def get(self, request, feed_id):
-        if getattr(settings, 'LOAD_FAVICON', True):
-            try:
-                feed = Feed.objects.get(pk=feed_id)
-                if feed.faviconUrl:
-                    icon = self.load_icon(feed.faviconUrl)
-                    if icon:
-                        return HttpResponse(icon[0], content_type=icon[1])
-            except Feed.DoesNotExist:
-                pass
-
-        return self.default_icon()
-
-    def load_icon(self, url):
-        try:
-            result = urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': 'Chrome'}))
-            data = result.read()
-            content_type = result.headers.get('content-type', 'text/html')
-            return (data, content_type, url)
-        except Exception as e:
-            print("Exception in load_icon: {0}".format(e))
-            return False
-
-    def default_icon(self):
-        return HttpResponse(open(os.path.join(settings.STATIC_ROOT, 'images/icons/silk/feed.png'), 'rb').read(), content_type='image/png')
-
-
 class ScriptUrls(TemplateView):
     template_name = 'feedreader/urls.js.html'
     content_type = 'application/javascript'
