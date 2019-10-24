@@ -1,9 +1,16 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 from bs4 import BeautifulSoup
 import re
 from mptt.models import MPTTModel, TreeForeignKey
 from urllib.parse import urljoin
+import asyncio
+import aiohttp
+import mimetypes
+
+mimetypes.init()
 
 # Create your models here.
 
@@ -30,6 +37,43 @@ class Feed(models.Model, DisplayTitleMixIn):
 
 	def __str__(self):
 		return self.display_title
+
+	async def fetch_favicon(self, url):
+		try:
+			async with aiohttp.ClientSession() as session:
+				async with session.get(url) as response:
+					if response.headers['Content-Type'].startswith('image/'):
+						return response.headers, await response.read()
+					else:
+						return response.headers, None
+		except Exception as e:
+			return None, None
+
+	def download_favicon(self):
+		if not self.faviconUrl:
+			return False
+		headers, content = asyncio.run(self.fetch_favicon(self.faviconUrl))
+		if not headers:
+			return False
+
+		content_type = headers['Content-Type']
+		if ';' in content_type:
+			content_type = content_type.split(';')[0].strip()
+		if not content:
+			return False
+		content = ContentFile(content)
+		if content_type == 'image/x-icon':
+			extension = '.ico'
+		else:
+			extension = mimetypes.guess_extension(content_type, strict=False)
+
+		if not extension:
+			return False
+		image_filename = f"{self.pk}{extension}"
+		if self.favicon.name:
+			self.favicon.delete()
+		self.favicon.save(image_filename, content)
+		return True
 
 
 class Outline(MPTTModel, DisplayTitleMixIn):
