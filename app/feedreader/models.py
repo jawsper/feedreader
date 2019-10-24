@@ -17,6 +17,7 @@ class Feed(models.Model, DisplayTitleMixIn):
 	xmlUrl 		= models.CharField(max_length=1000)
 	htmlUrl 	= models.CharField(max_length=1000)
 	faviconUrl  = models.CharField(max_length=1000, null=True, blank=True)
+	favicon     = models.ImageField(upload_to='favicon', null=True, blank=True)
 	lastPubDate = models.DateTimeField(null=True, blank=True)
 	lastUpdated = models.DateTimeField(null=True, blank=True)
 	lastStatus 	= models.CharField(max_length=1000, null=True, blank=True)
