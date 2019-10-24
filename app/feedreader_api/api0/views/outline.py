@@ -56,10 +56,11 @@ class GetAllOutlinesView(JsonResponseView):
                 'title': node.title,
                 'unread_count': node.unread_count,
                 'feed_id': node.feed_id,
+                'icon': node.feed.favicon.name if node.feed and node.feed.favicon else None,
                 'folder_opened': node.folder_opened,
                 'children': [recursive_node_to_dict(c) for c in node.get_children()]
             }
-        root_nodes = Outline.objects.filter(user=self.request.user).get_cached_trees()
+        root_nodes = Outline.objects.select_related('feed').filter(user=self.request.user).get_cached_trees()
         return {'outlines': [recursive_node_to_dict(node) for node in root_nodes]}
 
 
