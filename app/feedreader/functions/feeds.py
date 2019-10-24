@@ -32,5 +32,6 @@ def add_feed(user, feed_xml_url):
         feed = load_feed(feed_xml_url)
         feed.save()
     outline, created = Outline.objects.get_or_create(user=user, feed=feed, defaults=dict(title=feed.title))
+    tasks.download_feed_favicon.delay(feed.pk)
     tasks.update_feed.delay(feed.pk)
     return { 'outline_id': outline.id }

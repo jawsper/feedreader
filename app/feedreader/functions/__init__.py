@@ -159,3 +159,5 @@ class FaviconFinder:
 	def default_icon( self ):
 		return HttpResponse( open( settings.STATIC_ROOT + 'images/icons/silk/feed.png', 'r' ).read(), content_type = 'image/png' )
 
+def find_favicon(feed):
+	return FaviconFinder(feed, None).find()
