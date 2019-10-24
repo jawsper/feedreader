@@ -68,7 +68,7 @@ class FeedUpdater:
         if result:
             feed.lastUpdated = timezone.now()
             feed.lastStatus = result
-            feed.save()
+            feed.save(update_fields=['lastUpdated', 'lastStatus'])
 
     async def download_feed(self, feed):
         if not feed.xmlUrl:
