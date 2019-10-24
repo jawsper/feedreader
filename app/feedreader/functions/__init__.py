@@ -77,8 +77,16 @@ class FaviconFinder:
 	def __init__( self, feed, stdout ):
 		self.feed = feed
 		self.stdout = stdout
-		
-	def find( self ):
+	
+	def find(self):
+		icon = self.find_icon_in_page()
+		if icon:
+			return icon[2]
+		icon = self.try_force_favicon()
+		if icon:
+			return icon[2]
+
+	def find_and_save( self ):
 		# locate the <link> tag and find the icon in there
 		self.stdout.write( ' * Trying to find icon in html page' )
 		icon = self.find_icon_in_page()
