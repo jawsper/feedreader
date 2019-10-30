@@ -89,7 +89,7 @@ class FeedUpdater:
             async with self.session.get(feed.xmlUrl, headers=headers) as response:
                 return (await response.text()), response
         except (asyncio.TimeoutError, aiohttp.ClientError) as e:
-            print(f'{feed.id:03} | error | {e}')
+            logger.exception(f'{feed.id:03} | error | {e}')
             return None, None
 
     async def load_feed(self, feed: Feed):
