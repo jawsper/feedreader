@@ -12,7 +12,7 @@ class OutlineAdmin(DraggableMPTTAdmin):
     list_filter = (
         ('user', admin.RelatedOnlyFieldListFilter),
     )
-    list_select_related = ('parent', 'user')
+    list_select_related = ('parent', 'user', 'feed')
 
 @admin.register(Feed)
 class FeedAdmin(admin.ModelAdmin):
