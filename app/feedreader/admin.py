@@ -18,6 +18,8 @@ class OutlineAdmin(DraggableMPTTAdmin):
 class FeedAdmin(admin.ModelAdmin):
     list_display = ('title', 'lastUpdated', 'lastStatus', 'disabled', 'quirkFixNotXml')
 
+    search_fields = ['title']
+
     actions = ['mark_as_enabled', 'mark_as_disabled']
 
     def mark_as_enabled(self, request, queryset):
