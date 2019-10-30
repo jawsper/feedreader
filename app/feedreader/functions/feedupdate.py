@@ -15,8 +15,6 @@ from urllib.parse import urlparse
 
 import datetime
 
-import socket
-socket.setdefaulttimeout( 15 )
 
 import logging
 

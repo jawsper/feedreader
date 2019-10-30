@@ -7,9 +7,6 @@ from django.core.management.base import BaseCommand
 from feedreader.functions import FaviconFinder
 from feedreader.models import Feed
 
-import socket
-socket.setdefaulttimeout( 15 )
-
 class Command( BaseCommand ):
     def add_arguments(self, parser):
         parser.add_argument('feed_id', nargs="?")
