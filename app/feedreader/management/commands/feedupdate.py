@@ -7,6 +7,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('--debug', action='store_true', dest='debug', default=False, help='Debug')
         parser.add_argument('-f', '--force', action='store_true', dest='force', default=False, help='Force update.')
+        parser.add_argument('--all', action='store_true', dest='all', default=False, help='Update all feeds, including disabled.')
         parser.add_argument('range', nargs='?')
 
     def handle(self, *args, **options):

@@ -56,7 +56,11 @@ class FeedUpdater:
                 if m:
                     qs = Feed.objects.filter(id__gte=int(m.group(1)))
         else:
-            qs = Feed.objects.filter(disabled=False)
+            all = self.options.get('all', False)
+            if all:
+                qs = Feed.objects.all()
+            else:
+                qs = Feed.objects.filter(disabled=False)
         if qs:
             async with self._get_session() as self.session:
                 await asyncio.gather(*(self._update_feed(feed) for feed in qs))
