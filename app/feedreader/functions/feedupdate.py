@@ -1,28 +1,31 @@
+
+import asyncio
+import datetime
+import logging
+import re
+from time import mktime
+from urllib.parse import urlparse
+from wsgiref.handlers import format_date_time
+
+import aiohttp
+import feedparser
+
 from django.db import IntegrityError
 from django.utils import timezone
 
 from feedreader import __version__
 from feedreader.models import Feed, Post, Outline, UserPost
 
-import feedparser
-import time
-import asyncio
-import aiohttp
-from time import mktime
-from wsgiref.handlers import format_date_time
-import re
-from urllib.parse import urlparse
-
-import datetime
-
-
-import logging
-
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
 def struct_time_to_aware_datetime(time):
     return datetime.datetime(*time[:6]).replace(tzinfo=timezone.utc)
+
+
+class FeedUpdateFailure(Exception):
+    def __init__(self, message):
+        self.message = message
 
 
 class FeedUpdater:
@@ -32,7 +35,7 @@ class FeedUpdater:
         self.options = options
         self.session = None
 
-    def get_session(self):
+    def _get_session(self):
         if not self.session:
             self.session = aiohttp.ClientSession(headers={
                 'Connection': 'close',
@@ -55,63 +58,75 @@ class FeedUpdater:
         else:
             qs = Feed.objects.filter(disabled=False)
         if qs:
-            async with self.get_session() as self.session:
+            async with self._get_session() as self.session:
                 await asyncio.gather(*(self._update_feed(feed) for feed in qs))
 
     async def update_feed(self, feed):
-        async with self.get_session() as self.session:
+        async with self._get_session() as self.session:
             await self._update_feed(feed=feed)
 
     async def _update_feed(self, feed):
-        result = await self.load_feed(feed=feed)
-        if result:
+        try:
+            result = await self.load_feed(feed=feed)
+            if result:
+                feed.lastUpdated = timezone.now()
+                feed.lastStatus = result
+                feed.save(update_fields=['lastUpdated', 'lastStatus'])
+        except FeedUpdateFailure as e:
             feed.lastUpdated = timezone.now()
-            feed.lastStatus = result
+            feed.lastStatus = e.message
             feed.save(update_fields=['lastUpdated', 'lastStatus'])
 
     async def download_feed(self, feed):
         if not feed.xmlUrl:
             return None, None
+        headers = {}
+        if not self.options.get('force', False):
+            if feed.lastETag:
+                headers['If-None-Match'] = feed.lastETag
+            modified = feed.lastPubDate if feed.lastPubDate else feed.lastUpdated
+            if modified:
+                modified = mktime(modified.timetuple())
+                headers['If-Modified-Since'] = format_date_time(modified)
+        hostname = urlparse(feed.xmlUrl).hostname
+        if hostname.endswith('.tumblr.com'):
+            headers['User-Agent'] = 'Mozilla/5.0 (compatible; Baiduspider; +http://www.baidu.com/search/spider.html)'
         try:
-            headers = {}
-            if not self.options.get('force', False):
-                if feed.lastETag:
-                    headers['If-None-Match'] = feed.lastETag
-                modified = feed.lastPubDate if feed.lastPubDate else feed.lastUpdated
-                if modified:
-                    modified = mktime(modified.timetuple())
-                    headers['If-Modified-Since'] = format_date_time(modified)
-            hostname = urlparse(feed.xmlUrl).hostname
-            if hostname.endswith('.tumblr.com'):
-                headers['User-Agent'] = 'Mozilla/5.0 (compatible; Baiduspider; +http://www.baidu.com/search/spider.html)'
             async with self.session.get(feed.xmlUrl, headers=headers) as response:
                 return (await response.text()), response
+        except aiohttp.ClientConnectionError as e:
+            logger.warning(f'[{feed.id:03}] | Connection error | {e}')
+            raise FeedUpdateFailure(f'Error in connection | {e}')
+        except aiohttp.ClientResponseError as e:
+            logger.warning(f'[{feed.id:03}] | Response error | {e.status} {e.response}')
+            raise FeedUpdateFailure(f'Error in response | {e.status} {e.response}')
         except (asyncio.TimeoutError, aiohttp.ClientError) as e:
-            logger.exception(f'{feed.id:03} | error | {e}')
-            return None, None
+            logger.exception(f'[{feed.id:03}] | error | {e}')
+            raise FeedUpdateFailure(f'Error | {e}')
 
     async def load_feed(self, feed: Feed):
         prefix = f'[{feed.id:03}] '
         logger.info(f'{prefix}{feed.xmlUrl}')
         raw_data, response = await self.download_feed(feed=feed)
+
         if not response:
-            return None
+            return f'Error | unknown error'
 
         if response.status >= 400:
-            logger.warn(f'{prefix}Failed: status error {response.status}')
-            return f'Error: {response.status}'
+            logger.warning(f'{prefix}Failed: status error {response.status}')
+            return f'Error in response | {response.status}'
         elif response.status == 304:
             logger.info(f'{prefix}304 Not Changed')
             if not self.options.get('force', False):
-                return '304'
+                return 'Success | 304'
 
         data = feedparser.parse(raw_data)
 
         if data['bozo']:
-            logger.warn('{}Failed: {}'.format(prefix, data["bozo_exception"]))
+            logger.warning('{}Failed: {}'.format(prefix, data["bozo_exception"]))
         if not data:
-            logger.warn('{}Failed: no data'.format(prefix))
-            return 'Error: no data'
+            logger.warning('{}Failed: no data'.format(prefix))
+            return 'Error | No data'
 
         if response.headers.get('etag'):
             if feed.lastETag != response.headers.get('etag'):
@@ -144,7 +159,7 @@ class FeedUpdater:
         if not changed:
             logger.info('{}No changes detected'.format(prefix))
             if not self.options.get('force', False):
-                return None
+                return f'Success | No changes'
 
         logger.info('{}scanning {} posts, please have patience...'.format(prefix, len(data["entries"])))
 
@@ -159,9 +174,9 @@ class FeedUpdater:
                 insert_data['author'] = entry['author_detail']['name']
 
             if 'links' in entry:
-                if len( entry['links'] ) == 0:
+                if len(entry['links']) == 0:
                     pass
-                elif len( entry['links'] ) == 1:
+                elif len(entry['links']) == 1:
                     insert_data['link'] = entry['links'][0]['href']
                 else:
                     for link in entry['links']:
@@ -169,11 +184,11 @@ class FeedUpdater:
                             insert_data['link'] = link['href']
                             break
 
-            if not 'link' in insert_data:
+            if 'link' not in insert_data:
                 if 'link' in entry:
                     insert_data['link'] = entry['link']
                 else:
-                    logger.warn('{}Can\'t find a link.'.format(prefix))
+                    logger.warning('{prefix}Can\'t find a link.')
                     continue
 
             if 'content' in entry:
@@ -184,14 +199,14 @@ class FeedUpdater:
                 try:
                     insert_data['pubDate'] = struct_time_to_aware_datetime(entry['published_parsed'])
                 except TypeError:
-                    logger.warn('{}Invalid date: {}'.format(prefix, entry["published_parsed"]))
+                    logger.warning('{prefix}Invalid date: {entry["published_parsed"]}')
                     continue
             elif 'updated_parsed' in entry and entry['updated_parsed']:
                 insert_data['pubDate'] = struct_time_to_aware_datetime(entry['updated_parsed'])
 
             if 'id' in entry:
                 insert_data['guid'] = entry['id']
-            if not 'guid' in insert_data:
+            if 'guid' not in insert_data:
                 if 'pubDate' in insert_data:
                     insert_data['guid'] = insert_data['pubDate']
                 elif 'link' in insert_data:
@@ -199,28 +214,28 @@ class FeedUpdater:
                 elif 'description' in insert_data:
                     insert_data['guid'] = insert_data['description']
                 else:
-                    logger.warn('{} Cannot find a good unique ID {} {}'.format(prefix, entry, insert_data))
-                    raise CommandError( 'See above' )
-            if not 'pubDate' in insert_data:
+                    logger.warningf('{prefix}Cannot find a good unique ID {entry} {insert_data}')
+                    continue
+            if 'pubDate' not in insert_data:
                 insert_data['pubDate'] = timezone.now()
 
             try:
-                test = Post.objects.get( guid__exact = insert_data['guid'] )
+                test = Post.objects.get(guid__exact=insert_data['guid'])
             except Post.MultipleObjectsReturned:
-                logger.info('{}Duplicate post! {}'.format(prefix, insert_data))
+                logger.warning('{}Duplicate post! {}'.format(prefix, insert_data))
             except Post.DoesNotExist:
                 insert_data['feed'] = feed
-                post = Post( **insert_data )
+                post = Post(**insert_data)
                 try:
                     post.save()
-                    for outline in Outline.objects.filter( feed = feed ):
+                    for outline in Outline.objects.filter(feed=feed):
                         outline.unread_count += 1
                         outline.save(update_fields=["unread_count"])
-                        UserPost( user = outline.user, post = post ).save() # make userposts for all users who have this feed
+                        UserPost(user=outline.user, post=post).save() # make userposts for all users who have this feed
                     imported += 1
                 except IntegrityError:
-                    logger.warn('{}IntegrityError: {}'.format(prefix, entry))
-                    raise CommandError( 'Invalid post' )
+                    logger.exception(f'{prefix}IntegrityError {entry}')
+                    continue
 
         if feed.quirk_fix_invalid_publication_date:
             try:
@@ -231,4 +246,4 @@ class FeedUpdater:
 
         logger.info('{}Inserted {} new posts'.format(prefix, imported))
         self.imported += imported
-        return 'OK'
+        return f'Success | {imported} posts added'
