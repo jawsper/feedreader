@@ -80,6 +80,8 @@ class FeedUpdater:
             feed.lastUpdated = timezone.now()
             feed.lastStatus = e.message
             feed.save(update_fields=['lastUpdated', 'lastStatus'])
+        except Exception as e:
+            logger.exception('Feed error')
 
     async def download_feed(self, feed):
         if not feed.xmlUrl:
