@@ -14,10 +14,10 @@ RUN apk update \
     && apk add postgresql-dev zlib-dev jpeg-dev
 
 # install dependencies
-RUN pip install --upgrade pip
 RUN pip install pipenv
 COPY ./Pipfile /usr/src/app/Pipfile
-RUN pipenv install --skip-lock --system
+COPY ./Pipfile.lock /usr/src/app/Pipfile.lock
+RUN pipenv install --system --deploy --ignore-pipfile
 
 # Remove build dependencies
 RUN apk del build-deps
