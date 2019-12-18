@@ -52,8 +52,7 @@ class FeedUpdater:
             if re.match(r'^\d+$', range_):
                 qs = Feed.objects.filter(pk=int(range_))
             else:
-                m = re.match(r'^(\d+),$', range_)
-                if m:
+                if (m := re.match(r'^(\d+),$', range_)):
                     qs = Feed.objects.filter(id__gte=int(m.group(1)))
         else:
             all = self.options.get('all', False)
@@ -71,8 +70,7 @@ class FeedUpdater:
 
     async def _update_feed(self, feed):
         try:
-            result = await self.load_feed(feed=feed)
-            if result:
+            if (result := await self.load_feed(feed=feed)):
                 feed.lastUpdated = timezone.now()
                 feed.lastStatus = result
                 feed.save(update_fields=['lastUpdated', 'lastStatus'])
@@ -134,9 +132,9 @@ class FeedUpdater:
             logger.warning('{}Failed: no data'.format(prefix))
             return 'Error | No data'
 
-        if response.headers.get('etag'):
-            if feed.lastETag != response.headers.get('etag'):
-                feed.lastETag = response.headers.get('etag')
+        if (etag := response.headers.get('etag')):
+            if feed.lastETag != etag:
+                feed.lastETag = etag
                 feed.save(update_fields=['lastETag'])
 
         changed = True
