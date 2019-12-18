@@ -111,6 +111,7 @@ class Post(models.Model, DisplayTitleMixIn):
 	def __str__(self):
 		return self.display_title
 
+	@property
 	def processed_content(self):
 		soup = BeautifulSoup(self.content if self.content else self.description, 'html.parser')
 		# Remove all scripts
@@ -139,7 +140,7 @@ class Post(models.Model, DisplayTitleMixIn):
 		data['title'] = self.display_title
 		data['feedTitle'] = self.feed.display_title
 		data['pubDate'] = str(self.pubDate)
-		data['content'] = self.processed_content()
+		data['content'] = self.processed_content
 		if hasattr(self, 'starred'):
 			data['starred'] = bool(int(self.starred)) if self.starred != None else False
 		if hasattr(self, 'read'):
