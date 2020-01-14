@@ -169,7 +169,7 @@ class FeedUpdater:
 
         imported = 0
 
-        for entry in data['entries']:
+        for entry in reversed(data['entries']):
             insert_data = {}
             if 'title' in entry:
                 insert_data['title'] = entry['title']
