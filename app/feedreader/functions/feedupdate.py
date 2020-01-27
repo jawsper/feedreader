@@ -92,12 +92,16 @@ class FeedUpdater:
             if modified:
                 modified = mktime(modified.timetuple())
                 headers['If-Modified-Since'] = format_date_time(modified)
+
+        # Fix for GDPR wall on tumblr sites (#14)
         hostname = urlparse(feed.xmlUrl).hostname
         if hostname.endswith('.tumblr.com'):
             headers['User-Agent'] = 'Mozilla/5.0 (compatible; Baiduspider; +http://www.baidu.com/search/spider.html)'
         try:
             async with self.session.get(feed.xmlUrl, headers=headers) as response:
-                return (await response.text()), response
+                if feed.quirk_fix_override_encoding is not None:
+                    logger.info(f'[{feed.id:03}] Encoding overriden to %s', feed.quirk_fix_override_encoding)
+                return (await response.text(encoding=feed.quirk_fix_override_encoding)), response
         except aiohttp.ClientConnectionError as e:
             logger.warning(f'[{feed.id:03}] | Connection error | {e}')
             raise FeedUpdateFailure(f'Error in connection | {e}')
