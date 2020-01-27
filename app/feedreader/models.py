@@ -32,6 +32,7 @@ class Feed(models.Model, DisplayTitleMixIn):
 
 	quirkFixNotXml = models.BooleanField(default=False)
 	quirk_fix_invalid_publication_date = models.BooleanField(default=False)
+	quirk_fix_override_encoding = models.CharField(max_length=32, null=True, blank=True)
 
 	disabled	= models.BooleanField(default=False)
 
