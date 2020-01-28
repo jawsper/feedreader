@@ -20,8 +20,8 @@ class Command( BaseCommand ):
             feeds = Feed.objects.all()
         
         for feed in feeds:
-            if feed_id is not None or feed.faviconUrl == None or feed.faviconUrl == '':
-                self.stdout.write( '{0:03} {1} '.format( feed.id, feed.xmlUrl ) )
-                self.stdout.write( ' * htmlUrl: {}'.format( feed.htmlUrl ) )
+            if feed_id is not None or feed.favicon_url == None or feed.favicon_url == '':
+                self.stdout.write( '{0:03} {1} '.format( feed.id, feed.xml_url ) )
+                self.stdout.write( ' * html_url: {}'.format( feed.html_url ) )
                 print(FaviconFinder( feed, self.stdout ).find())
                 FaviconFinder( feed, self.stdout ).find_and_save()

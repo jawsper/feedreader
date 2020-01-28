@@ -16,7 +16,7 @@ class OutlineAdmin(DraggableMPTTAdmin):
 
 @admin.register(Feed)
 class FeedAdmin(admin.ModelAdmin):
-    list_display = ('title', 'lastUpdated', 'lastStatus', 'disabled', 'quirkFixNotXml')
+    list_display = ('title', 'last_updated', 'last_status', 'disabled')
 
     search_fields = ['title']
 

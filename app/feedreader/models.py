@@ -21,14 +21,14 @@ class DisplayTitleMixIn:
 
 class Feed(models.Model, DisplayTitleMixIn):
 	title 		= models.CharField(max_length=500)
-	xmlUrl 		= models.CharField(max_length=1000)
-	htmlUrl 	= models.CharField(max_length=1000)
-	faviconUrl  = models.CharField(max_length=1000, null=True, blank=True)
+	xml_url 		= models.CharField(max_length=1000)
+	html_url 	= models.CharField(max_length=1000)
+	favicon_url  = models.CharField(max_length=1000, null=True, blank=True)
 	favicon     = models.ImageField(upload_to='favicon', null=True, blank=True)
-	lastPubDate = models.DateTimeField(null=True, blank=True)
-	lastUpdated = models.DateTimeField(null=True, blank=True)
-	lastStatus 	= models.CharField(max_length=1000, null=True, blank=True)
-	lastETag	= models.CharField(max_length=100, null=True, blank=True)
+	last_pub_date = models.DateTimeField(null=True, blank=True)
+	last_updated = models.DateTimeField(null=True, blank=True)
+	last_status 	= models.CharField(max_length=1000, null=True, blank=True)
+	last_etag	= models.CharField(max_length=100, null=True, blank=True)
 
 	quirk_fix_invalid_publication_date = models.BooleanField(default=False)
 	quirk_fix_override_encoding = models.CharField(max_length=32, null=True, blank=True)
@@ -50,9 +50,9 @@ class Feed(models.Model, DisplayTitleMixIn):
 			return None, None
 
 	def download_favicon(self):
-		if not self.faviconUrl:
+		if not self.favicon_url:
 			return False
-		headers, content = asyncio.run(self.fetch_favicon(self.faviconUrl))
+		headers, content = asyncio.run(self.fetch_favicon(self.favicon_url))
 		if not headers:
 			return False
 

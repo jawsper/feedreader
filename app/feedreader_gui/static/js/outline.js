@@ -103,7 +103,7 @@ function set_outline_param( a_outline_id, key, value, no_load )
 function set_outline_data( a_outline_id, data )
 {
 	g_outline_data = data;
-	$( '#outline_title > a' ).text( data.title ).attr( 'href', data.htmlUrl );
+	$( '#outline_title > a' ).text( data.title ).attr( 'href', data.html_url );
 	update_outline_unread_count();
 	$( '#button_sort_order' ).button( 'option', 'label', data.sort_order == 'ASC' ? 'Oldest first' : 'Newest first' );
 	

@@ -14,12 +14,12 @@ class Command(BaseCommand):
 
         if feed_id:
             feed = Feed.objects.get(pk=feed_id)
-            print(f'Feed: {feed.title}, {feed.faviconUrl}')
+            print(f'Feed: {feed.title}, {feed.favicon_url}')
             if not feed.favicon:
                 feed.download_favicon()
         else:
             for feed in Feed.objects.filter(disabled=False, favicon=None):
-                print(f'[{feed.pk:03d}] {feed.title}, {feed.faviconUrl}')
+                print(f'[{feed.pk:03d}] {feed.title}, {feed.favicon_url}')
                 if not feed.favicon:
                     print(' - No icon, downloading now')
                     feed.download_favicon()

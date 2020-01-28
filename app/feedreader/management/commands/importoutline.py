@@ -46,9 +46,9 @@ class Command(BaseCommand):
 
 	def import_outline_feed( self, data, parent = None ):
 		try:
-			feed = Feed.objects.get( xmlUrl = data['xmlUrl'] )
+			feed = Feed.objects.get( xml_url = data['xmlUrl'] )
 		except Feed.DoesNotExist:
-			feed = Feed( title = data['title'], xmlUrl = data['xmlUrl'], htmlUrl = data['htmlUrl'] )
+			feed = Feed( title = data['title'], xml_url = data['xmlUrl'], html_url = data['htmlUrl'] )
 			feed.save()
 			self.feeds += 1
 		try:

@@ -71,34 +71,34 @@ class FeedUpdater:
     async def _update_feed(self, feed):
         try:
             if (result := await self.load_feed(feed=feed)):
-                feed.lastUpdated = timezone.now()
-                feed.lastStatus = result
-                feed.save(update_fields=['lastUpdated', 'lastStatus'])
+                feed.last_updated = timezone.now()
+                feed.last_status = result
+                feed.save(update_fields=['last_updated', 'last_status'])
         except FeedUpdateFailure as e:
-            feed.lastUpdated = timezone.now()
-            feed.lastStatus = e.message
-            feed.save(update_fields=['lastUpdated', 'lastStatus'])
+            feed.last_updated = timezone.now()
+            feed.last_status = e.message
+            feed.save(update_fields=['last_updated', 'last_status'])
         except Exception as e:
             logger.exception('Feed error')
 
     async def download_feed(self, feed):
-        if not feed.xmlUrl:
+        if not feed.xml_url:
             return None, None
         headers = {}
         if not self.options.get('force', False):
-            if feed.lastETag:
-                headers['If-None-Match'] = feed.lastETag
-            modified = feed.lastPubDate if feed.lastPubDate else feed.lastUpdated
+            if feed.last_etag:
+                headers['If-None-Match'] = feed.last_etag
+            modified = feed.last_pub_date if feed.last_pub_date else feed.last_updated
             if modified:
                 modified = mktime(modified.timetuple())
                 headers['If-Modified-Since'] = format_date_time(modified)
 
         # Fix for GDPR wall on tumblr sites (#14)
-        hostname = urlparse(feed.xmlUrl).hostname
+        hostname = urlparse(feed.xml_url).hostname
         if hostname.endswith('.tumblr.com'):
             headers['User-Agent'] = 'Mozilla/5.0 (compatible; Baiduspider; +http://www.baidu.com/search/spider.html)'
         try:
-            async with self.session.get(feed.xmlUrl, headers=headers) as response:
+            async with self.session.get(feed.xml_url, headers=headers) as response:
                 if feed.quirk_fix_override_encoding is not None:
                     logger.info(f'[{feed.id:03}] Encoding overriden to %s', feed.quirk_fix_override_encoding)
                 return (await response.text(encoding=feed.quirk_fix_override_encoding)), response
@@ -114,7 +114,7 @@ class FeedUpdater:
 
     async def load_feed(self, feed: Feed):
         prefix = f'[{feed.id:03}] '
-        logger.info(f'{prefix}{feed.xmlUrl}')
+        logger.info(f'{prefix}{feed.xml_url}')
         raw_data, response = await self.download_feed(feed=feed)
 
         if not response:
@@ -137,9 +137,9 @@ class FeedUpdater:
             return 'Error | No data'
 
         if (etag := response.headers.get('etag')):
-            if feed.lastETag != etag:
-                feed.lastETag = etag
-                feed.save(update_fields=['lastETag'])
+            if feed.last_etag != etag:
+                feed.last_etag = etag
+                feed.save(update_fields=['last_etag'])
 
         changed = True
         last_updated = None
@@ -158,11 +158,11 @@ class FeedUpdater:
 
         if feed.quirk_fix_invalid_publication_date:
             pass
-        elif feed.lastPubDate and last_updated and feed.lastPubDate == last_updated:
+        elif feed.last_pub_date and last_updated and feed.last_pub_date == last_updated:
             changed = False
         elif last_updated:
-            feed.lastPubDate = last_updated
-            feed.save(update_fields=["lastPubDate"])
+            feed.last_pub_date = last_updated
+            feed.save(update_fields=['last_pub_date'])
 
         if not changed:
             logger.info('{}No changes detected'.format(prefix))
@@ -247,8 +247,8 @@ class FeedUpdater:
 
         if feed.quirk_fix_invalid_publication_date:
             try:
-                feed.lastPubDate = feed.post_set.order_by('-pubDate').values_list('pubDate')[0][0]
-                feed.save(update_fields=["lastPubDate"])
+                feed.last_pub_date = feed.post_set.order_by('-pubDate').values_list('pubDate')[0][0]
+                feed.save(update_fields=['last_pub_date'])
             except IndexError:
                 pass
 

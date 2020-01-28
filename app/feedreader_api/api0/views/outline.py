@@ -144,7 +144,7 @@ class GetPostsView(JsonResponseView):
         return dict(
             success=True,
             title=outline.display_title,
-            htmlUrl=outline.feed.htmlUrl if outline.feed else None,
+            html_url=outline.feed.html_url if outline.feed else None,
             is_feed=bool(outline.feed),
             show_only_new=outline.show_only_new,
             sort_order=sort_order,

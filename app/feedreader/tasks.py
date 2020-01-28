@@ -42,11 +42,11 @@ def download_feed_favicon(feed_id):
     except Feed.DoesNotExist:
         logger.warning(f'Feed {feed_id} doesn\'t exist')
         return
-    if not feed.faviconUrl:
+    if not feed.favicon_url:
         logger.info('No favicon URL set, trying to find one')
-        feed.faviconUrl = find_favicon(feed)
-        feed.save(update_fields=['faviconUrl'])
-        logger.info(f'URL is now: {feed.faviconUrl}')
+        feed.favicon_url = find_favicon(feed)
+        feed.save(update_fields=['favicon_url'])
+        logger.info(f'URL is now: {feed.favicon_url}')
     logger.info('Downloading favicon')
     result = feed.download_favicon()
     logger.info(f'Download success: {result}')

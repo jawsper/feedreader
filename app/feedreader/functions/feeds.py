@@ -20,14 +20,14 @@ def load_feed(feed_xml_url):
     insert_data = {}
     if data.feed.title:
         insert_data['title'] = data.feed.title
-    insert_data['xmlUrl'] = feed_xml_url
+    insert_data['xml_url'] = feed_xml_url
     if data.feed.link:
-        insert_data['htmlUrl'] = data.feed.link
+        insert_data['html_url'] = data.feed.link
     return Feed(**insert_data)
 
 def add_feed(user, feed_xml_url):
     try:
-        feed = Feed.objects.get(xmlUrl=feed_xml_url)
+        feed = Feed.objects.get(xml_url=feed_xml_url)
     except Feed.DoesNotExist:
         feed = load_feed(feed_xml_url)
         feed.save()
