@@ -57,8 +57,8 @@ services:
   nginx:
     build: ./nginx
     ports:
-      - 1337:80
-      - 1338:443
+      - 127.0.0.1:1337:80
+      - 127.0.0.1:1338:443
     volumes:
       - static_volume:/usr/src/app/static
       - media_volume:/usr/src/app/media
