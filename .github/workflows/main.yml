@@ -31,6 +31,6 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
         registry: docker.jawsper.nl:443
         repository: jawsper/feedreader
-        tags: latest 
-        tag_with_ref: true  
+        tags: latest
+        tag_with_ref: true
         path: app

@@ -13,12 +13,12 @@ class Command( BaseCommand ):
 
     def handle( self, *args, feed_id=None, **options ):
         self.stdout.write( '[Favicon finder]' )
-        
+
         if feed_id is not None:
             feeds = Feed.objects.filter(pk=feed_id)
         else:
             feeds = Feed.objects.all()
-        
+
         for feed in feeds:
             if feed_id is not None or feed.favicon_url == None or feed.favicon_url == '':
                 self.stdout.write( '{0:03} {1} '.format( feed.id, feed.xml_url ) )

@@ -20,10 +20,10 @@ class Command(BaseCommand):
 		if not os.path.exists( filename ):
 			self.stdout.write( 'File does not exist!' )
 			return
-			
+
 		self.outlines = 0
 		self.feeds = 0
-		
+
 		data = ET.parse( filename )
 		root = data.getroot()
 		body = root.find( 'body' )
@@ -37,7 +37,7 @@ class Command(BaseCommand):
 		self.stdout.write( 'Completed!' )
 		self.stdout.write( 'Added {0} new outlines and {1} new feeds'.format( self.outlines, self.feeds ) )
 		return
-	
+
 	def import_outline( self, data ):
 		outline = Outline( user = self.user, title = data['title'] )
 		outline.save()
@@ -53,7 +53,7 @@ class Command(BaseCommand):
 			self.feeds += 1
 		try:
 			outline = Outline.objects.get( feed = feed, user = self.user )
-		except Outline.DoesNotExist:		
+		except Outline.DoesNotExist:
 			outline = Outline( user = self.user, parent = parent, title = data['title'], feed = feed )
 			outline.save()
 			self.outlines += 1

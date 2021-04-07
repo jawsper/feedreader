@@ -77,7 +77,7 @@ class FaviconFinder:
 	def __init__( self, feed, stdout ):
 		self.feed = feed
 		self.stdout = stdout
-	
+
 	def find(self):
 		icon = self.find_icon_in_page()
 		if icon:
@@ -93,21 +93,21 @@ class FaviconFinder:
 		if icon:
 			self.save_icon( icon[2] )
 			return
-		
+
 		# try <host>/favicon.ico
 		self.stdout.write( ' * Trying <host>/favicon.ico' )
 		icon = self.try_force_favicon()
 		if icon:
 			self.save_icon( icon[2] )
 			return
-		
+
 		self.stdout.write( ' * No icon found...' )
-	
+
 	def save_icon( self, url ):
 		self.stdout.write( ' * Found icon at {}'.format( url ) )
 		self.feed.favicon_url = url
 		self.feed.save()
-	
+
 	def load_icon( self, url ):
 		try:
 			result = urllib.request.urlopen( urllib.request.Request( url, headers = { 'User-Agent': 'Chrome' } ) )
@@ -126,7 +126,7 @@ class FaviconFinder:
 		except Exception as e:
 			print( "Exception in load_icon: {0}".format( e ) )
 			return False
-	
+
 	def find_icon_in_page( self ):
 		# load associated html page
 		try:
@@ -137,25 +137,25 @@ class FaviconFinder:
 					m = re.search( 'href="([^"]+)"', match )
 					if not m:
 						continue
-				
+
 					favicon_url = m.groups(1)[0]
-				
+
 					p_favicon_url = urllib.parse.urlparse( favicon_url )
-				
+
 					# relative url, add hostname of site
 					if not p_favicon_url.hostname:
 						p_url = urllib.parse.urlparse( self.feed.html_url )
 						favicon_url = urllib.parse.urlunparse( p_url[0:2] + p_favicon_url[2:] )
-				
+
 					return self.load_icon( favicon_url )
 		except:
 			pass
 		return False
-	
+
 	def try_force_favicon( self ):
 		p_url = urllib.parse.urlparse( self.feed.html_url )
 		return self.load_icon( '{0}://{1}/favicon.ico'.format( p_url[0], p_url[1] ) )
-	
+
 	def default_icon( self ):
 		return HttpResponse( open( settings.STATIC_ROOT + 'images/icons/silk/feed.png', 'r' ).read(), content_type = 'image/png' )
 

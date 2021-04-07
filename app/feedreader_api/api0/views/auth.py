@@ -14,7 +14,7 @@ from feedreader.functions import verify_token
 import uuid
 def generate_token():
 	return uuid.uuid4().get_hex()
-	
+
 def token( request ):
 	if not all( k in request.POST for k in ( 'username', 'password' ) ): # check if username and password are supplied
 		return HttpResponseForbidden()

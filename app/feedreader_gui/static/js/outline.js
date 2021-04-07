@@ -89,7 +89,7 @@ function set_outline_param( a_outline_id, key, value, no_load )
 	if(!a_outline_id) return;
 	data = {outline: a_outline_id, action: key};
 	if( value ) data['value'] = value;
-	
+
 	api_request( 'outline_set', data, function( data )
 	{
 		if(data.success)
@@ -106,7 +106,7 @@ function set_outline_data( a_outline_id, data )
 	$( '#outline_title > a' ).text( data.title ).attr( 'href', data.html_url );
 	update_outline_unread_count();
 	$( '#button_sort_order' ).button( 'option', 'label', data.sort_order == 'ASC' ? 'Oldest first' : 'Newest first' );
-	
+
 	get_unread_counts( a_outline_id );
 }
 
@@ -153,7 +153,7 @@ var load_outline = _.debounce(function( a_outline_id, forced_refresh )
 		{
 			if( g_outline_id != a_outline_id ) return; // attempt to prevent slow loads from overwriting the current outline
 			set_outline_data( a_outline_id, data );
-			
+
 			$( '#content' ).scrollTop( 0 );
 			$( '#posts' ).empty();
 			g_current_post = null;
@@ -280,9 +280,9 @@ function select_post_by_id( post_id )
 }
 
 function select_post( post )
-{	
+{
 	if( g_current_post != null && post.length > 0 && g_current_post.attr( 'id' ) == post.attr( 'id' ) ) return;
-	
+
 	if( g_current_post != null ) g_current_post.removeClass( 'current' );
 	if( post.length == 0 )
 	{
@@ -291,9 +291,9 @@ function select_post( post )
 	}
 	g_current_post = post;
 	g_current_post.addClass( 'current' );
-	
+
 	post[0].scrollIntoView( true );
-	
+
 	if( !post.data( 'do-not-auto-mark-read' ) && !post.find( '.footer .action.read' ).attr( 'checked' ) )
 	{
 		post.find( '.footer .action.read' ).attr( 'checked', true );
@@ -321,7 +321,7 @@ function post_attach_handlers( post_id )
 function post_build_html( post, is_feed )
 {
 	var postTemplate = $( "#postTemplate" ).html();
-	var template = postTemplate.format( 
+	var template = postTemplate.format(
 		post.id,
 		post.link,
 		post.title,
@@ -365,4 +365,3 @@ function move_post( direction )
 		select_post( g_current_post.prev( '.post' ) );
 	}
 }
-

@@ -74,7 +74,7 @@ body
 	right:0;
 	z-index:100;
 	margin: 1.5em;
-} 
+}
 #result_container
 {
 	padding: 0 .7em;
@@ -84,8 +84,8 @@ body
 	float:left;
 	margin-right:.3em;
 }
-   
-ul.clean 
+
+ul.clean
 {
 	list-style-type: none;
 	margin: 0;

@@ -98,7 +98,7 @@ function set_unread_count( outline_id, unread_count )
 	$('> .outline-line > .outline-unread-count', outline).text(unread_count);
 }
 
-var options = 
+var options =
 {
 	'showOnlyUnread': {
 		'title': 'Show only unread posts',
@@ -140,7 +140,7 @@ function load_options()
 }
 
 function option_button_click( name )
-{	
+{
 	if( options[ name ]['type'] == 'boolean' )
 	{
 		save_option( name, !options[ name ]['value'] );
@@ -178,7 +178,7 @@ $(function()
 {
 	// make sure to not propagate when clicked to prevent folders from opening/closing
 	//$( '#outlines a' ).click( function(e) { e.stopPropagation(); } );
-	
+
 	$( '#outlines' )
 		.on({ click: function( e )
 			{
@@ -196,7 +196,7 @@ $(function()
 				set_outline_param( outline_id, 'folder_opened', outline.hasClass( 'folder-closed' ) ? 0 : 1, true );
 			}
 		}, '.folder > .outline-line' );
-		
+
 	// make a button for all options
 	$.each( options, function( name, data )
 	{
@@ -205,7 +205,7 @@ $(function()
 	} );
 	// load the options
 	load_options();
-	
+
 	$( '#new-feed-popup' ).dialog({
 		autoOpen: false,
 		modal: true,
@@ -224,27 +224,27 @@ $(function()
 			$( '#new-feed-url' ).val( '' );
 		}
 	});
-	
+
 	$( '#button-new-feed' ).click( function() { $( '#new-feed-popup' ).dialog( 'open' ); } );
 	// make the options and refresh button work
 	$( '#button-options' ).click( function() { $( '#navigation .options' ).toggle(); } );
-	$( '#button_refresh_page' ).click( function( e ) 
+	$( '#button_refresh_page' ).click( function( e )
 	{
 		e.preventDefault();
 		//get_unread_counts();
 		load_navigation();
 	});
-	
+
 	// trigger initial hash change, and set window.hashchange event
 	//on_hash_change();
 	//$( window ).on( 'hashchange', on_hash_change );
-	
+
 	// if is outline url, then set the outline
-	
-	
+
+
 	//url_change( location.pathname );
 	window.addEventListener( 'popstate', on_popstate );
-	
+
 	load_navigation();
 
 	url_change(location.pathname)
@@ -267,9 +267,9 @@ function get_template( id )
 {
 	var re_template_keys = /\$\{(?:([a-z]+)\.)*([a-z_]+)\}/g;
 	//var re_keyname = /^\$\{(?:([a-z]+)\.)*([a-z_]+)\}$/;
-	
+
 	var template = $( id ).text();
-	
+
 	var match = false;
 	var keys = {};
 	while( ( match = re_template_keys.exec( template, re_template_keys.lastIndex ) ) != null )
@@ -277,12 +277,12 @@ function get_template( id )
 		var key_name = match[0];
 		keys[ key_name ] = match.splice( 1 );
 	}
-	
+
 	/*var matched = template.match( re_template_keys );
 	var keys = {};
 	$.each( matched, function( k, v )
 	{
-		var split_key = v.match( re_keyname ); 
+		var split_key = v.match( re_keyname );
 		if( !split_key )
 		{
 			console.debug( v );
@@ -293,7 +293,7 @@ function get_template( id )
 			keys[ key_name ] = split_key.splice( 1 );
 		}
 	});*/
-	
+
 	return { str: template, keys: keys };
 }
 
@@ -329,14 +329,14 @@ function make_outline( template, outline )
 function render_navigation( navigation )
 {
 	var template = get_template( '#templateNavigationItem' );
-	
+
 	var main_ul = $( '#outlines' );
 	main_ul.empty();
 	$.each( navigation, function( k, outline )
 	{
 		if(!outline) return;
 		var outline_html = make_outline( template, outline );
-		
+
 		if( outline.children && outline.children.length > 0 )
 		{
 			var children = $( '<ul>' );
@@ -355,7 +355,7 @@ function render_navigation( navigation )
 
 String.prototype.format = function() {
   var args = arguments;
-  return this.replace(/{(\d+)}/g, function(match, number) { 
+  return this.replace(/{(\d+)}/g, function(match, number) {
     return typeof args[number] != 'undefined'
       ? args[number]
       : match

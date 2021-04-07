@@ -50,4 +50,3 @@ def download_feed_favicon(feed_id):
     logger.info('Downloading favicon')
     result = feed.download_favicon()
     logger.info(f'Download success: {result}')
-
