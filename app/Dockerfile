@@ -15,8 +15,7 @@ RUN apk update \
 
 # install dependencies
 RUN pip install pipenv
-COPY ./Pipfile /usr/src/app/Pipfile
-COPY ./Pipfile.lock /usr/src/app/Pipfile.lock
+COPY ./Pipfile ./Pipfile.lock ./
 RUN pipenv install --system --deploy --ignore-pipfile
 
 # Remove build dependencies
@@ -26,6 +25,6 @@ RUN apk del build-deps
 # COPY ./entrypoint.sh /usr/src/app/entrypoint.sh
 
 # copy project
-COPY . /usr/src/app/
+COPY . .
 
 # ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
