@@ -75,7 +75,7 @@ class GetAllPostsView(JsonResponseView):
         skip = int(args.get("skip", DEFAULT_SKIP))
         limit = int(args.get("limit", DEFAULT_LIMIT))
         userposts = UserPost.objects.filter(user=user).select_related()[skip:limit]
-        return dict(posts=[up.toJsonDict() for up in userposts])
+        return dict(posts=[up.to_json_dict() for up in userposts])
 
 
 class GetStarredPostsView(JsonResponseView):
@@ -85,7 +85,7 @@ class GetStarredPostsView(JsonResponseView):
         userposts = UserPost.objects.filter(user=user, starred=True).select_related()[
             skip:limit
         ]
-        return dict(posts=[up.toJsonDict() for up in userposts])
+        return dict(posts=[up.to_json_dict() for up in userposts])
 
 
 class GetPostsView(JsonResponseView):
@@ -154,7 +154,7 @@ class GetPostsView(JsonResponseView):
         else:
             posts_queryset = posts_queryset[skip : skip + limit]
 
-        posts = [post.toJsonDict() for post in posts_queryset]
+        posts = [post.to_json_dict() for post in posts_queryset]
 
         if len(posts):
             if self.OLD_SORTING:

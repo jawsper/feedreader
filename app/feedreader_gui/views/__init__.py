@@ -14,7 +14,7 @@ class IndexView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["config"] = ConfigStore.getUserConfig(user=self.request.user)
+        context["config"] = ConfigStore.get_user_config(user=self.request.user)
         context["nodes"] = Outline.objects.select_related("feed").filter(
             user=self.request.user
         )

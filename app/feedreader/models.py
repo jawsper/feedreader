@@ -143,7 +143,7 @@ class Post(models.Model, DisplayTitleMixIn):
             tag["href"] = urljoin(self.link, tag["href"])
         return str(soup)
 
-    def toJsonDict(self):
+    def to_json_dict(self):
         data = {}
         for k in ("id", "link", "author"):
             data[k] = getattr(self, k)
@@ -167,10 +167,10 @@ class UserPost(models.Model):
     class Meta:
         unique_together = ("user", "post")
 
-    def toJsonDict(self):
+    def to_json_dict(self):
         data = {}
         if self.post:
-            data = self.post.toJsonDict()
+            data = self.post.to_json_dict()
         data["starred"] = self.starred if self.starred != None else False
         data["read"] = self.read if self.read != None else False
         return data
@@ -185,7 +185,7 @@ class ConfigStore(models.Model):
         unique_together = ("key", "user")
 
     @staticmethod
-    def getUserConfig(user):
+    def get_user_config(user):
         config = {}
         for line in ConfigStore.objects.filter(user=user):
             config[line.key] = line.value
