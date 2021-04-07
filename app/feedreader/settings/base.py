@@ -21,37 +21,37 @@ BASE_DIR = Path(__file__).parents[2]
 
 # Application definition
 
-DJANGO_CORE_APPS = (
+DJANGO_CORE_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-)
+]
 
-FEEDREADER_APPS = (
+FEEDREADER_APPS = [
     "feedreader",
     "feedreader_gui",
     "feedreader_api",
-)
+]
 
-THIRD_PARTY_APPS = (
+THIRD_PARTY_APPS = [
     "mptt",
     "django_extensions",
     "django_celery_beat",
-)
+]
 
 INSTALLED_APPS = DJANGO_CORE_APPS + FEEDREADER_APPS + THIRD_PARTY_APPS
 
-MIDDLEWARE = (
+MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-)
+]
 
 ROOT_URLCONF = "feedreader.urls"
 
@@ -64,9 +64,9 @@ LOGOUT_REDIRECT_URL = "index"
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "static"
+STATIC_ROOT = str(BASE_DIR / "static")
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_ROOT = str(BASE_DIR / "media")
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/

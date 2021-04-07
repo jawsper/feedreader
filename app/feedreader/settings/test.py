@@ -1,7 +1,8 @@
+from typing import List
 from .base import *
 
 DEBUG = True
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS: List[str] = []
 
 LOAD_FAVICON = False
 

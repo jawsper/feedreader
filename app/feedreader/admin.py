@@ -25,9 +25,9 @@ class FeedAdmin(admin.ModelAdmin):
     def mark_as_enabled(self, request, queryset):
         queryset.update(disabled=False)
 
-    mark_as_enabled.short_description = "Enable selected feeds"
+    mark_as_enabled.short_description = "Enable selected feeds"  # type: ignore
 
     def mark_as_disabled(self, request, queryset):
         queryset.update(disabled=True)
 
-    mark_as_disabled.short_description = "Disable selected feeds"
+    mark_as_disabled.short_description = "Disable selected feeds"  # type: ignore

@@ -238,7 +238,7 @@ class FeedUpdater:
                 elif "description" in insert_data:
                     insert_data["guid"] = insert_data["description"]
                 else:
-                    logger.warningf(
+                    logger.warning(
                         "{prefix}Cannot find a good unique ID {entry} {insert_data}"
                     )
                     continue

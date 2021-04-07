@@ -23,7 +23,7 @@ ADMINS = (
 DATABASES = {
     "default": {
         "ENGINE": os.getenv("SQL_ENGINE", "django.db.backends.sqlite3"),
-        "NAME": os.getenv("SQL_DATABASE", BASE_DIR / "db.sqlite3"),
+        "NAME": os.getenv("SQL_DATABASE", str(BASE_DIR / "db.sqlite3")),
         "USER": os.getenv("SQL_USER", "user"),
         "PASSWORD": os.getenv("SQL_PASSWORD", "password"),
         "HOST": os.getenv("SQL_HOST", "localhost"),
@@ -31,10 +31,10 @@ DATABASES = {
     }
 }
 
-STATIC_ROOT = os.environ.get("STATIC_ROOT", BASE_DIR / "static/")
+STATIC_ROOT = os.environ.get("STATIC_ROOT", str(BASE_DIR / "static/"))
 STATIC_URL = os.environ.get("STATIC_URL", STATIC_URL)
 
-MEDIA_ROOT = os.environ.get("MEDIA_ROOT", BASE_DIR / "media/")
+MEDIA_ROOT = os.environ.get("MEDIA_ROOT", str(BASE_DIR / "media/"))
 MEDIA_URL = os.environ.get("MEDIA_URL", MEDIA_URL)
 
 sentry_sdk.init(
