@@ -4,8 +4,6 @@
 
 from django.http import HttpResponse, JsonResponse
 from django.utils.timezone import utc
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 from feedreader.models import UserToken, Outline, Post, UserPost
 
 import re

@@ -2,17 +2,11 @@
 # Author: Jasper Seidel
 # Date: 2013-06-24
 
-from django.http import HttpResponse, Http404
-from django.conf import settings
-from django.views.generic.base import View, TemplateView
+from django.http import Http404
+from django.views.generic.base import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from feedreader.models import Feed, ConfigStore, Outline
-
-import urllib.request
-import urllib.error
-import urllib.parse
-import os
+from feedreader.models import ConfigStore, Outline
 
 
 class IndexView(LoginRequiredMixin, TemplateView):

@@ -3,7 +3,6 @@ from .base import *
 from feedreader import __version__
 
 import os
-import pkg_resources
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.celery import CeleryIntegration

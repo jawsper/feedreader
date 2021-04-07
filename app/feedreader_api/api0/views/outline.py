@@ -6,9 +6,6 @@ from feedreader.models import Outline, Post, Feed, UserPost
 from feedreader.functions import get_total_unread_count
 from feedreader.functions.feeds import add_feed
 from feedreader_api.functions import JsonResponseView
-from django.views.generic.base import TemplateView
-from django.contrib.auth.mixins import LoginRequiredMixin
-import json
 from base64 import b64encode, b64decode
 
 DEFAULT_SKIP = 0
