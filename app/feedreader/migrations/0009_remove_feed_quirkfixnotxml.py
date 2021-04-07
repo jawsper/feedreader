@@ -6,12 +6,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('feedreader', '0008_feed_quirk_fix_override_encoding'),
+        ("feedreader", "0008_feed_quirk_fix_override_encoding"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='feed',
-            name='quirkFixNotXml',
+            model_name="feed",
+            name="quirkFixNotXml",
         ),
     ]

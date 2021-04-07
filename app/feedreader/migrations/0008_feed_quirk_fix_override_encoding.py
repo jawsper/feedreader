@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('feedreader', '0007_feed_favicon'),
+        ("feedreader", "0007_feed_favicon"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='feed',
-            name='quirk_fix_override_encoding',
+            model_name="feed",
+            name="quirk_fix_override_encoding",
             field=models.CharField(blank=True, max_length=32, null=True),
         ),
     ]

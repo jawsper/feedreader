@@ -18,7 +18,9 @@ class PostContentTest(TestCase):
         post.link = "https://example.org"
         post.content = """<a href="/url">url</a>"""
 
-        self.assertEqual(post.processed_content, """<a href="https://example.org/url">url</a>""")
+        self.assertEqual(
+            post.processed_content, """<a href="https://example.org/url">url</a>"""
+        )
 
     def test_iframe_replacement(self):
         """
@@ -27,7 +29,9 @@ class PostContentTest(TestCase):
         post = Post()
         post.content = """<iframe src="https://example.org"></iframe>"""
 
-        self.assertEqual(post.processed_content, """<a href="https://example.org">iframe</a>""")
+        self.assertEqual(
+            post.processed_content, """<a href="https://example.org">iframe</a>"""
+        )
 
     def test_iframe_no_src(self):
         """

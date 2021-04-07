@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('feedreader', '0006_mptt_update'),
+        ("feedreader", "0006_mptt_update"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='feed',
-            name='favicon',
-            field=models.ImageField(blank=True, null=True, upload_to='favicon'),
+            model_name="feed",
+            name="favicon",
+            field=models.ImageField(blank=True, null=True, upload_to="favicon"),
         ),
     ]

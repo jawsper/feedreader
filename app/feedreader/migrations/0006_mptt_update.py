@@ -6,23 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('feedreader', '0005_feed_quirk_fix_invalid_publication_date'),
+        ("feedreader", "0005_feed_quirk_fix_invalid_publication_date"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='outline',
-            name='level',
+            model_name="outline",
+            name="level",
             field=models.PositiveIntegerField(editable=False),
         ),
         migrations.AlterField(
-            model_name='outline',
-            name='lft',
+            model_name="outline",
+            name="lft",
             field=models.PositiveIntegerField(editable=False),
         ),
         migrations.AlterField(
-            model_name='outline',
-            name='rght',
+            model_name="outline",
+            name="rght",
             field=models.PositiveIntegerField(editable=False),
         ),
     ]

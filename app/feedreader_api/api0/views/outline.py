@@ -17,21 +17,23 @@ DEFAULT_LIMIT = 20
 
 class AddFeedView(JsonResponseView):
     def get_response(self, user, args):
-        if 'url' not in args:
-            return dict(success=False, message='No URL supplied.')
-        result = add_feed(user, args['url'])
-        return dict(success='outline_id' in result, result=result)
+        if "url" not in args:
+            return dict(success=False, message="No URL supplied.")
+        result = add_feed(user, args["url"])
+        return dict(success="outline_id" in result, result=result)
 
 
 class GetUnreadCountView(JsonResponseView):
     def get_response(self, user, args):
         total = 0
         counts = {}
-        if 'outline_id' in args:
+        if "outline_id" in args:
             try:
-                outline = Outline.objects.select_related('parent').get(pk=int(args['outline_id']))
+                outline = Outline.objects.select_related("parent").get(
+                    pk=int(args["outline_id"])
+                )
             except Outline.DoesNotExist:
-                return dict(success=False, message='Invalid outline ID.')
+                return dict(success=False, message="Invalid outline ID.")
 
             counts[outline.id] = outline.unread_count
             if outline.parent:
@@ -52,92 +54,118 @@ class GetAllOutlinesView(JsonResponseView):
     def get_response(self, user, args):
         def recursive_node_to_dict(node):
             return {
-                'id': node.pk,
-                'title': node.title,
-                'unread_count': node.unread_count,
-                'feed_id': node.feed_id,
-                'icon': node.feed.favicon.name if node.feed and node.feed.favicon else None,
-                'folder_opened': node.folder_opened,
-                'children': [recursive_node_to_dict(c) for c in node.get_children()]
+                "id": node.pk,
+                "title": node.title,
+                "unread_count": node.unread_count,
+                "feed_id": node.feed_id,
+                "icon": node.feed.favicon.name
+                if node.feed and node.feed.favicon
+                else None,
+                "folder_opened": node.folder_opened,
+                "children": [recursive_node_to_dict(c) for c in node.get_children()],
             }
-        root_nodes = Outline.objects.select_related('feed').filter(user=self.request.user).get_cached_trees()
-        return {'outlines': [recursive_node_to_dict(node) for node in root_nodes]}
+
+        root_nodes = (
+            Outline.objects.select_related("feed")
+            .filter(user=self.request.user)
+            .get_cached_trees()
+        )
+        return {"outlines": [recursive_node_to_dict(node) for node in root_nodes]}
 
 
 class GetAllPostsView(JsonResponseView):
     def get_response(self, user, args):
-        skip = int(args.get('skip', DEFAULT_SKIP))
-        limit = int(args.get('limit', DEFAULT_LIMIT))
+        skip = int(args.get("skip", DEFAULT_SKIP))
+        limit = int(args.get("limit", DEFAULT_LIMIT))
         userposts = UserPost.objects.filter(user=user).select_related()[skip:limit]
         return dict(posts=[up.toJsonDict() for up in userposts])
 
 
 class GetStarredPostsView(JsonResponseView):
     def get_response(self, user, args):
-        skip = int(args.get('skip', DEFAULT_SKIP))
-        limit = int(args.get('limit', DEFAULT_LIMIT))
-        userposts = UserPost.objects.filter(user=user, starred=True).select_related()[skip:limit]
+        skip = int(args.get("skip", DEFAULT_SKIP))
+        limit = int(args.get("limit", DEFAULT_LIMIT))
+        userposts = UserPost.objects.filter(user=user, starred=True).select_related()[
+            skip:limit
+        ]
         return dict(posts=[up.toJsonDict() for up in userposts])
 
 
 class GetPostsView(JsonResponseView):
     OLD_SORTING = False
+
     def get_response(self, user, args):
         try:
-            outline_id = args.get('outline', None)
-            outline = Outline.objects.select_related('feed').get(user=user, id=outline_id)
+            outline_id = args.get("outline", None)
+            outline = Outline.objects.select_related("feed").get(
+                user=user, id=outline_id
+            )
         except Outline.DoesNotExist:
-            return dict(success=False, message='Outline does not exist.')
+            return dict(success=False, message="Outline does not exist.")
 
-        after = args.get('after', None)
+        after = args.get("after", None)
 
         params = {
-            'user': user,
-            'post__feed__in': outline.get_descendants(include_self=True).values_list('feed_id', flat=True)
+            "user": user,
+            "post__feed__in": outline.get_descendants(include_self=True).values_list(
+                "feed_id", flat=True
+            ),
         }
 
         if outline.show_only_new:
-            params['read'] = False
+            params["read"] = False
 
         if after is not None:
             if self.OLD_SORTING:
                 # option 1: when ordering is done by post__pubDate, post_id
-                pubDate_operator = 'gte' if outline.sort_order_asc else 'lte'
-                operator = 'lt' if outline.sort_order_asc else 'gt'
-                pubDate, post_id = b64decode(after.encode('utf-8')).decode('utf-8').split(';')
-                params[f'post__pubDate__{pubDate_operator}'] = pubDate
-                params[f'post__id__{operator}'] = post_id
+                pubDate_operator = "gte" if outline.sort_order_asc else "lte"
+                operator = "lt" if outline.sort_order_asc else "gt"
+                pubDate, post_id = (
+                    b64decode(after.encode("utf-8")).decode("utf-8").split(";")
+                )
+                params[f"post__pubDate__{pubDate_operator}"] = pubDate
+                params[f"post__id__{operator}"] = post_id
             else:
                 # option 2: this works when only sorting by post_id
-                operator = 'gt' if outline.sort_order_asc else 'lt'
-                params[f'post__id__{operator}'] = after
+                operator = "gt" if outline.sort_order_asc else "lt"
+                params[f"post__id__{operator}"] = after
 
         # option 1
         if self.OLD_SORTING:
-            posts_queryset = UserPost.objects.filter(**params).select_related('post', 'post__feed').order_by('post__pubDate', 'post_id')
+            posts_queryset = (
+                UserPost.objects.filter(**params)
+                .select_related("post", "post__feed")
+                .order_by("post__pubDate", "post_id")
+            )
         # option 2
         else:
-            posts_queryset = UserPost.objects.filter(**params).select_related('post', 'post__feed').order_by('post_id')
+            posts_queryset = (
+                UserPost.objects.filter(**params)
+                .select_related("post", "post__feed")
+                .order_by("post_id")
+            )
 
-        sort_order = 'ASC' if outline.sort_order_asc else 'DESC'
+        sort_order = "ASC" if outline.sort_order_asc else "DESC"
         if not outline.sort_order_asc:
             posts_queryset = posts_queryset.reverse()
 
-        skip = int(args.get('skip', DEFAULT_SKIP))
-        limit = int(args.get('limit', DEFAULT_LIMIT))
+        skip = int(args.get("skip", DEFAULT_SKIP))
+        limit = int(args.get("limit", DEFAULT_LIMIT))
 
         if after is not None:
             posts_queryset = posts_queryset[:limit]
         else:
-            posts_queryset = posts_queryset[skip:skip+limit]
+            posts_queryset = posts_queryset[skip : skip + limit]
 
         posts = [post.toJsonDict() for post in posts_queryset]
 
         if len(posts):
             if self.OLD_SORTING:
-                next_page = b64encode(f"{posts[-1]['pubDate']};{posts[-1]['id']}".encode('utf-8')).decode('utf-8')
+                next_page = b64encode(
+                    f"{posts[-1]['pubDate']};{posts[-1]['id']}".encode("utf-8")
+                ).decode("utf-8")
             else:
-                next_page = posts[-1]['id']
+                next_page = posts[-1]["id"]
         else:
             next_page = None
 
@@ -159,12 +187,12 @@ class GetPostsView(JsonResponseView):
 class OutlineGetDataView(JsonResponseView):
     def get_response(self, user, args):
         try:
-            outline_id = args.get('outline', None)
+            outline_id = args.get("outline", None)
             outline = Outline.objects.get(user=user, id=outline_id)
         except Outline.DoesNotExist:
-            return dict(success=False, message='Outline does not exist.')
+            return dict(success=False, message="Outline does not exist.")
 
-        sort_order = 'ASC' if outline.sort_order_asc else 'DESC'
+        sort_order = "ASC" if outline.sort_order_asc else "DESC"
         show_only_new = outline.show_only_new
 
         return dict(
@@ -172,57 +200,59 @@ class OutlineGetDataView(JsonResponseView):
             title=outline.feed.title if outline.feed else outline.title,
             show_only_new=show_only_new,
             sort_order=sort_order,
-            unread_count=outline.unread_count
+            unread_count=outline.unread_count,
         )
 
 
 class OutlineSetView(JsonResponseView):
     def get_response(self, user, args):
         action_to_field = {
-            'sort_order': 'sort_order_asc',
-            'show_only_new': 'show_only_new',
-            'folder_opened': 'folder_opened'
+            "sort_order": "sort_order_asc",
+            "show_only_new": "show_only_new",
+            "folder_opened": "folder_opened",
         }
 
         try:
-            outline_id = args.get('outline', None)
+            outline_id = args.get("outline", None)
             outline = Outline.objects.get(user=user, id=outline_id)
         except Outline.DoesNotExist:
-            return dict(success=False, message='Outline does not exist.')
+            return dict(success=False, message="Outline does not exist.")
 
-        if 'action' not in args:
-            return dict(success=False, error='ERROR: action not set')
+        if "action" not in args:
+            return dict(success=False, error="ERROR: action not set")
 
-        if args['action'] not in action_to_field:
-            return dict(success=False, error='ERROR: invalid action')
+        if args["action"] not in action_to_field:
+            return dict(success=False, error="ERROR: invalid action")
 
-        if 'value' in args and args['value'] in ('0', '1'):
-            value = args['value'] == '1'
+        if "value" in args and args["value"] in ("0", "1"):
+            value = args["value"] == "1"
         else:
-            value = 'toggle'
+            value = "toggle"
 
-        field = action_to_field[args['action']]
-        if value == 'toggle':
+        field = action_to_field[args["action"]]
+        if value == "toggle":
             value = not getattr(outline, field)
         setattr(outline, field, value)
 
         outline.save()
 
-        return dict(success=True, message='OK')
+        return dict(success=True, message="OK")
 
 
 class OutlineMarkAsReadView(JsonResponseView):
     def get_response(self, user, args):
         try:
-            outline_id = args.get('outline', None)
+            outline_id = args.get("outline", None)
             outline = Outline.objects.get(user=user, id=outline_id)
         except Outline.DoesNotExist:
-            return dict(success=False, message='Outline does not exist.')
+            return dict(success=False, message="Outline does not exist.")
 
         if outline.feed:
             posts = Post.objects.filter(feed=outline.feed)
         else:
-            feed_ids = Outline.objects.filter(parent=outline).values_list('feed', flat=True)
+            feed_ids = Outline.objects.filter(parent=outline).values_list(
+                "feed", flat=True
+            )
             feeds = Feed.objects.filter(pk__in=feed_ids)
             posts = Post.objects.filter(feed__in=feeds)
         post_count = change_count = 0

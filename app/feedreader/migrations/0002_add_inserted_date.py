@@ -2,16 +2,17 @@
 
 from django.db import migrations, models
 
+
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('feedreader', '0001_squashed_0014_auto_20171203_2154'),
+        ("feedreader", "0001_squashed_0014_auto_20171203_2154"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='post',
-            name='inserted_date',
+            model_name="post",
+            name="inserted_date",
             field=models.DateTimeField(auto_now_add=True, null=True),
         ),
     ]

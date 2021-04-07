@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('feedreader', '0004_remove_null_from_inserted_date'),
+        ("feedreader", "0004_remove_null_from_inserted_date"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='feed',
-            name='quirk_fix_invalid_publication_date',
+            model_name="feed",
+            name="quirk_fix_invalid_publication_date",
             field=models.BooleanField(default=False),
         ),
     ]

@@ -7,38 +7,46 @@ from django.db.models import F
 from feedreader.models import Outline, Post, UserPost
 from feedreader_api.functions import JsonResponseView
 
+
 def _find_post_outline(userpost):
     user, post = userpost.user, userpost.post
     return Outline.objects.get(user=user, feed=post.feed)
+
 
 def _update_unread_count(userpost, num):
     outline = _find_post_outline(userpost)
     if not outline:
         return
     outline.get_ancestors(include_self=True).update(
-        unread_count=F('unread_count') + num
+        unread_count=F("unread_count") + num
     )
 
 
 class PostActionView(JsonResponseView):
     def get_response(self, user, args):
         try:
-            post_id = args.get('post', None)
+            post_id = args.get("post", None)
             post = Post.objects.get(id=post_id)
         except Post.DoesNotExist:
-            return {'success': False, 'caption': 'Error', 'message': 'Post not found.'}
+            return {"success": False, "caption": "Error", "message": "Post not found."}
 
-        action = args.get('action', None)
-        state = args.get('state', None)
+        action = args.get("action", None)
+        state = args.get("state", None)
         try:
             state = bool(int(state))
         except ValueError:
             state = None
-        if action not in ('starred', 'read') or state is None:
-            return {'success': False, 'caption': 'Error', 'message': 'Invalid parameters.'}
+        if action not in ("starred", "read") or state is None:
+            return {
+                "success": False,
+                "caption": "Error",
+                "message": "Invalid parameters.",
+            }
 
         try:
-            user_post = UserPost.objects.select_related('user', 'post').get(user=user, post=post)
+            user_post = UserPost.objects.select_related("user", "post").get(
+                user=user, post=post
+            )
         except UserPost.DoesNotExist:
             user_post = UserPost(user=user, post=post)
 
@@ -53,10 +61,16 @@ class PostActionView(JsonResponseView):
         if changed:
             setattr(user_post, action, state)
             user_post.save(update_fields=[action])
-            if action == 'read':
+            if action == "read":
                 _update_unread_count(user_post, -1 if state else +1)
 
-            result_message = 'Post {} marked as {}'.format(post_id, action if state else 'not ' + action)
-            return {'success': True, 'caption': 'Result', 'message': result_message}
+            result_message = "Post {} marked as {}".format(
+                post_id, action if state else "not " + action
+            )
+            return {"success": True, "caption": "Result", "message": result_message}
 
-        return {'success': True, 'caption': 'Result', 'message': 'Post[{}].{} not changed'.format(post.id, action)}
+        return {
+            "success": True,
+            "caption": "Result",
+            "message": "Post[{}].{} not changed".format(post.id, action),
+        }
