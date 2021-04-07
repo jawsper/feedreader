@@ -138,11 +138,11 @@ class FeedUpdater:
 
         data = feedparser.parse(raw_data)
 
-        if data["bozo"]:
-            logger.warning("{}Failed: {}".format(prefix, data["bozo_exception"]))
         if not data:
             logger.warning("{}Failed: no data".format(prefix))
             return "Error | No data"
+        if data["bozo"]:
+            logger.warning("{}Failed: {}".format(prefix, data["bozo_exception"]))
 
         if (etag := response.headers.get("etag")) :
             if feed.last_etag != etag:
