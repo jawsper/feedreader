@@ -10,8 +10,8 @@ SECRET_KEY = "Better generate a better secret key!"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "feedreader",
+        "ENGINE": os.getenv("SQL_ENGINE", "django.db.backends.sqlite3"),
+        "NAME": os.getenv("SQL_DATABASE", BASE_DIR / "develop.sqlite3"),
         "USER": "feedreader",
         "PASSWORD": "feedreader",
     }
