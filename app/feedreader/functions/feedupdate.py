@@ -195,6 +195,10 @@ class FeedUpdater:
             )
         )
 
+        outlines: List[Outline] = await sync_to_async(list)(
+            Outline.objects.filter(feed=feed).prefetch_related("user")
+        )
+
         imported = 0
 
         for entry in reversed(data["entries"]):
@@ -268,9 +272,6 @@ class FeedUpdater:
                 post = Post(**insert_data)
                 try:
                     await sync_to_async(post.save)()
-                    outlines: List[Outline] = await sync_to_async(list)(
-                        Outline.objects.filter(feed=feed).prefetch_related("user")
-                    )
                     for outline in outlines:
                         outline.unread_count += 1
                         await sync_to_async(outline.save)(
