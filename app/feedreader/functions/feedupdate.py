@@ -2,6 +2,8 @@ import asyncio
 import datetime
 import logging
 import re
+from typing import List, Union
+from asgiref.sync import sync_to_async
 from time import mktime
 from urllib.parse import urlparse
 from wsgiref.handlers import format_date_time
@@ -48,41 +50,51 @@ class FeedUpdater:
 
     async def run(self):
         range_ = self.options.get("range", None)
-        qs = None
-        if range_:
-            if re.match(r"^\d+$", range_):
-                qs = Feed.objects.filter(pk=int(range_))
-            else:
-                if (m := re.match(r"^(\d+),$", range_)) :
-                    qs = Feed.objects.filter(id__gte=int(m.group(1)))
-        else:
-            all = self.options.get("all", False)
-            if all:
-                qs = Feed.objects.all()
-            else:
-                qs = Feed.objects.filter(disabled=False)
+        all = self.options.get("all", False)
+        qs = await self.get_queryset(range_=range_, all=all)
         if qs:
             async with self._get_session() as self.session:
                 await asyncio.gather(*(self._update_feed(feed) for feed in qs))
 
-    async def update_feed(self, feed):
+    @sync_to_async
+    def get_queryset(
+        self, *, range_: Union[str, None] = None, all: bool = False
+    ) -> List:
+        filter_params = {}
+        if range_:
+            if re.match(r"^\d+$", range_):
+                filter_params["pk"] = int(range_)
+            else:
+                if (m := re.match(r"^(\d+),$", range_)) :
+                    filter_params["id__gte"] = int(m.group(1))
+        else:
+            if not all:
+                filter_params["disabled"] = False
+
+        return list(Feed.objects.filter(**filter_params))
+
+    async def update_feed(self, feed: Feed):
         async with self._get_session() as self.session:
             await self._update_feed(feed=feed)
 
-    async def _update_feed(self, feed):
+    async def _update_feed(self, feed: Feed):
         try:
             if (result := await self.load_feed(feed=feed)) :
                 feed.last_updated = timezone.now()
                 feed.last_status = result
-                feed.save(update_fields=["last_updated", "last_status"])
+                await sync_to_async(feed.save)(
+                    update_fields=["last_updated", "last_status"]
+                )
         except FeedUpdateFailure as e:
             feed.last_updated = timezone.now()
             feed.last_status = e.message
-            feed.save(update_fields=["last_updated", "last_status"])
+            await sync_to_async(feed.save)(
+                update_fields=["last_updated", "last_status"]
+            )
         except Exception as e:
             logger.exception("Feed error")
 
-    async def download_feed(self, feed):
+    async def download_feed(self, feed: Feed):
         if not feed.xml_url:
             return None, None
         headers = {}
@@ -147,7 +159,7 @@ class FeedUpdater:
         if (etag := response.headers.get("etag")) :
             if feed.last_etag != etag:
                 feed.last_etag = etag
-                feed.save(update_fields=["last_etag"])
+                await sync_to_async(feed.save)(update_fields=["last_etag"])
 
         changed = True
         last_updated = None
@@ -170,7 +182,7 @@ class FeedUpdater:
             changed = False
         elif last_updated:
             feed.last_pub_date = last_updated
-            feed.save(update_fields=["last_pub_date"])
+            await sync_to_async(feed.save)(update_fields=["last_pub_date"])
 
         if not changed:
             logger.info("{}No changes detected".format(prefix))
@@ -246,34 +258,45 @@ class FeedUpdater:
                 insert_data["pubDate"] = timezone.now()
 
             try:
-                test = Post.objects.get(guid__exact=insert_data["guid"])
+                _ = await sync_to_async(Post.objects.get)(
+                    guid__exact=insert_data["guid"]
+                )
             except Post.MultipleObjectsReturned:
                 logger.warning("{}Duplicate post! {}".format(prefix, insert_data))
             except Post.DoesNotExist:
                 insert_data["feed"] = feed
                 post = Post(**insert_data)
                 try:
-                    post.save()
-                    for outline in Outline.objects.filter(feed=feed):
+                    await sync_to_async(post.save)()
+                    outlines: List[Outline] = await sync_to_async(list)(
+                        Outline.objects.filter(feed=feed).prefetch_related("user")
+                    )
+                    for outline in outlines:
                         outline.unread_count += 1
-                        outline.save(update_fields=["unread_count"])
-                        UserPost(
-                            user=outline.user, post=post
-                        ).save()  # make userposts for all users who have this feed
+                        await sync_to_async(outline.save)(
+                            update_fields=["unread_count"]
+                        )
+                        # make userposts for all users who have this feed
+                        up = UserPost(user=outline.user, post=post)
+                        await sync_to_async(up.save)()
                     imported += 1
                 except IntegrityError:
                     logger.exception(f"{prefix}IntegrityError {entry}")
                     continue
 
         if feed.quirk_fix_invalid_publication_date:
-            try:
-                feed.last_pub_date = feed.post_set.order_by("-pubDate").values_list(
-                    "pubDate"
-                )[0][0]
-                feed.save(update_fields=["last_pub_date"])
-            except IndexError:
-                pass
+            await self._fix_invalid_publication_date(feed=feed)
 
         logger.info("{}Inserted {} new posts".format(prefix, imported))
         self.imported += imported
         return f"Success | {imported} posts added"
+
+    @sync_to_async
+    def _fix_invalid_publication_date(self, feed: Feed):
+        try:
+            (feed.last_pub_date,) = (
+                feed.post_set.order_by("-pubDate").values_list("pubDate").first()
+            )
+            feed.save(update_fields=["last_pub_date"])
+        except IndexError:
+            pass
