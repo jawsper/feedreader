@@ -6,6 +6,8 @@ name: Build and push docker images
 # events but only for the master branch
 on:
   push:
+    branches:
+      - master
     tags:
       - 'v*.*.*'
 
