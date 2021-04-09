@@ -6,10 +6,8 @@ name: Build and push docker images
 # events but only for the master branch
 on:
   push:
-    branches:
-      - master
     tags:
-      - '*'
+      - 'v*.*.*'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -23,14 +21,18 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: Checkout repository
       uses: actions/checkout@v2
-
-    - name: Build and push Docker images
-      uses: docker/build-push-action@v1.1.0
+    - name: Set env
+      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
       with:
+        registry: docker.jawsper.nl
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-        registry: docker.jawsper.nl:443
-        repository: jawsper/feedreader
-        tags: latest
-        tag_with_ref: true
-        path: app
+    - name: Build and push Docker images
+      uses: docker/build-push-action@v2
+      with:
+        context: app
+        tags: jawsper/feedreader:${{ env.RELEASE_VERSION }}
