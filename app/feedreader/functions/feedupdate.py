@@ -12,6 +12,7 @@ import aiohttp
 import feedparser
 
 from django.db import IntegrityError
+from django.db.models import F
 from django.utils import timezone
 
 from feedreader import __version__
@@ -273,9 +274,11 @@ class FeedUpdater:
                 try:
                     await sync_to_async(post.save)()
                     for outline in outlines:
-                        outline.unread_count += 1
-                        await sync_to_async(outline.save)(
-                            update_fields=["unread_count"]
+                        outline_with_ancestors = outline.get_ancestors(
+                            include_self=True
+                        )
+                        await sync_to_async(outline_with_ancestors.update)(
+                            unread_count=F("unread_count") + 1
                         )
                         # make userposts for all users who have this feed
                         up = UserPost(user=outline.user, post=post)
