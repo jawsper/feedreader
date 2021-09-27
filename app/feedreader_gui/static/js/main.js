@@ -252,9 +252,10 @@ $(function()
 
 function load_navigation()
 {
-	api_request('outline_get_all_outlines', {}, function(data)
-	{
+	$('#button_refresh_page').button("option", "disabled", true);
+	api_request('outline_get_all_outlines', {}, function(data) {
 		render_navigation(data.outlines);
+		$('#button_refresh_page').button("option", "disabled", false);
 	});
 }
 
