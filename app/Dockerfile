@@ -27,4 +27,14 @@ RUN apk del build-deps
 # copy project
 COPY . .
 
+RUN adduser \
+    --system \
+    --home "$(pwd)" \
+    --disabled-password \
+    --no-create-home \
+    feedreader
+RUN chown -R feedreader .
+
+USER feedreader
+
 # ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
