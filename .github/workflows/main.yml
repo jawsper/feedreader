@@ -28,6 +28,8 @@ jobs:
         tags: |
           jawsper/feedreader:${{ env.RELEASE_VERSION }}
           jawsper/feedreader:latest
+        cache-from: type=registry,ref=jawsper/feedreader:latest
+        cache-to: type=inline
         push: true
     - name: Release
       uses: softprops/action-gh-release@v1
