@@ -191,3 +191,16 @@ class ConfigStore(models.Model):
         for line in ConfigStore.objects.filter(user=user):
             config[line.key] = line.value
         return config
+
+
+class UserConfig(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    show_only_unread = models.BooleanField(default=True)
+    show_nsfw_feeds = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"UserConfig(user={self.user}, show_only_unread={self.show_only_unread}, show_nsfw_feeds={self.show_nsfw_feeds})"
+
+    @staticmethod
+    def get_user_config(user):
+        return UserConfig.objects.filter(user=user).first()
