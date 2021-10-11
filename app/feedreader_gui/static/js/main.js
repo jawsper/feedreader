@@ -238,9 +238,21 @@ $(function () {
     $("#new-feed-popup").dialog("open");
   });
   // make the options and refresh button work
-  $("#button-options").click(function () {
-    $("#navigation .options").toggle();
-  });
+  $("#button-options")
+    .click(function () {
+      const self = $(this);
+      $("#navigation .options").toggle({
+        effect: "slide",
+        direction: "up",
+        complete: function (args) {
+          const visible = $(this).is(":visible");
+          self.button("option", "icons", {
+            primary: visible ? "ui-icon-carat-1-s" : "ui-icon-carat-1-e",
+          });
+        },
+      });
+    })
+    .button("option", "icons", { primary: "ui-icon-carat-1-e" });
   $("#button_refresh_page").click(function (e) {
     e.preventDefault();
     //get_unread_counts();
