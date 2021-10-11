@@ -123,18 +123,28 @@ function load_options() {
     $.each(options, function (name, data) {
       if (typeof result.options[name] == "undefined") {
         // key not found
-        data["value"] = data["default"];
+        data.value = data.default;
       } else {
-        data["value"] = result.options[name];
+        data.value = result.options[name];
       }
-      if (data["callback"]) data["callback"].apply(data);
+      if (data.type === "boolean") {
+        const icon = data.value
+          ? "ui-icon-circle-check"
+          : "ui-icon-circle-close";
+        $(`#btn-option-${name}`).button("option", "icons", { primary: icon });
+      }
+      if (data.callback) data.callback.apply(data);
     });
   });
 }
 
 function option_button_click(name) {
-  if (options[name]["type"] == "boolean") {
-    save_option(name, !options[name]["value"]);
+  const btn = $(this);
+  if (options[name].type == "boolean") {
+    const new_value = !options[name].value;
+    save_option(name, new_value);
+    const icon = new_value ? "ui-icon-circle-check" : "ui-icon-circle-close";
+    btn.button("option", "icons", { primary: icon });
   }
 }
 
@@ -193,13 +203,16 @@ $(function () {
     );
 
   // make a button for all options
-  $.each(options, function (name, data) {
+  $.each(options, function (name, option) {
     var button = $("<a>")
-      .text(data.title)
+      .attr("id", `btn-option-${name}`)
       .click(function () {
-        option_button_click(name);
+        option_button_click.bind(this)(name);
       })
-      .button();
+      .button({
+        icons: { primary: "ui-icon-circle-check" },
+        label: option.title,
+      });
     $("#navigation ul.options").append($("<li>").append(button));
   });
   // load the options
