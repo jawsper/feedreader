@@ -253,11 +253,13 @@ $(function () {
       });
     })
     .button("option", "icons", { primary: "ui-icon-carat-1-e" });
-  $("#button_refresh_page").click(function (e) {
-    e.preventDefault();
-    //get_unread_counts();
-    load_navigation();
-  });
+  $("#button_refresh_page")
+    .click(function (e) {
+      e.preventDefault();
+      //get_unread_counts();
+      load_navigation();
+    })
+    .button("option", "icons", { primary: "ui-icon-refresh" });
 
   // trigger initial hash change, and set window.hashchange event
   //on_hash_change();
