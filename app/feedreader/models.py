@@ -177,22 +177,6 @@ class UserPost(models.Model):
         return data
 
 
-class ConfigStore(models.Model):
-    key = models.CharField(max_length=255, primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    value = models.CharField(max_length=255)
-
-    class Meta:
-        unique_together = ("key", "user")
-
-    @staticmethod
-    def get_user_config(user):
-        config = {}
-        for line in ConfigStore.objects.filter(user=user):
-            config[line.key] = line.value
-        return config
-
-
 class UserConfig(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     show_only_unread = models.BooleanField(default=True)
