@@ -27,5 +27,5 @@ repos:
     rev: 'v2.4.1'
     hooks:
     -   id: prettier
-        types: [javascript]
+        types_or: [javascript, css]
         exclude: 'vendor'
