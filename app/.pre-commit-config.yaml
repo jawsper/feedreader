@@ -23,3 +23,9 @@ repos:
     -   id: flake8
         additional_dependencies: [pep8-naming]
         args: ["--select=F401,N801,N802,N803,N804,N805,N807"]
+-   repo: https://github.com/pre-commit/mirrors-prettier
+    rev: 'v2.4.1'
+    hooks:
+    -   id: prettier
+        types: [javascript]
+        exclude: '(jquery|lodash|js\.cookie)'
