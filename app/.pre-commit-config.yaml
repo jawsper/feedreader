@@ -28,4 +28,4 @@ repos:
     hooks:
     -   id: prettier
         types: [javascript]
-        exclude: '(jquery|lodash|js\.cookie)'
+        exclude: 'vendor'
