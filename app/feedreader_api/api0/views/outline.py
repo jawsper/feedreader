@@ -2,7 +2,9 @@
 # Author: Jasper Seidel
 # Date: 2013-06-24
 
-from feedreader.models import Outline, Post, Feed, UserPost
+from django.db.models import Q
+
+from feedreader.models import Outline, Post, Feed, UserConfig, UserPost
 from feedreader.functions import get_total_unread_count
 from feedreader.functions.feeds import add_feed
 from feedreader_api.functions import JsonResponseView
@@ -62,10 +64,13 @@ class GetAllOutlinesView(JsonResponseView):
                 "children": [recursive_node_to_dict(c) for c in node.get_children()],
             }
 
+        filters = [Q(user=self.request.user)]
+        config, _ = UserConfig.objects.get_or_create(user=user)
+        if not config.show_nsfw_feeds:
+            filters.append(Q(feed=None) | Q(feed__is_nsfw=False))
+
         root_nodes = (
-            Outline.objects.select_related("feed")
-            .filter(user=self.request.user)
-            .get_cached_trees()
+            Outline.objects.select_related("feed").filter(*filters).get_cached_trees()
         )
         return {"outlines": [recursive_node_to_dict(node) for node in root_nodes]}
 
