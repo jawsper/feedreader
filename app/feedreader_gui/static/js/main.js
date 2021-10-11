@@ -213,7 +213,7 @@ $(function () {
         icons: { primary: "ui-icon-circle-check" },
         label: option.title,
       });
-    $("#navigation ul.options").append($("<li>").append(button));
+    $("#navigation .options ul").append($("<li>").append(button));
   });
   // load the options
   load_options();
