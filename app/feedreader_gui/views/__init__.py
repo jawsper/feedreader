@@ -2,6 +2,7 @@
 # Author: Jasper Seidel
 # Date: 2013-06-24
 
+from django.db.models import Q
 from django.http import Http404
 from django.views.generic.base import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -14,10 +15,12 @@ class IndexView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["config"] = UserConfig.get_user_config(user=self.request.user)
-        context["nodes"] = Outline.objects.select_related("feed").filter(
-            user=self.request.user
-        )
+        config, _ = UserConfig.objects.get_or_create(user=self.request.user)
+        filters = [Q(user=self.request.user)]
+        if not config.show_nsfw_feeds:
+            filters.append(Q(feed=None) | Q(feed__is_nsfw=False))
+        context["config"] = config
+        context["nodes"] = Outline.objects.select_related("feed").filter(*filters)
         return context
 
 
