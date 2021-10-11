@@ -103,6 +103,15 @@ var options = {
       $("#outlines").toggleClass("show-only-unread", this["value"]);
     },
   },
+  show_nsfw_feeds: {
+    title: "Show NSFW feeds",
+    type: "boolean",
+    default: false,
+    callback: () => {
+      load_navigation();
+      $("#button_refresh").click();
+    },
+  },
 };
 
 function load_options() {
