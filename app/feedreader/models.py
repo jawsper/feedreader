@@ -190,16 +190,3 @@ class ConfigStore(models.Model):
         for line in ConfigStore.objects.filter(user=user):
             config[line.key] = line.value
         return config
-
-
-from django.utils.timezone import utc
-import datetime
-
-
-class UserToken(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    token = models.CharField(max_length=255)
-    expire = models.DateTimeField()
-
-    def expired(self):
-        return self.expire < datetime.datetime.utcnow().replace(tzinfo=utc)

@@ -85,7 +85,6 @@ LOGOUT_URL = "logout"
 
 # AUTHENTICATION_BACKENDS = (
 #         'django.contrib.auth.backends.ModelBackend',
-#         'feedreader.backend.TokenBackend',
 # )
 
 TEMPLATES = [

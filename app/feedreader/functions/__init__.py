@@ -3,12 +3,10 @@
 # Date: 2013-06-29
 
 from django.http import HttpResponse, JsonResponse
-from django.utils.timezone import utc
-from feedreader.models import UserToken, Outline, Post, UserPost
+from feedreader.models import Outline, Post, UserPost
 
 import re
 import json
-import datetime
 
 from django.db.models.aggregates import Aggregate
 
@@ -49,22 +47,6 @@ def get_unread_count(user, outline):
 def get_total_unread_count(user):
     query = UserPost.objects.filter(user=user, read=False)
     return query.count()
-
-
-def verify_token(username, token):
-    if not username or not token:
-        return False
-    try:
-        token = UserToken.objects.get(user__username=username, token=token)
-        if token.expire < datetime.datetime.utcnow().replace(
-            tzinfo=utc
-        ):  # invalid token
-            token.delete()
-            return False
-        return token
-    except UserToken.DoesNotExist:
-        pass
-    return False
 
 
 import urllib.request, urllib.error, urllib.parse

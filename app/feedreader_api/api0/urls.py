@@ -1,10 +1,8 @@
 from django.urls import path
-from .views import auth, options, outline, post
+from .views import options, outline, post
 
 
 urlpatterns = [
-    path("auth/token/", auth.token, name="auth_token"),
-    path("auth/verify/", auth.verify, name="auth_verify"),
     path(
         "get_options/", options.GetOptionsView.as_view(), name="get_options"
     ),  # unused
