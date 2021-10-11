@@ -97,6 +97,7 @@ class GetPostsView(JsonResponseView):
     OLD_SORTING = False
 
     def get_response(self, user, args):
+        config, _ = UserConfig.objects.get_or_create(user)
         try:
             outline_id = args.get("outline", None)
             outline = Outline.objects.select_related("feed").get(
@@ -107,11 +108,13 @@ class GetPostsView(JsonResponseView):
 
         after = args.get("after", None)
 
+        feed_query = outline.get_descendants(include_self=True)
+        if not config.show_nsfw_feeds:
+            feed_query = feed_query.filter(feed__is_nsfw=False)
+
         params = {
             "user": user,
-            "post__feed__in": outline.get_descendants(include_self=True).values_list(
-                "feed_id", flat=True
-            ),
+            "post__feed__in": feed_query.values_list("feed_id", flat=True),
         }
 
         if outline.show_only_new:
