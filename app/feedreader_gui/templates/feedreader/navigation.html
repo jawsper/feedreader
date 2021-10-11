@@ -1,7 +1,7 @@
 {% load static %}
 {% load mptt_tags %}
 {% get_media_prefix as MEDIA_PREFIX %}
-<ul id="outlines" class="feeds{% if config.showOnlyUnread %} show-only-unread{% endif %}">
+<ul id="outlines" class="feeds{% if config.show_only_unread %} show-only-unread{% endif %}">
     {% recursetree nodes %}
         <li data-unread-count="{{ node.unread_count }}" class="outline {% if node.unread_count > 0 %}has-unread {% endif %}{% if node.feed_id %}feed{% else %}folder{% if not node.folder_opened %} folder-closed{% endif %}{% endif %}" id="outline-{{ node.id }}">
             <div class="outline-line"{% if node.icon %} style="background-image:url('{{ MEDIA_PREFIX }}{{ node.icon }}')"{% endif %}>

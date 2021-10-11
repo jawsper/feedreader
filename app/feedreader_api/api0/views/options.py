@@ -2,49 +2,56 @@
 # Author: Jasper Seidel
 # Date: 2013-06-24
 
-from feedreader.models import ConfigStore
+from feedreader.models import UserConfig
 from feedreader_api.functions import JsonResponseView
 
 
 class GetOptionsView(JsonResponseView):
     def get_response(self, user, args):
-        return dict(
-            options={x.key: x.value for x in ConfigStore.objects.filter(user=user)}
-        )
+        config, _ = UserConfig.objects.get_or_create(user=user)
+        return {
+            "success": True,
+            "options": {
+                key: getattr(config, key) for key in UserConfig.get_config_keys()
+            },
+        }
 
 
 class GetOptionView(JsonResponseView):
     def get_response(self, user, args):
-        if "keys[]" in args:
-            return dict(
-                success=True,
-                options={
-                    x.key: x.value
-                    for x in ConfigStore.objects.filter(
-                        user=user, key__in=args.getlist("keys[]")
-                    )
+        config, _ = UserConfig.objects.get_or_create(user=user)
+        if "keys" in args:
+            return {
+                "success": True,
+                "options": {
+                    key: getattr(config, key)
+                    for key in UserConfig.get_config_keys()
+                    if key in args["keys"]
                 },
-            )
-        elif "keys" in args:
-            return dict(
-                success=True,
-                options={
-                    x.key: x.value
-                    for x in ConfigStore.objects.filter(user=user, key__in=args["keys"])
-                },
-            )
-        if "key" not in args:
-            return dict(success=False, error="Invalid arguments")
-        data = ConfigStore.objects.get(user=user, key=args["key"])
-        if not data:
-            return dict(success=False, error="Not found")
-        return dict(success=True, key=data.key, value=data.value)
+            }
+
+        return {
+            "success": True,
+            "options": {
+                key: getattr(config, key) for key in UserConfig.get_config_keys()
+            },
+        }
 
 
 class SetOptionView(JsonResponseView):
     def get_response(self, user, args):
         if len(args) == 0:
-            return dict(success=False, error=True, message="Invalid arguments.")
+            return {"success": False, "error": True, "message": "Invalid arguments."}
+        config, _ = UserConfig.objects.get_or_create(user=user)
+        fields = list(args.keys())
+        invalid_args = set(fields) - set(UserConfig.get_config_keys())
+        if len(invalid_args) > 0:
+            return {
+                "success": False,
+                "error": True,
+                "message": f"Received invalid keys: {list(invalid_args)}",
+            }
         for key, value in args.items():
-            ConfigStore(user=user, key=key, value=value).save()
-        return dict(success=True)
+            setattr(config, key, value)
+        config.save(update_fields=fields)
+        return {"success": True}

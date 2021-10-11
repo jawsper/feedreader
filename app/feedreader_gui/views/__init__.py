@@ -6,7 +6,7 @@ from django.http import Http404
 from django.views.generic.base import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from feedreader.models import ConfigStore, Outline
+from feedreader.models import Outline, UserConfig
 
 
 class IndexView(LoginRequiredMixin, TemplateView):
@@ -14,7 +14,7 @@ class IndexView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["config"] = ConfigStore.get_user_config(user=self.request.user)
+        context["config"] = UserConfig.get_user_config(user=self.request.user)
         context["nodes"] = Outline.objects.select_related("feed").filter(
             user=self.request.user
         )

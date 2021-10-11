@@ -204,3 +204,12 @@ class UserConfig(models.Model):
     @staticmethod
     def get_user_config(user):
         return UserConfig.objects.filter(user=user).first()
+
+    @classmethod
+    def get_config_keys(cls):
+        ignore_fields = ["id", "user"]
+        return [
+            field.name
+            for field in cls._meta.get_fields()
+            if not field.name in ignore_fields
+        ]

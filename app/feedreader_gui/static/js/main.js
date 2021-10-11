@@ -100,7 +100,7 @@ function set_unread_count( outline_id, unread_count )
 
 var options =
 {
-	'showOnlyUnread': {
+	'show_only_unread': {
 		'title': 'Show only unread posts',
 		'type': 'boolean',
 		'default': false,
@@ -125,14 +125,7 @@ function load_options()
 			}
 			else
 			{
-				if( data['type'] == 'boolean' )
-				{
-					data['value'] = result.options[ name ].toLowerCase() == 'true';
-				}
-				else
-				{
-					data['value'] = result.options[ name ];
-				}
+				data['value'] = result.options[ name ];
 			}
 			if( data['callback'] ) data['callback'].apply( data );
 		});
