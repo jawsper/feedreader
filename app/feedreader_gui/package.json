@@ -1,0 +1,27 @@
+{
+  "name": "feedreader_gui",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "watch": "webpack watch --config webpack.config.js --mode development",
+    "build": "webpack --config webpack.config.js"
+  },
+  "dependencies": {
+    "jquery": "2.2",
+    "jquery-ui": "1.10",
+    "js-cookie": "^3.0.1",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "css-loader": "^6.5.1",
+    "mini-css-extract-plugin": "^2.4.5",
+    "postcss-loader": "^6.2.1",
+    "sass": "^1.44.0",
+    "sass-loader": "^12.3.0",
+    "webpack": "^5.64.4",
+    "webpack-bundle-tracker": "^1.4.0",
+    "webpack-cli": "^4.9.1"
+  }
+}
