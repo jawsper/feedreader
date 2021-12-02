@@ -1,5 +1,6 @@
 {% load static %}
 {% load app_version %}
+{% load render_bundle from webpack_loader %}
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
@@ -8,13 +9,8 @@
 <meta name="viewport" content="width=device-width">
 
 <link rel="icon" href="{% static 'images/favicon.png' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'css/vendor/smoothness/jquery-ui-1.10.3.custom.min.css' %}">
 
-<script type="text/javascript" src="{% static 'js/vendor/lodash.custom.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/vendor/jquery-2.2.4.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/vendor/js.cookie.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/vendor/jquery-ui-1.10.3.custom.min.js' %}"></script>
+{% render_bundle 'main' 'css' %}
 
 {% block head %}{% endblock head %}
 </head>
@@ -63,9 +59,9 @@
 
 {% if user.is_authenticated %}
 <script src="{% url 'script_urls' %}"></script>
-<script type="text/javascript" src="{% static 'js/main.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/outline.js' %}"></script>
+{% render_bundle 'main' 'js' %}
 {% endif %}
+
 
 </body>
 </html>
