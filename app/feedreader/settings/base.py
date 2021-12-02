@@ -40,6 +40,7 @@ THIRD_PARTY_APPS = [
     "mptt",
     "django_extensions",
     "django_celery_beat",
+    "webpack_loader",
 ]
 
 INSTALLED_APPS = DJANGO_CORE_APPS + FEEDREADER_APPS + THIRD_PARTY_APPS
@@ -110,3 +111,10 @@ REDIS_PORT = int(os.environ.get("REDIS_PORT", 6379))
 
 CELERY_BROKER_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/0"
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+
+WEBPACK_LOADER = {
+    "DEFAULT": {
+        "BUNDLE_DIR_NAME": "",
+        "STATS_FILE": str(BASE_DIR / "feedreader_gui/webpack-stats.json"),
+    }
+}
