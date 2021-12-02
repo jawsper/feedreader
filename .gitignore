@@ -33,3 +33,10 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+
+
+# generated files
+app/static
+app/feedreader_gui/static
+node_modules
+webpack-stats.json
