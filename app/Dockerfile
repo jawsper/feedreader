@@ -11,7 +11,7 @@ WORKDIR /usr/src/app
 # Install build dependencies
 RUN apk update \
     && apk add --virtual build-deps gcc python3-dev musl-dev \
-    && apk add postgresql-dev zlib-dev jpeg-dev
+    && apk add postgresql-dev zlib-dev jpeg-dev yarn
 
 # install dependencies
 RUN pip install pipenv
@@ -26,6 +26,11 @@ RUN apk del build-deps
 
 # copy project
 COPY . .
+
+RUN cd ./feedreader_gui && \
+    yarn --frozen-lockfile && \
+    yarn run build && \
+    rm -r node_modules
 
 RUN adduser \
     --system \
