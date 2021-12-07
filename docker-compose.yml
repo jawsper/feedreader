@@ -17,7 +17,6 @@ services:
     env_file:
       - web-variables.env
     volumes:
-      - ./app/:/usr/src/app/
       - static_volume:/usr/src/app/static
       - media_volume:/usr/src/app/media
     expose:
@@ -33,8 +32,6 @@ services:
     command: celery -A feedreader worker -l info
     env_file:
       - web-variables.env
-    volumes:
-      - ./app/:/usr/src/app/
     depends_on:
       - redis
     restart: unless-stopped
@@ -46,8 +43,6 @@ services:
     command: celery -A feedreader beat -l info
     env_file:
       - web-variables.env
-    volumes:
-      - ./app/:/usr/src/app/
     depends_on:
       - redis
     restart: unless-stopped
