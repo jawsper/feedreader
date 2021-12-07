@@ -58,5 +58,6 @@ RUN chown -R feedreader .
 USER feedreader
 
 COPY --from=node-builder --chown=feedreader /app/static ./feedreader_gui/static/
+COPY --from=node-builder --chown=feedreader /app/webpack-stats.json ./feedreader_gui/
 
 # ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
