@@ -1,3 +1,18 @@
+FROM node:14 AS node-builder
+
+WORKDIR /app
+
+COPY feedreader_gui/package.json \
+    feedreader_gui/yarn.lock \
+    feedreader_gui/webpack.config.js \
+    /app/
+COPY feedreader_gui/assets /app/assets/
+
+RUN yarn --frozen-lockfile && \
+    ls /app && \
+    yarn run build && \
+    rm -r node_modules
+
 # pull official base image
 FROM python:3.9-alpine
 
@@ -11,7 +26,7 @@ WORKDIR /usr/src/app
 # Install build dependencies
 RUN apk update \
     && apk add --virtual build-deps gcc python3-dev musl-dev \
-    && apk add postgresql-dev zlib-dev jpeg-dev yarn
+    && apk add postgresql-dev zlib-dev jpeg-dev
 
 # install dependencies
 RUN pip install pipenv
@@ -27,19 +42,21 @@ RUN apk del build-deps
 # copy project
 COPY . .
 
-RUN cd ./feedreader_gui && \
-    yarn --frozen-lockfile && \
-    yarn run build && \
-    rm -r node_modules
-
-RUN adduser \
+RUN addgroup \
+    --system \
+    feedreader \
+    && adduser \
     --system \
     --home "$(pwd)" \
     --disabled-password \
     --no-create-home \
+    --ingroup feedreader \
     feedreader
+
 RUN chown -R feedreader .
 
 USER feedreader
+
+COPY --from=node-builder --chown=feedreader /app/static ./feedreader_gui/static/
 
 # ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
