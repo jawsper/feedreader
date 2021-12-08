@@ -11,8 +11,6 @@ import "../css/main.scss";
 	License: MIT
 */
 
-var base_path = "//" + document.location.host + "/";
-
 function api_request(path, args, callback) {
   var fetch_args = {
     method: "POST",
@@ -37,12 +35,6 @@ function api_request(path, args, callback) {
     })
     .then(callback)
     .catch(console.log);
-}
-
-function get_url(path) {
-  //if( base_path.substr( -1 ) != '/' ) base_path += '/';
-  //if( path.substr( 0, 1 ) == '/' ) path = path.substr( 1 );
-  return base_path + path;
 }
 
 function get_media_url(path) {
@@ -290,10 +282,6 @@ function load_navigation() {
   });
 }
 
-function regexp_escape(input) {
-  return input.replace(/([\$\{\}])/g, "\\$1");
-}
-
 function get_template(id) {
   var re_template_keys = /\$\{(?:([a-z]+)\.)*([a-z_]+)\}/g;
   //var re_keyname = /^\$\{(?:([a-z]+)\.)*([a-z_]+)\}$/;
@@ -525,15 +513,6 @@ function update_outline_unread_count() {
   );
 }
 
-function get_outline_data(a_outline_id) {
-  if (!a_outline_id) return;
-  api_request("get_outline_data", { outline: a_outline_id }, function (data) {
-    if (!data.error) {
-      set_outline_data(a_outline_id, data);
-    }
-  });
-}
-
 function count_visible_unread_posts() {
   // get all unchecked posts and skip those
   // or just all posts
@@ -631,18 +610,6 @@ function post_get_id(post) {
 }
 function id_get_post(post_id) {
   return $("#post_" + post_id);
-}
-
-function outline_change_unread_count(outline_id, diff) {
-  var outline = $("#outline-" + outline_id);
-  var outline_obj = outline.data("outline");
-  outline_obj.unread_count += diff;
-  outline.data("outline", outline_obj);
-  outline.toggleClass("has-unread", outline_obj.unread_count > 0);
-  $("#outline-unread-count-" + outline_id).text(outline_obj.unread_count);
-  var parent = outline.parents(".outline");
-  if (parent.length > 0)
-    outline_change_unread_count(parent.data("outline")["id"], diff);
 }
 
 function set_post_read_state(post_id, state) {
