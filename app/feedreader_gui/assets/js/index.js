@@ -486,7 +486,7 @@ function set_outline(a_outline_id) {
 
 function set_outline_param(a_outline_id, key, value, no_load) {
   if (!a_outline_id) return;
-  data = { outline: a_outline_id, action: key };
+  let data = { outline: a_outline_id, action: key };
   if (value) data["value"] = value;
 
   api_request("outline_set", data, function (data) {
@@ -595,7 +595,7 @@ var load_more_posts = _.debounce(
     $("#load_more_posts").hide();
     $("#no_more_posts").hide();
 
-    skip = count_visible_unread_posts();
+    let skip = count_visible_unread_posts();
 
     api_request(
       "get_posts",
