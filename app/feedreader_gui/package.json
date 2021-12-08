@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "jquery": "2.2",
-    "jquery-ui": "1.10",
+    "jquery-ui": "1.13",
     "js-cookie": "^3.0.1",
     "lodash": "^4.17.21"
   },
