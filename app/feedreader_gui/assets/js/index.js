@@ -213,7 +213,7 @@ $(function () {
   $.each(options, function (name, option) {
     var button = $("<a>")
       .attr("id", `btn-option-${name}`)
-      .click(function () {
+      .on("click", function () {
         option_button_click.bind(this)(name);
       })
       .button({
@@ -241,12 +241,12 @@ $(function () {
     },
   });
 
-  $("#button-new-feed").click(function () {
+  $("#button-new-feed").on("click", function () {
     $("#new-feed-popup").dialog("open");
   });
   // make the options and refresh button work
   $("#button-options")
-    .click(function () {
+    .on("click", function () {
       const self = $(this);
       $("#navigation .options").toggle({
         effect: "slide",
@@ -261,7 +261,7 @@ $(function () {
     })
     .button("option", "icons", { primary: "ui-icon-carat-1-e" });
   $("#button_refresh_page")
-    .click(function (e) {
+    .on("click", function (e) {
       e.preventDefault();
       //get_unread_counts();
       load_navigation();
@@ -400,7 +400,7 @@ var g_limit = 10;
 /* directly after load init everything */
 
 $(function () {
-  $("body").keypress(function (e) {
+  $("body").on("keypress", function (e) {
     var key = e.key.toLowerCase();
     if (e.shiftKey) key = "shift+" + key;
     if (e.metaKey) key = "meta+" + key;
@@ -408,7 +408,7 @@ $(function () {
     if (e.altKey) key = "alt+" + key;
     switch (key) {
       case "r":
-        $("#button_refresh").click();
+        $("#button_refresh").trigger("click");
         break;
       case "j":
         move_post(+1);
@@ -418,7 +418,7 @@ $(function () {
         break;
       case "f":
         $("body").toggleClass("fullscreen");
-        if ($("body").hasClass("fullscreen")) $("#content").focus();
+        if ($("body").hasClass("fullscreen")) $("#content").trigger("focus");
         break;
       case "m":
         if (g_current_post != null) {
@@ -450,29 +450,29 @@ $(function () {
     }
     //e.preventDefault();
   });
-  $("#button_refresh").click(function () {
+  $("#button_refresh").on("click", function () {
     load_outline(g_outline_id, true);
   });
-  $("#button_mark_all_as_read").click(function () {
+  $("#button_mark_all_as_read").on("click", function () {
     mark_all_as_read(g_outline_id);
   });
-  $("#button_show_only_new").click(function () {
+  $("#button_show_only_new").on("click", function () {
     set_outline_param(g_outline_id, "show_only_new");
   });
-  $("#button_sort_order").click(function () {
+  $("#button_sort_order").on("click", function () {
     set_outline_param(g_outline_id, "sort_order");
   });
-  $("#button_toggle_fullscreen").click(function () {
+  $("#button_toggle_fullscreen").on("click", function () {
     $("body").toggleClass("fullscreen");
-    if ($("body").hasClass("fullscreen")) $("#content").focus();
+    if ($("body").hasClass("fullscreen")) $("#content").trigger("focus");
   });
-  $("#button_prev_post").click(function () {
+  $("#button_prev_post").on("click", function () {
     move_post(-1);
   });
-  $("#button_next_post").click(function () {
+  $("#button_next_post").on("click", function () {
     move_post(+1);
   });
-  $("#load_more_posts a").click(function () {
+  $("#load_more_posts a").on("click", function () {
     load_more_posts(g_outline_id, null, null);
   });
 });
@@ -706,16 +706,16 @@ function select_post(post) {
 
 function post_attach_handlers(post_id) {
   id_get_post(post_id)
-    .mouseup(function () {
+    .on("mouseup", function () {
       select_post_by_id(post_id);
     })
     .find(".footer .action.starred")
-    .click(function () {
+    .on("click", function () {
       set_post_starred_state(post_id, $(this).is(":checked") ? 1 : 0);
     })
     .end()
     .find(".footer .action.read")
-    .click(function () {
+    .on("click", function () {
       set_post_read_state(post_id, $(this).is(":checked") ? 1 : 0);
     })
     .end()
