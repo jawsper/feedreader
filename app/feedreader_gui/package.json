@@ -9,7 +9,7 @@
     "build": "webpack --config webpack.config.js"
   },
   "dependencies": {
-    "jquery": "2.2",
+    "jquery": "3.5",
     "jquery-ui": "1.10",
     "js-cookie": "^3.0.1",
     "lodash": "^4.17.21"
