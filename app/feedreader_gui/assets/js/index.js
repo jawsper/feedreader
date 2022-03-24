@@ -1,5 +1,6 @@
 import $ from "jquery";
-import "jquery-ui";
+import "jquery-ui/ui/widgets/button";
+import "jquery-ui/ui/widgets/dialog";
 import _ from "lodash";
 import Cookies from "js-cookie";
 
