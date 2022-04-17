@@ -12,6 +12,8 @@ import "../css/main.scss";
 	License: MIT
 */
 
+const urls = JSON.parse(document.getElementById("urls").textContent);
+
 function api_request(path, args, callback) {
   var fetch_args = {
     method: "POST",

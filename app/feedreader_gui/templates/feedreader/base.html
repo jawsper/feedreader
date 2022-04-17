@@ -58,7 +58,7 @@
 <div id="version" class="footer row"><a target="_blank" href="https://github.com/jawsper/feedreader">Feedreader</a> v{% app_version %}</div>
 
 {% if user.is_authenticated %}
-<script src="{% url 'script_urls' %}"></script>
+{{ urls | json_script:"urls" }}
 {% render_bundle 'main' 'js' %}
 {% endif %}
 
