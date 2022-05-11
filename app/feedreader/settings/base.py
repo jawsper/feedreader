@@ -46,6 +46,7 @@ THIRD_PARTY_APPS = [
 INSTALLED_APPS = DJANGO_CORE_APPS + FEEDREADER_APPS + THIRD_PARTY_APPS
 
 MIDDLEWARE = [
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
