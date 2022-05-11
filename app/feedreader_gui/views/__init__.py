@@ -46,12 +46,14 @@ class FaviconView(LoginRequiredMixin, View):
         try:
             outline = Outline.objects.get(pk=outline_id)
             if outline.feed and outline.feed.favicon_url:
-                response = requests.get(outline.feed.favicon_url)
+                response = requests.get(outline.feed.favicon_url, timeout=10)
                 content_type = response.headers.get("content-type", "image/icon")
                 return HttpResponse(
                     response.content,
                     content_type=content_type,
                 )
+        except requests.exceptions.RequestException:
+            pass  # if it failed for any reason, just return the default icon
         except Outline.DoesNotExist:
             pass
         return HttpResponseRedirect("/static/images/4986817c45fa2df22ddd.png")
