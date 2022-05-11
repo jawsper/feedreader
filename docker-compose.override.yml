@@ -1,0 +1,18 @@
+version: "3.7"
+
+services:
+  db:
+    restart: unless-stopped
+  redis:
+    restart: unless-stopped
+  web:
+    restart: unless-stopped
+    image: feedreader
+    ports:
+      - 127.0.0.1:1337:8000
+  celery:
+    restart: unless-stopped
+    image: feedreader
+  beat:
+    restart: unless-stopped
+    image: feedreader

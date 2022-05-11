@@ -5,11 +5,9 @@ services:
     image: postgres:10-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-    restart: unless-stopped
 
   redis:
     image: redis:5-alpine
-    restart: unless-stopped
 
   web:
     build: ./app
@@ -19,11 +17,8 @@ services:
     volumes:
       - static_volume:/app/static
       - media_volume:/app/media
-    ports:
-      - 127.0.0.1:1337:8000
     depends_on:
       - db
-    restart: unless-stopped
     secrets:
       - secret_key
 
@@ -34,7 +29,6 @@ services:
       - web-variables.env
     depends_on:
       - redis
-    restart: unless-stopped
     secrets:
       - secret_key
 
@@ -45,7 +39,6 @@ services:
       - web-variables.env
     depends_on:
       - redis
-    restart: unless-stopped
     secrets:
       - secret_key
 
