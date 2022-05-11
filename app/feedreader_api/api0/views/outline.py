@@ -58,7 +58,7 @@ class GetAllOutlinesView(JsonResponseView):
                 "title": node.title,
                 "unread_count": node.unread_count,
                 "feed_id": node.feed_id,
-                "icon": reverse("favicon", args=(node.pk,)),
+                "icon": reverse("favicon", args=(node.pk,)) if node.feed_id else None,
                 "folder_opened": node.folder_opened,
                 "children": [recursive_node_to_dict(c) for c in node.get_children()],
             }
