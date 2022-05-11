@@ -13,34 +13,31 @@ RUN yarn --frozen-lockfile && \
     yarn run build && \
     rm -r node_modules
 
+######################################
+
 # pull official base image
-FROM python:3.9-alpine
+FROM python:3.9-slim as builder
 
 # set environment varibles
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIPENV_VENV_IN_PROJECT=1
 
 # set work directory
-WORKDIR /usr/src/app
+WORKDIR /app
 
 # Install build dependencies
-RUN apk update \
-    && apk add --virtual build-deps gcc python3-dev musl-dev \
-    && apk add postgresql-dev zlib-dev jpeg-dev
+RUN DEBIAN_FRONTEND=noninteractive apt-get update \
+    && apt-get install -y python3-dev libpq-dev gcc
 
 # install dependencies
 RUN pip install pipenv
 COPY ./Pipfile ./Pipfile.lock ./
-RUN pipenv install --system --deploy --ignore-pipfile
+RUN pipenv sync
 
-# Remove build dependencies
-RUN apk del build-deps
+######################################
 
-# copy entrypoint.sh
-# COPY ./entrypoint.sh /usr/src/app/entrypoint.sh
+FROM python:3.9-slim as runtime
 
-# copy project
-COPY . .
+WORKDIR /app
 
 RUN addgroup \
     --system \
@@ -53,11 +50,23 @@ RUN addgroup \
     --ingroup feedreader \
     feedreader
 
-RUN chown -R feedreader .
+RUN chown feedreader .
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get update \
+    && apt-get install -y libpq-dev
 
 USER feedreader
 
+# copy project
+RUN mkdir media static
+ENV PATH /app/.venv/bin:$PATH
+COPY --from=builder --chown=feedreader /app/.venv/ ./.venv/
+COPY --chown=feedreader feedreader ./feedreader
+COPY --chown=feedreader feedreader_api ./feedreader_api
+COPY --chown=feedreader feedreader_gui ./feedreader_gui
+COPY --chown=feedreader manage.py .
 COPY --from=node-builder --chown=feedreader /app/static ./feedreader_gui/static/
 COPY --from=node-builder --chown=feedreader /app/webpack-stats.json ./feedreader_gui/
+
 
 # ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
