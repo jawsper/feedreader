@@ -26,10 +26,10 @@ WORKDIR /app
 
 # Install build dependencies
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
-    && apt-get install -y python3-dev libpq-dev gcc
+    && apt-get install --no-install-recommends -y python3-dev libpq-dev gcc
 
 # install dependencies
-RUN pip install pipenv
+RUN pip install pipenv==2022.5.2
 COPY ./Pipfile ./Pipfile.lock ./
 RUN pipenv sync
 
@@ -53,7 +53,9 @@ RUN addgroup \
 RUN chown feedreader .
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
-    && apt-get install -y libpq-dev
+    && apt-get install --no-install-recommends -y libpq-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 USER feedreader
 
