@@ -3,9 +3,10 @@
 # Date: 2013-06-24
 
 from django.db.models import Q
+from django.urls import reverse
 
 from feedreader.models import Outline, Post, Feed, UserConfig, UserPost
-from feedreader.functions import get_total_unread_count, ensure_https_url
+from feedreader.functions import get_total_unread_count
 from feedreader.functions.feeds import add_feed
 from feedreader_api.functions import JsonResponseView
 from base64 import b64encode, b64decode
@@ -57,7 +58,7 @@ class GetAllOutlinesView(JsonResponseView):
                 "title": node.title,
                 "unread_count": node.unread_count,
                 "feed_id": node.feed_id,
-                "icon": ensure_https_url(node.feed.favicon_url) if node.feed else None,
+                "icon": reverse("favicon", args=(node.pk,)),
                 "folder_opened": node.folder_opened,
                 "children": [recursive_node_to_dict(c) for c in node.get_children()],
             }
