@@ -1,5 +1,12 @@
 version: '3.7'
 
+x-app: &default-app
+  build: ./app
+  env_file:
+    - web-variables.env
+  secrets:
+    - secret_key
+
 services:
   db:
     image: postgres:10-alpine
@@ -10,37 +17,25 @@ services:
     image: redis:5-alpine
 
   web:
-    build: ./app
+    <<: *default-app
     command: gunicorn feedreader.wsgi:application --bind 0.0.0.0:8000 -w 5
-    env_file:
-      - web-variables.env
     volumes:
       - static_volume:/app/static
       - media_volume:/app/media
     depends_on:
       - db
-    secrets:
-      - secret_key
 
   celery:
-    build: ./app
+    <<: *default-app
     command: celery -A feedreader worker -l info
-    env_file:
-      - web-variables.env
     depends_on:
       - redis
-    secrets:
-      - secret_key
 
   beat:
-    build: ./app
+    <<: *default-app
     command: celery -A feedreader beat -l info
-    env_file:
-      - web-variables.env
     depends_on:
       - redis
-    secrets:
-      - secret_key
 
 volumes:
   postgres_data:
