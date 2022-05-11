@@ -40,10 +40,6 @@ function api_request(path, args, callback) {
     .catch(console.log);
 }
 
-function get_media_url(path) {
-  return document.body.dataset.mediaUrl + path;
-}
-
 function add_new_feed(url) {
   api_request("feed_add", { url: url }, function (result) {
     if (result.success) {
@@ -339,10 +335,7 @@ function make_outline(template, outline) {
   }
   html.toggleClass("has-unread", outline.unread_count > 0);
   if (outline.icon) {
-    $("> .outline-line", html).css(
-      "background-image",
-      `url(${get_media_url(outline.icon)})`
-    );
+    $("> .outline-line", html).css("background-image", `url(${outline.icon})`);
   }
   return html;
 }

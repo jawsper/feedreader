@@ -158,3 +158,9 @@ class FaviconFinder:
 
 def find_favicon(feed):
     return FaviconFinder(feed, None).find()
+
+
+def ensure_https_url(url: str):
+    if url and url.startswith("http://"):
+        url = f"https{url[4:]}"
+    return url

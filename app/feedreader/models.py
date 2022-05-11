@@ -100,8 +100,10 @@ class Outline(MPTTModel, DisplayTitleMixIn):
 
     @property
     def icon(self):
+        from feedreader.functions import ensure_https_url
+
         if self.feed:
-            return self.feed.favicon
+            return ensure_https_url(self.feed.favicon_url)
 
 
 class Post(models.Model, DisplayTitleMixIn):
