@@ -50,8 +50,6 @@ def get_total_unread_count(user):
 
 
 import urllib.request, urllib.error, urllib.parse
-from PIL import Image
-from io import BytesIO
 
 
 class FaviconFinder:
@@ -100,15 +98,6 @@ class FaviconFinder:
                 if "content-type" in result.headers
                 else "text/html"
             )
-            img = Image.open(BytesIO(data))
-            if False and (content_type == "image/x-icon" or not img.size == (16, 16)):
-                if not img.size == (16, 16):
-                    print("resizing")
-                    img = img.resize((16, 16))
-                raw = BytesIO()
-                img.save(raw, "PNG")
-                data = raw.getvalue()
-                content_type = "image/png"
             return (data, content_type, url)
         except Exception as e:
             print("Exception in load_icon: {0}".format(e))
