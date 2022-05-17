@@ -17,15 +17,19 @@
 <button id="button_show_only_new">
   {#if outline_data?.show_only_new}
   {outline_data.unread_count} new item{#if outline_data.unread_count !== 1}s{/if}
-  {:else}
+  {:else if outline_data}
   All items
+  {:else}
+  &nbsp;
   {/if}
 </button>
 <button id="button_sort_order">
   {#if outline_data?.sort_order === "ASC"}
   Oldest first
-  {:else}
+  {:else if outline_data}
   Newest first
+  {:else}
+  &nbsp;
   {/if}
 </button>
 <div style="float:right">
