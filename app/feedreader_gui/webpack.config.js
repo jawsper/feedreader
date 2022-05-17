@@ -26,6 +26,14 @@ module.exports = {
     }),
   ],
 
+  resolve: {
+    alias: {
+      svelte: path.resolve("node_modules", "svelte"),
+    },
+    extensions: [".mjs", ".js", ".svelte"],
+    mainFields: ["svelte", "browser", "module", "main"],
+  },
+
   module: {
     rules: [
       {
@@ -37,6 +45,24 @@ module.exports = {
         type: "asset/resource",
         generator: {
           filename: "images/[hash][ext][query]",
+        },
+      },
+      {
+        test: /\.(html|svelte)$/,
+        use: {
+          loader: "svelte-loader",
+          options: {
+            compilerOptions: {
+              hydratable: true,
+            },
+          },
+        },
+      },
+      {
+        // required to prevent errors from Svelte on Webpack 5+, omit on Webpack 4
+        test: /node_modules\/svelte\/.*\.mjs$/,
+        resolve: {
+          fullySpecified: false,
         },
       },
     ],
