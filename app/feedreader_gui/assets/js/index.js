@@ -1,10 +1,68 @@
 import $ from "jquery";
 import "jquery-ui/ui/widgets/button";
 import "jquery-ui/ui/widgets/dialog";
-import _ from "lodash";
+import { debounce } from "lodash";
 import Cookies from "js-cookie";
 
 import "../css/main.scss";
+
+// import App from "./App";
+import Navigation from "./Navigation";
+import OutlineHeader from "./OutlineHeader";
+import Posts from "./Posts";
+
+import {
+  outline as outline_store,
+  posts,
+  load_more_posts as load_more_posts_store,
+} from "./stores";
+
+// const app = new App({
+//   target: document.querySelector("#app")
+// })
+
+const navigation = new Navigation({
+  target: document.querySelector("#outlines"),
+  props: {
+    navigation: [],
+  },
+  hydrate: true,
+});
+
+const outline_header = new OutlineHeader({
+  target: document.querySelector(".content_header"),
+  hydrate: true,
+});
+
+const posts_component = new Posts({
+  target: document.querySelector("#posts"),
+  props: {
+    is_feed: false,
+  },
+  hydrate: true,
+});
+
+navigation.$on("outline", (outline_id) => {
+  console.log("on outline", outline_id);
+});
+
+load_more_posts_store.subscribe((more) => {
+  if (more) {
+    load_more_posts(g_outline_id, null, null);
+    load_more_posts_store.set(false);
+  }
+});
+
+posts_component.$on("starred", (e) => {
+  const { id, value } = e.detail;
+  console.log("starred", e.detail);
+  set_post_attr_state(id, "starred", value);
+});
+posts_component.$on("read", (e) => {
+  const { id, value } = e.detail;
+  console.log("read", e.detail);
+  set_post_attr_state(id, "read", value);
+});
 
 /*
 	File: main.js
@@ -15,7 +73,7 @@ import "../css/main.scss";
 const urls = JSON.parse(document.getElementById("urls").textContent);
 
 function api_request(path, args, callback) {
-  var fetch_args = {
+  let fetch_args = {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -67,7 +125,7 @@ function show_result(data) {
   $("#result").stop(true, true).fadeIn().delay(5000).fadeOut();
 }
 
-var get_unread_counts = _.debounce(
+var get_unread_counts = debounce(
   function (outline_id) {
     api_request("get_unread", { outline_id: outline_id }, function (data) {
       document.title =
@@ -83,12 +141,9 @@ var get_unread_counts = _.debounce(
 
 function set_unread_count(outline_id, unread_count) {
   var outline = $("#outline-" + outline_id);
+  // TODO: make this in svelte
+  // console.log(navigation.navigation);
   outline.toggleClass("has-unread", unread_count > 0);
-  var outline_obj = outline.data("outline");
-  if (outline_obj) {
-    outline_obj.unread_count = unread_count;
-    outline.data("outline", outline_obj);
-  }
   $("> .outline-line > .outline-unread-count", outline).text(unread_count);
 }
 
@@ -107,7 +162,7 @@ var options = {
     default: false,
     callback: () => {
       load_navigation();
-      $("#button_refresh").click();
+      $("#button_refresh").trigger("click");
     },
   },
 };
@@ -281,93 +336,9 @@ function load_navigation() {
   });
 }
 
-function get_template(id) {
-  var re_template_keys = /\$\{(?:([a-z]+)\.)*([a-z_]+)\}/g;
-  //var re_keyname = /^\$\{(?:([a-z]+)\.)*([a-z_]+)\}$/;
-
-  var template = $(id).text();
-
-  var match = false;
-  var keys = {};
-  while (
-    (match = re_template_keys.exec(template, re_template_keys.lastIndex)) !=
-    null
-  ) {
-    var key_name = match[0];
-    keys[key_name] = match.splice(1);
-  }
-
-  /*var matched = template.match( re_template_keys );
-	var keys = {};
-	$.each( matched, function( k, v )
-	{
-		var split_key = v.match( re_keyname );
-		if( !split_key )
-		{
-			console.debug( v );
-		}
-		else
-		{
-			var key_name = split_key[0];
-			keys[ key_name ] = split_key.splice( 1 );
-		}
-	});*/
-
-  return { str: template, keys: keys };
+function render_navigation(new_navigation) {
+  navigation.$set({ navigation: new_navigation });
 }
-
-function apply_template(template, data_name, data) {
-  var str = template.str;
-  $.each(data, function (k, v) {
-    var name = data_name + "." + k;
-    var rx = RegExp("\\$\\{" + name + "\\}", "g");
-    str = str.replace(rx, v);
-  });
-  return str;
-}
-
-function make_outline(template, outline) {
-  var html = $(apply_template(template, "outline", outline));
-  html.data("outline", outline);
-  html.addClass(outline.feed_id ? "feed" : "folder");
-  if (!outline.folder_opened) {
-    html.addClass("folder-closed");
-  }
-  html.toggleClass("has-unread", outline.unread_count > 0);
-  if (outline.icon) {
-    $("> .outline-line", html).css("background-image", `url(${outline.icon})`);
-  }
-  return html;
-}
-
-function render_navigation(navigation) {
-  var template = get_template("#templateNavigationItem");
-
-  var main_ul = $("#outlines");
-  main_ul.empty();
-  $.each(navigation, function (k, outline) {
-    if (!outline) return;
-    var outline_html = make_outline(template, outline);
-
-    if (outline.children && outline.children.length > 0) {
-      var children = $("<ul>");
-      $.each(outline.children, function (k, child) {
-        if (!child) return;
-        var child = make_outline(template, child);
-        children.append(child);
-      });
-      outline_html.append(children);
-    }
-    main_ul.append(outline_html);
-  });
-}
-
-String.prototype.format = function () {
-  var args = arguments;
-  return this.replace(/{(\d+)}/g, function (match, number) {
-    return typeof args[number] != "undefined" ? args[number] : match;
-  });
-};
 
 /*
 	File: outline.js
@@ -378,7 +349,6 @@ String.prototype.format = function () {
 /* globals */
 var g_outline_id = null;
 var g_outline_data = null;
-var g_current_post = null;
 var g_limit = 10;
 
 /* directly after load init everything */
@@ -395,39 +365,35 @@ $(function () {
         $("#button_refresh").trigger("click");
         break;
       case "j":
-        move_post(+1);
+        posts.move_post(+1);
         break;
       case "k":
-        move_post(-1);
+        posts.move_post(-1);
         break;
       case "f":
         $("body").toggleClass("fullscreen");
         if ($("body").hasClass("fullscreen")) $("#content").trigger("focus");
         break;
       case "m":
-        if (g_current_post != null) {
-          var cb = g_current_post.find(".footer .action.read");
-          cb.prop("checked", !cb.prop("checked"));
-          set_post_read_state(
-            post_get_id(g_current_post),
-            cb.is(":checked") ? 1 : 0
-          );
-        }
+        posts.update_current_post((post) => {
+          set_post_attr_state(post.id, "read", !post.read);
+          return {
+            ...post,
+            read: !post.read,
+          };
+        });
         break;
       case "s":
-        if (g_current_post != null) {
-          var cb = g_current_post.find(".footer .action.starred");
-          cb.prop("checked", !cb.prop("checked"));
-          set_post_starred_state(
-            post_get_id(g_current_post),
-            cb.is(":checked") ? 1 : 0
-          );
-        }
+        posts.update_current_post((post) => {
+          set_post_attr_state(post.id, "starred", !post.starred);
+          return {
+            ...post,
+            starred: !post.starred,
+          };
+        });
         break;
       case "v":
-        if (g_current_post != null) {
-          window.open(g_current_post.find(".link a").attr("href"), "_blank");
-        }
+        posts.current_open_link();
         break;
       default:
         return true; // don't care
@@ -451,10 +417,10 @@ $(function () {
     if ($("body").hasClass("fullscreen")) $("#content").trigger("focus");
   });
   $("#button_prev_post").on("click", function () {
-    move_post(-1);
+    posts.move_post(-1);
   });
   $("#button_next_post").on("click", function () {
-    move_post(+1);
+    posts.move_post(+1);
   });
   $("#load_more_posts a").on("click", function () {
     load_more_posts(g_outline_id, null, null);
@@ -481,32 +447,20 @@ function set_outline_param(a_outline_id, key, value, no_load) {
 }
 
 function set_outline_data(a_outline_id, data) {
+  outline_store.set({
+    id: a_outline_id,
+    ...data,
+  });
   g_outline_data = data;
   $("#outline_title > a").text(data.title).attr("href", data.html_url);
-  update_outline_unread_count();
-  $("#button_sort_order").button(
-    "option",
-    "label",
-    data.sort_order == "ASC" ? "Oldest first" : "Newest first"
-  );
-
   get_unread_counts(a_outline_id);
 }
 
 function set_outline_unread_count(count) {
-  g_outline_data.unread_count = count;
-  update_outline_unread_count();
-}
-function update_outline_unread_count() {
-  $("#button_show_only_new").button(
-    "option",
-    "label",
-    g_outline_data.show_only_new
-      ? g_outline_data.unread_count +
-          " new item" +
-          (g_outline_data.unread_count != 1 ? "s" : "")
-      : "All items"
-  );
+  outline_store.update(($outline) => ({
+    ...$outline,
+    unread_count: count,
+  }));
 }
 
 function count_visible_unread_posts() {
@@ -520,7 +474,7 @@ function count_visible_unread_posts() {
   return count;
 }
 
-var load_outline = _.debounce(
+var load_outline = debounce(
   function (a_outline_id, forced_refresh) {
     if (!a_outline_id) return;
 
@@ -536,12 +490,11 @@ var load_outline = _.debounce(
           set_outline_data(a_outline_id, data);
 
           $("#content").scrollTop(0);
-          $("#posts").empty();
-          g_current_post = null;
+          posts.current_id.set(null);
           if (data.posts.length > 0) {
-            $.each(data.posts, function (k, post) {
-              $("#posts").append(post_build_html(post, data.is_feed));
-              post_attach_handlers(post.id);
+            posts.set(data.posts);
+            posts_component.$set({
+              is_feed: data.is_feed,
             });
             $("#no_more_posts").hide();
           } else {
@@ -563,7 +516,7 @@ function mark_all_as_read(a_outline_id) {
   });
 }
 
-var load_more_posts = _.debounce(
+const load_more_posts = debounce(
   function (a_outline_id, on_success, on_failure) {
     if (!a_outline_id) return;
 
@@ -578,12 +531,7 @@ var load_more_posts = _.debounce(
       function (data) {
         if (!data.error) {
           if (data.posts.length > 0) {
-            $.each(data.posts, function (k, post) {
-              if (id_get_post(post.id).length == 0) {
-                $("#posts").append(post_build_html(post, data.is_feed));
-                post_attach_handlers(post.id);
-              }
-            });
+            posts.append(data.posts);
             $("#no_more_posts").hide();
             if (on_success) on_success();
           } else {
@@ -601,30 +549,6 @@ var load_more_posts = _.debounce(
 
 /* post functions */
 
-function post_get_id(post) {
-  return post && post.attr("id").replace(/[^\d]/g, "");
-}
-function id_get_post(post_id) {
-  return $("#post_" + post_id);
-}
-
-function set_post_read_state(post_id, state) {
-  set_post_attr_state(post_id, "read", state);
-  if (!state) {
-    var post = id_get_post(post_id);
-    post.data("do-not-auto-mark-read", true);
-  }
-  // only visually update the unread count.
-  // TODO: every now and then actually do API hit...?
-  // Maybe better on a timer...
-  // outline_change_unread_count(g_outline_id, state ? -1 : 1);
-  // g_outline_data.unread_count += state ? -1 : 1;
-
-  // update_outline_unread_count();
-}
-function set_post_starred_state(post_id, state) {
-  set_post_attr_state(post_id, "starred", state);
-}
 function set_post_attr_state(post_id, attr, state) {
   api_request(
     "post_action",
@@ -634,99 +558,4 @@ function set_post_attr_state(post_id, attr, state) {
       if (data.success) get_unread_counts(g_outline_id);
     }
   );
-}
-
-function select_post_by_id(post_id) {
-  select_post(id_get_post(post_id));
-}
-
-function select_post(post) {
-  if (
-    g_current_post != null &&
-    post.length > 0 &&
-    g_current_post.attr("id") == post.attr("id")
-  )
-    return;
-
-  if (g_current_post != null) g_current_post.removeClass("current");
-  if (post.length == 0) {
-    g_current_post = null;
-    return;
-  }
-  g_current_post = post;
-  g_current_post.addClass("current");
-
-  post[0].scrollIntoView(true);
-
-  if (
-    !post.data("do-not-auto-mark-read") &&
-    !post.find(".footer .action.read").attr("checked")
-  ) {
-    post.find(".footer .action.read").attr("checked", true);
-    set_post_read_state(post_get_id(post), 1);
-  }
-}
-
-function post_attach_handlers(post_id) {
-  id_get_post(post_id)
-    .on("mouseup", function () {
-      select_post_by_id(post_id);
-    })
-    .find(".footer .action.starred")
-    .on("click", function () {
-      set_post_starred_state(post_id, $(this).is(":checked") ? 1 : 0);
-    })
-    .end()
-    .find(".footer .action.read")
-    .on("click", function () {
-      set_post_read_state(post_id, $(this).is(":checked") ? 1 : 0);
-    })
-    .end()
-    .find(".body .content a")
-    .attr("target", "_blank");
-}
-
-function post_build_html(post, is_feed) {
-  var postTemplate = $("#postTemplate").html();
-  var template = postTemplate.format(
-    post.id,
-    post.link,
-    post.title,
-    post.pubDate,
-    (is_feed ? "" : "from " + post.feedTitle + " ") +
-      (post.author
-        ? 'by <span class="authorName">{0}</span>'.format(post.author)
-        : ""),
-    post.content,
-    post.starred ? ' checked="checked"' : "",
-    post.read ? ' checked="checked"' : ""
-  );
-  return template;
-}
-
-function move_post(direction) {
-  if (direction > 0) {
-    if (g_current_post == null) {
-      select_post($("#posts .post").first());
-    } else {
-      var next_post = g_current_post.next(".post");
-      if (next_post.length > 0) {
-        select_post(next_post);
-        if (g_current_post.next(".post").length == 0) {
-          load_more_posts(g_outline_id, null, null);
-        }
-      } else {
-        load_more_posts(
-          g_outline_id,
-          function () {
-            move_post(+1);
-          },
-          null
-        );
-      }
-    }
-  } else {
-    if (g_current_post == null) return; // can't do anything
-    select_post(g_current_post.prev(".post"));
-  }
 }
