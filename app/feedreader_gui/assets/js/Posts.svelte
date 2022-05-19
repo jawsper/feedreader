@@ -1,5 +1,6 @@
 <script>
-  import { createEventDispatcher } from "svelte";
+  import { afterUpdate, createEventDispatcher } from "svelte";
+  import jQuery from 'jquery';
   import { posts } from "./stores";
 
   import Post from "./Post.svelte";
@@ -48,8 +49,9 @@
     dispatch("read", e.detail);
   };
 
-  $: {
-  }
+  afterUpdate(() => {
+    jQuery("#load_more_posts button").button();
+  })
 
   const load_more_posts = () => {
     dispatch("load_more_posts");
