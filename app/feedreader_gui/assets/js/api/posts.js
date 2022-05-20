@@ -3,7 +3,11 @@ import jquery from "jquery";
 import { get } from "svelte/store";
 
 import { api_request } from "./base";
-import { posts as posts_store, outline as outline_store } from "../stores";
+import {
+  posts as posts_store,
+  outline as outline_store,
+  outlines as outlines_store,
+} from "../stores";
 
 const g_limit = 10;
 
@@ -86,31 +90,30 @@ export const load_more_posts = debounce(
   { leading: true }
 );
 
-function set_unread_count(outline_id, unread_count) {
-  var outline = jquery("#outline-" + outline_id);
-  // TODO: make this in svelte
-  // console.log(navigation.navigation);
-  outline.toggleClass("has-unread", unread_count > 0);
-  jquery("> .outline-line > .outline-unread-count", outline).text(unread_count);
-}
-
-function set_outline_unread_count(count) {
-  outline_store.update(($outline) => ({
-    ...$outline,
-    unread_count: count,
-  }));
-}
-
 export const get_unread_counts = debounce(
   (outline_id) => {
     api_request("get_unread", { outline_id: outline_id }, (data) => {
       document.title =
         data.total > 0 ? `Feedreader (${data.total})` : "Feedreader";
       if (!data.counts) return;
-      for (const [outline_id, unread_count] of Object.entries(data.counts)) {
-        set_unread_count(outline_id, unread_count);
-      }
-      set_outline_unread_count(data.counts[`${outline_id}`]);
+      outlines_store.update(($outlines) => {
+        for (const outline of $outlines.outlines) {
+          if (data.counts[`${outline.id}`] !== undefined) {
+            outline.unread_count = data.counts[`${outline.id}`];
+          }
+        }
+        return $outlines;
+      });
+
+      outline_store.update(($outline) => {
+        if ($outline.id === outline_id) {
+          return {
+            ...$outline,
+            unread_count: data.counts[`${outline_id}`],
+          };
+        }
+        return $outline;
+      });
     });
   },
   500,
