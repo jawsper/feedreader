@@ -1,6 +1,7 @@
 <script>
   import jquery from "jquery";
   import { onMount } from "svelte";
+  import { slide } from "svelte/transition"
   import { api_request } from "./api";
 
   const options = {
@@ -81,14 +82,19 @@
   };
 </script>
 
-{#each Object.entries(options) as [name, option]}
-  <li>
-    <button
-      class="option-button"
-      id={`btn-option-${name}`}
-      on:click={() => option_button_click(name)}
-    >
-      {option.title}
-    </button>
-  </li>
-{/each}
+<div class="options" transition:slide>
+  <ul class="clean">
+    {#each Object.entries(options) as [name, option]}
+      <li>
+        <button
+          class="option-button"
+          id={`btn-option-${name}`}
+          on:click={() => option_button_click(name)}
+        >
+          {option.title}
+        </button>
+      </li>
+    {/each}
+  </ul>
+  <hr class="" />
+</div>

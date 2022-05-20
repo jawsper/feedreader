@@ -10,7 +10,7 @@ import Navigation from "./Navigation";
 import OutlineHeader from "./OutlineHeader";
 import Posts from "./Posts";
 import Toast from "./Toast";
-import Options from "./Options";
+import Sidebar from "./Sidebar";
 
 import { api_request } from "./api";
 
@@ -46,8 +46,8 @@ const toast_component = new Toast({
   hydrate: true,
 });
 
-new Options({
-  target: document.querySelector("#navigation .options ul"),
+new Sidebar({
+  target: document.querySelector("#sidebar"),
   hydrate: true,
 });
 
@@ -184,22 +184,7 @@ $(function () {
   $("#button-new-feed").on("click", function () {
     $("#new-feed-popup").dialog("open");
   });
-  // make the options and refresh button work
-  $("#button-options")
-    .on("click", function () {
-      const self = $(this);
-      $("#navigation .options").toggle({
-        effect: "slide",
-        direction: "up",
-        complete: function (args) {
-          const visible = $(this).is(":visible");
-          self.button("option", "icons", {
-            primary: visible ? "ui-icon-carat-1-s" : "ui-icon-carat-1-e",
-          });
-        },
-      });
-    })
-    .button("option", "icons", { primary: "ui-icon-carat-1-e" });
+  // make the refresh button work
   $("#button_refresh_page")
     .on("click", function (e) {
       e.preventDefault();
