@@ -71,7 +71,7 @@ function createPosts() {
             load_more_posts.set(true);
           }
         } else {
-          load_more_posts.set(1);
+          load_more_posts.set(true);
         }
       }
     } else if (direction < 0) {

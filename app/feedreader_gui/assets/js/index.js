@@ -72,10 +72,6 @@ posts_component.$on("read", (e) => {
   set_post_attr_state(id, "read", value);
 });
 
-posts_component.$on("load_more_posts", () => {
-  load_more_posts(g_outline_id, null, null);
-});
-
 /*
 	File: main.js
 	Copyright: 2013 Jasper Seidel

@@ -4,6 +4,7 @@
   import { outline, posts } from "./stores";
   const { current_id, loading, no_more_posts } = posts;
 
+  import { load_more_posts } from "./api";
   import Post from "./Post.svelte";
   import PostHeader from "./PostHeader.svelte";
 
@@ -35,8 +36,8 @@
     jQuery("#load_more_posts button").button();
   });
 
-  const load_more_posts = () => {
-    dispatch("load_more_posts");
+  const load_more_posts_on_click = () => {
+    load_more_posts($outline.id, null, null);
   };
 </script>
 
@@ -55,7 +56,9 @@
 </div>
 {#if !$loading}
   <div id="load_more_posts">
-    <button class="button" on:click={load_more_posts}>Load more posts</button>
+    <button class="button" on:click={load_more_posts_on_click}
+      >Load more posts</button
+    >
   </div>
 {/if}
 {#if $no_more_posts}
