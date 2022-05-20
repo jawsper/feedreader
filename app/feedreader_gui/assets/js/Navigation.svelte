@@ -4,6 +4,6 @@
   import NavigationLine from "./NavigationLine.svelte";
 </script>
 
-{#each $outlines as outline}
+{#each $outlines.outlines as outline}
   <NavigationLine {outline} on:outline />
 {/each}

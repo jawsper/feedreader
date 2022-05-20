@@ -19,7 +19,6 @@ import {
   posts as posts_store,
   load_more_posts as load_more_posts_store,
   toast as toast_store,
-  outlines as outlines_store,
 } from "./stores";
 
 // const app = new App({
@@ -184,11 +183,6 @@ $(function () {
   $("#button-new-feed").on("click", function () {
     $("#new-feed-popup").dialog("open");
   });
-  // make the refresh button work
-  $("#button-refresh-page").on("click", () => {
-    //get_unread_counts();
-    load_navigation();
-  });
 
   // trigger initial hash change, and set window.hashchange event
   //on_hash_change();
@@ -199,22 +193,8 @@ $(function () {
   //url_change( location.pathname );
   window.addEventListener("popstate", on_popstate);
 
-  load_navigation();
-
   url_change(location.pathname);
 });
-
-function load_navigation() {
-  $("#button-refresh-page").button("option", "disabled", true);
-  api_request("outline_get_all_outlines", {}, function (data) {
-    render_navigation(data.outlines);
-    $("#button-refresh-page").button("option", "disabled", false);
-  });
-}
-
-function render_navigation(new_navigation) {
-  outlines_store.set(new_navigation);
-}
 
 /*
 	File: outline.js

@@ -1,7 +1,10 @@
 import { writable } from "svelte/store";
 
 const createOutlines = () => {
-  const { subscribe, set, update } = writable([]);
+  const { subscribe, set, update } = writable({
+    loading: false,
+    outlines: [],
+  });
 
   return {
     subscribe,
