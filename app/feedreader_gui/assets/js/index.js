@@ -10,11 +10,13 @@ import "../css/main.scss";
 import Navigation from "./Navigation";
 import OutlineHeader from "./OutlineHeader";
 import Posts from "./Posts";
+import Toast from "./Toast";
 
 import {
   outline as outline_store,
   posts as posts_store,
   load_more_posts as load_more_posts_store,
+  toast as toast_store,
 } from "./stores";
 
 // const app = new App({
@@ -36,6 +38,11 @@ const outline_header = new OutlineHeader({
 
 const posts_component = new Posts({
   target: document.querySelector("#content"),
+  hydrate: true,
+});
+
+const toast_component = new Toast({
+  target: document.querySelector("#toast"),
   hydrate: true,
 });
 
@@ -114,16 +121,7 @@ $(function () {
 });
 
 function show_result(data) {
-  $("#result_text").text(data.message);
-  if (data.caption) $("#result_caption_text").text(data.caption);
-  $("#result_caption").toggle(data.caption ? true : false);
-  $("#result_container")
-    .toggleClass("ui-state-error", !data.success)
-    .toggleClass("ui-state-highlight", data.success);
-  $("#result_icon")
-    .toggleClass("ui-icon-alert", !data.success)
-    .toggleClass("ui-icon-info", data.success);
-  $("#result").stop(true, true).fadeIn().delay(5000).fadeOut();
+  toast_store.set(data);
 }
 
 var get_unread_counts = debounce(

@@ -15,15 +15,7 @@
 {% block head %}{% endblock head %}
 </head>
 <body data-media-url="{% get_media_prefix %}">
-<div id="result" class="ui-helper-hidden ui-widget">
-	<div id="result_container" class="ui-state-error ui-corner-all">
-		<p>
-			<span id="result_icon" class="ui-icon ui-icon-alert"></span>
-			<strong id="result_caption"><span id="result_caption_text">Result</span>: </strong>
-			<span id="result_text"></span>
-		</p>
-	</div>
-</div>
+<div id="toast"></div>
 {% if user.is_authenticated %}
 <div id="new-feed-popup" class="ui-helper-hidden" title="Add new feed">
 	<label for="new-feed-url">URL: <input id="new-feed-url" type="text"></label>
