@@ -35,10 +35,6 @@
     // temporary!
     jQuery("#load_more_posts button").button();
   });
-
-  const load_more_posts_on_click = () => {
-    load_more_posts();
-  };
 </script>
 
 <PostHeader />
@@ -56,9 +52,7 @@
 </div>
 {#if !$loading}
   <div id="load_more_posts">
-    <button class="button" on:click={load_more_posts_on_click}
-      >Load more posts</button
-    >
+    <button class="button" on:click={load_more_posts}>Load more posts</button>
   </div>
 {/if}
 {#if $no_more_posts}
