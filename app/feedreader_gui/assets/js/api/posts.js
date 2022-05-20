@@ -43,6 +43,7 @@ export const load_posts = debounce(
             posts_store.set(data.posts);
             posts_store.no_more_posts.set(false);
           } else {
+            posts_store.set([]);
             posts_store.no_more_posts.set(true);
           }
           posts_store.loading.set(false);
