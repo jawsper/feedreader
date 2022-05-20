@@ -19,6 +19,7 @@ import {
   posts as posts_store,
   load_more_posts as load_more_posts_store,
   toast as toast_store,
+  outlines as outlines_store,
 } from "./stores";
 
 // const app = new App({
@@ -27,9 +28,6 @@ import {
 
 const navigation = new Navigation({
   target: document.querySelector("#outlines"),
-  props: {
-    navigation: [],
-  },
   hydrate: true,
 });
 
@@ -233,7 +231,7 @@ function load_navigation() {
 }
 
 function render_navigation(new_navigation) {
-  navigation.$set({ navigation: new_navigation });
+  outlines_store.set(new_navigation);
 }
 
 /*

@@ -1,15 +1,9 @@
 <script>
-  export let navigation = [];
-
-  console.log("Navigation.svelte");
-
-  $: {
-    console.log(navigation);
-  }
+  import { outlines } from "./stores";
 
   import NavigationLine from "./NavigationLine.svelte";
 </script>
 
-{#each navigation as outline}
+{#each $outlines as outline}
   <NavigationLine {outline} on:outline />
 {/each}
