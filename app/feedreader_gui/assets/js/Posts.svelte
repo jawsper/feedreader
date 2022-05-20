@@ -1,8 +1,8 @@
 <script>
   import { afterUpdate, createEventDispatcher } from "svelte";
-  import jQuery from 'jquery';
+  import jQuery from "jquery";
   import { outline, posts } from "./stores";
-  const { current_id, loading, no_more_posts } = posts
+  const { current_id, loading, no_more_posts } = posts;
 
   import Post from "./Post.svelte";
   import PostHeader from "./PostHeader.svelte";
@@ -11,7 +11,7 @@
 
   const post_on_focus = (e) => {
     const post_id = e.detail;
-    $current_id = post_id
+    $current_id = post_id;
   };
 
   const post_on_starred = (e) => {
@@ -33,7 +33,7 @@
   afterUpdate(() => {
     // temporary!
     jQuery("#load_more_posts button").button();
-  })
+  });
 
   const load_more_posts = () => {
     dispatch("load_more_posts");
@@ -59,6 +59,6 @@
   </div>
 {/if}
 {#if $no_more_posts}
-<div id="no_more_posts">No more posts.</div>
+  <div id="no_more_posts">No more posts.</div>
 {/if}
 <div style="height: 50%" />

@@ -1,6 +1,6 @@
 <script>
   import { afterUpdate } from "svelte/internal";
-  import { fade } from "svelte/transition"
+  import { fade } from "svelte/transition";
 
   import { toast } from "./stores";
 
@@ -10,10 +10,10 @@
   let timeout;
 
   afterUpdate(() => {
-    if(timeout) clearTimeout(timeout)
+    if (timeout) clearTimeout(timeout);
     timeout = setTimeout(() => {
-        $toast = null
-    }, 5000)
+      $toast = null;
+    }, 5000);
   });
 </script>
 

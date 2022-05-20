@@ -11,8 +11,7 @@
     return node;
   });
 
-  import { posts } from "./stores"
-
+  import { posts } from "./stores";
 
   export let post;
   export let is_feed;
@@ -25,14 +24,14 @@
   $: is_starred = post.starred;
   $: is_read = post.read;
 
-  posts.current_id.subscribe(new_id => {
-    if(new_id === post.id) {
+  posts.current_id.subscribe((new_id) => {
+    if (new_id === post.id) {
       div.scrollIntoView(true);
       if (!dont_auto_mark_read && !is_read) {
         mark_post_read();
       }
     }
-  })
+  });
 
   $: postClasses = `post ${is_current ? "current" : ""}`;
 
