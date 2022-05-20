@@ -20,6 +20,7 @@ import {
   toast as toast_store,
 } from "./stores";
 import { load_posts } from "./api/posts";
+import { outline_id } from "./stores/outline";
 
 // const app = new App({
 //   target: document.querySelector("#app")
@@ -253,8 +254,8 @@ $(function () {
 /* outline functions */
 
 function set_outline(a_outline_id) {
+  outline_id.set(a_outline_id);
   g_outline_id = a_outline_id;
-  load_posts(g_outline_id);
 }
 
 function set_outline_param(a_outline_id, key, value, no_load) {

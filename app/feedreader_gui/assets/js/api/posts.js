@@ -7,20 +7,10 @@ import {
   posts as posts_store,
   outline as outline_store,
   outlines as outlines_store,
+  unreadPosts,
 } from "../stores";
 
 const g_limit = 10;
-
-const count_visible_unread_posts = () => {
-  // get all unchecked posts and skip those
-  // or just all posts
-  var count = jquery(
-    get(outline_store).show_only_new
-      ? "#posts .post .action.read:not(:checked)"
-      : "#posts .post"
-  ).length;
-  return count;
-};
 
 export const load_posts = debounce(
   (a_outline_id) => {
@@ -35,16 +25,17 @@ export const load_posts = debounce(
       (data) => {
         if (data.success) {
           // if (g_outline_id != a_outline_id) return; // attempt to prevent slow loads from overwriting the current outline
+          const { posts, ...rest } = data;
           outline_store.set({
             id: a_outline_id,
-            ...data,
+            ...rest,
           });
           get_unread_counts(a_outline_id);
 
           jquery("#content").scrollTop(0);
           posts_store.current_id.set(null);
           if (data.posts.length > 0) {
-            posts_store.set(data.posts);
+            posts_store.set(posts);
             posts_store.no_more_posts.set(false);
           } else {
             posts_store.set([]);
@@ -66,7 +57,7 @@ export const load_more_posts = debounce(
     posts_store.loading.set(true);
     posts_store.no_more_posts.set(false);
 
-    let skip = count_visible_unread_posts();
+    let skip = get(unreadPosts);
 
     api_request(
       "get_posts",
