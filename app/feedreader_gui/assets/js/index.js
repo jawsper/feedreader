@@ -185,13 +185,10 @@ $(function () {
     $("#new-feed-popup").dialog("open");
   });
   // make the refresh button work
-  $("#button_refresh_page")
-    .on("click", function (e) {
-      e.preventDefault();
-      //get_unread_counts();
-      load_navigation();
-    })
-    .button("option", "icons", { primary: "ui-icon-refresh" });
+  $("#button-refresh-page").on("click", () => {
+    //get_unread_counts();
+    load_navigation();
+  });
 
   // trigger initial hash change, and set window.hashchange event
   //on_hash_change();
@@ -208,10 +205,10 @@ $(function () {
 });
 
 function load_navigation() {
-  $("#button_refresh_page").button("option", "disabled", true);
+  $("#button-refresh-page").button("option", "disabled", true);
   api_request("outline_get_all_outlines", {}, function (data) {
     render_navigation(data.outlines);
-    $("#button_refresh_page").button("option", "disabled", false);
+    $("#button-refresh-page").button("option", "disabled", false);
   });
 }
 

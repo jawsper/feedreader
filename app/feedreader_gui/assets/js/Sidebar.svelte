@@ -10,6 +10,9 @@
     jquery("#button-options").button({
       icon: "ui-icon-caret-1-s",
     });
+    jquery("#button-refresh-page").button({
+      icon: "ui-icon-refresh"
+    })
   });
 </script>
 
