@@ -257,7 +257,7 @@ $(function () {
     //e.preventDefault();
   });
   $("#button_refresh").on("click", function () {
-    load_outline(g_outline_id, true);
+    load_outline(g_outline_id);
   });
   $("#button_mark_all_as_read").on("click", function () {
     mark_all_as_read(g_outline_id);
@@ -284,7 +284,7 @@ $(function () {
 
 function set_outline(a_outline_id) {
   g_outline_id = a_outline_id;
-  load_outline(g_outline_id, false);
+  load_outline(g_outline_id);
 }
 
 function set_outline_param(a_outline_id, key, value, no_load) {
@@ -294,7 +294,7 @@ function set_outline_param(a_outline_id, key, value, no_load) {
 
   api_request("outline_set", data, function (data) {
     if (data.success) {
-      if (!no_load) load_outline(a_outline_id, true);
+      if (!no_load) load_outline(a_outline_id);
     }
   });
 }
@@ -327,7 +327,7 @@ function count_visible_unread_posts() {
 }
 
 var load_outline = debounce(
-  function (a_outline_id, forced_refresh) {
+  function (a_outline_id) {
     if (!a_outline_id) return;
 
     posts_store.loading.set(true);
@@ -335,7 +335,7 @@ var load_outline = debounce(
 
     api_request(
       "get_posts",
-      { limit: g_limit, outline: a_outline_id, forced_refresh: forced_refresh },
+      { limit: g_limit, outline: a_outline_id },
       function (data) {
         if (data.success) {
           if (g_outline_id != a_outline_id) return; // attempt to prevent slow loads from overwriting the current outline
@@ -361,7 +361,7 @@ var load_outline = debounce(
 function mark_all_as_read(a_outline_id) {
   if (!a_outline_id) return;
   api_request("outline_mark_read", { outline: a_outline_id }, function (data) {
-    if (!data.error) load_outline(a_outline_id, true);
+    if (!data.error) load_outline(a_outline_id);
   });
 }
 
