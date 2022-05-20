@@ -1,6 +1,6 @@
 import Cookies from "js-cookie";
 
-import { toast } from "./stores";
+import { toast } from "../stores";
 
 const urls = JSON.parse(document.getElementById("urls").textContent);
 
