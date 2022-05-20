@@ -1,7 +1,6 @@
 import $ from "jquery";
 import "jquery-ui/ui/widgets/button";
 import "jquery-ui/ui/widgets/dialog";
-import { debounce } from "lodash";
 
 import "../css/main.scss";
 
@@ -12,14 +11,15 @@ import Posts from "./Posts";
 import Toast from "./Toast";
 import Sidebar from "./Sidebar";
 
-import { api_request } from "./api";
+import { api_request, load_more_posts } from "./api";
+import { get_unread_counts } from "./api/posts";
 
 import {
-  outline as outline_store,
   posts as posts_store,
   load_more_posts as load_more_posts_store,
   toast as toast_store,
 } from "./stores";
+import { load_posts } from "./api/posts";
 
 // const app = new App({
 //   target: document.querySelector("#app")
@@ -95,30 +95,6 @@ var outline_regex = /^outline-(\d+)$/;
 $(function () {
   $("input:submit, button, a.button").button();
 });
-
-var get_unread_counts = debounce(
-  function (outline_id) {
-    api_request("get_unread", { outline_id: outline_id }, function (data) {
-      document.title =
-        data.total > 0 ? `Feedreader (${data.total})` : "Feedreader";
-      if (!data.counts) return;
-      for (const [outline_id, unread_count] of Object.entries(data.counts)) {
-        set_unread_count(outline_id, unread_count);
-      }
-      set_outline_unread_count(data.counts["" + outline_id]);
-    });
-  },
-  500,
-  { trailing: true }
-);
-
-function set_unread_count(outline_id, unread_count) {
-  var outline = $("#outline-" + outline_id);
-  // TODO: make this in svelte
-  // console.log(navigation.navigation);
-  outline.toggleClass("has-unread", unread_count > 0);
-  $("> .outline-line > .outline-unread-count", outline).text(unread_count);
-}
 
 function url_change(url) {
   var m = url.match(/\/outline\/(\d+)\//);
@@ -204,8 +180,6 @@ $(function () {
 
 /* globals */
 var g_outline_id = null;
-var g_outline_data = null;
-var g_limit = 10;
 
 /* directly after load init everything */
 
@@ -257,7 +231,7 @@ $(function () {
     //e.preventDefault();
   });
   $("#button_refresh").on("click", function () {
-    load_outline(g_outline_id);
+    load_posts(g_outline_id);
   });
   $("#button_mark_all_as_read").on("click", function () {
     mark_all_as_read(g_outline_id);
@@ -284,7 +258,7 @@ $(function () {
 
 function set_outline(a_outline_id) {
   g_outline_id = a_outline_id;
-  load_outline(g_outline_id);
+  load_posts(g_outline_id);
 }
 
 function set_outline_param(a_outline_id, key, value, no_load) {
@@ -294,117 +268,27 @@ function set_outline_param(a_outline_id, key, value, no_load) {
 
   api_request("outline_set", data, function (data) {
     if (data.success) {
-      if (!no_load) load_outline(a_outline_id);
+      if (!no_load) load_posts(a_outline_id);
     }
   });
 }
-
-function set_outline_data(a_outline_id, data) {
-  outline_store.set({
-    id: a_outline_id,
-    ...data,
-  });
-  g_outline_data = data;
-  get_unread_counts(a_outline_id);
-}
-
-function set_outline_unread_count(count) {
-  outline_store.update(($outline) => ({
-    ...$outline,
-    unread_count: count,
-  }));
-}
-
-function count_visible_unread_posts() {
-  // get all unchecked posts and skip those
-  // or just all posts
-  var count = $(
-    g_outline_data.show_only_new
-      ? "#posts .post .action.read:not(:checked)"
-      : "#posts .post"
-  ).length;
-  return count;
-}
-
-var load_outline = debounce(
-  function (a_outline_id) {
-    if (!a_outline_id) return;
-
-    posts_store.loading.set(true);
-    posts_store.no_more_posts.set(false);
-
-    api_request(
-      "get_posts",
-      { limit: g_limit, outline: a_outline_id },
-      function (data) {
-        if (data.success) {
-          if (g_outline_id != a_outline_id) return; // attempt to prevent slow loads from overwriting the current outline
-          set_outline_data(a_outline_id, data);
-
-          $("#content").scrollTop(0);
-          posts_store.current_id.set(null);
-          if (data.posts.length > 0) {
-            posts_store.set(data.posts);
-            posts_store.no_more_posts.set(false);
-          } else {
-            posts_store.no_more_posts.set(true);
-          }
-          posts_store.loading.set(false);
-        }
-      }
-    );
-  },
-  500,
-  { leading: true }
-);
 
 function mark_all_as_read(a_outline_id) {
   if (!a_outline_id) return;
   api_request("outline_mark_read", { outline: a_outline_id }, function (data) {
-    if (!data.error) load_outline(a_outline_id);
+    if (!data.error) load_posts(a_outline_id);
   });
 }
 
-const load_more_posts = debounce(
-  function (a_outline_id, on_success, on_failure) {
-    if (!a_outline_id) return;
-
-    posts_store.loading.set(true);
-    posts_store.no_more_posts.set(false);
-
-    let skip = count_visible_unread_posts();
-
-    api_request(
-      "get_posts",
-      { outline: a_outline_id, skip: skip, limit: g_limit },
-      function (data) {
-        if (!data.error) {
-          if (data.posts.length > 0) {
-            posts_store.append(data.posts);
-            posts_store.no_more_posts.set(false);
-            if (on_success) on_success();
-          } else {
-            posts_store.no_more_posts.set(true);
-            if (on_failure) on_failure();
-          }
-          posts_store.loading.set(false);
-        }
-      }
-    );
-  },
-  500,
-  { leading: true }
-);
-
 /* post functions */
 
-function set_post_attr_state(post_id, attr, state) {
+const set_post_attr_state = (post_id, attr, state) => {
   api_request(
     "post_action",
     { post: post_id, action: attr, state: state },
-    function (data) {
+    (data) => {
       toast_store.set(data);
       if (data.success) get_unread_counts(g_outline_id);
     }
   );
-}
+};
