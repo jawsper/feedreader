@@ -1,10 +1,5 @@
 <script>
   import { outline } from "./stores";
-
-  let outline_data;
-  outline.subscribe(($outline) => {
-    outline_data = $outline;
-  });
 </script>
 
 <button id="button_toggle_fullscreen" title="Toggle fullscreen">
@@ -15,18 +10,18 @@
 </button>
 <button id="button_mark_all_as_read">Mark all as read</button>
 <button id="button_show_only_new">
-  {#if outline_data?.show_only_new}
-  {outline_data.unread_count} new item{#if outline_data.unread_count !== 1}s{/if}
-  {:else if outline_data}
+  {#if $outline?.show_only_new}
+  {$outline.unread_count} new item{#if $outline.unread_count !== 1}s{/if}
+  {:else if $outline}
   All items
   {:else}
   &nbsp;
   {/if}
 </button>
 <button id="button_sort_order">
-  {#if outline_data?.sort_order === "ASC"}
+  {#if $outline?.sort_order === "ASC"}
   Oldest first
-  {:else if outline_data}
+  {:else if $outline}
   Newest first
   {:else}
   &nbsp;
