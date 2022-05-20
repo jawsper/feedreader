@@ -37,7 +37,7 @@
   });
 
   const load_more_posts_on_click = () => {
-    load_more_posts($outline.id);
+    load_more_posts();
   };
 </script>
 

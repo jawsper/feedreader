@@ -51,29 +51,25 @@ export const load_posts = debounce(
 );
 
 export const load_more_posts = debounce(
-  (a_outline_id) => {
-    if (!a_outline_id) return;
+  () => {
+    const { id: outline } = get(outline_store);
 
     posts_store.loading.set(true);
     posts_store.no_more_posts.set(false);
 
     let skip = get(unreadPosts);
 
-    api_request(
-      "get_posts",
-      { outline: a_outline_id, skip: skip, limit: g_limit },
-      function (data) {
-        if (!data.error) {
-          if (data.posts.length > 0) {
-            posts_store.append(data.posts);
-            posts_store.no_more_posts.set(false);
-          } else {
-            posts_store.no_more_posts.set(true);
-          }
-          posts_store.loading.set(false);
+    api_request("get_posts", { outline, skip, limit: g_limit }, (data) => {
+      if (!data.error) {
+        if (data.posts.length > 0) {
+          posts_store.append(data.posts);
+          posts_store.no_more_posts.set(false);
+        } else {
+          posts_store.no_more_posts.set(true);
         }
+        posts_store.loading.set(false);
       }
-    );
+    });
   },
   500,
   { leading: true }
