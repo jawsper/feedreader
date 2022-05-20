@@ -1,36 +1,17 @@
 <script>
   import { afterUpdate, createEventDispatcher } from "svelte";
   import jQuery from 'jquery';
-  import { posts } from "./stores";
+  import { outline, posts } from "./stores";
+  const { current_id, loading, no_more_posts } = posts
 
   import Post from "./Post.svelte";
   import PostHeader from "./PostHeader.svelte";
 
-  export let is_feed;
-
   const dispatch = createEventDispatcher();
-
-  let posts_value;
-  let current_post_id_value;
-  let loading;
-  let no_more_posts;
-
-  posts.subscribe((value) => {
-    posts_value = value;
-  });
-  posts.current_id.subscribe((value) => {
-    current_post_id_value = value;
-  });
-  posts.loading.subscribe((value) => {
-    loading = value;
-  });
-  posts.no_more_posts.subscribe((value) => {
-    no_more_posts = value;
-  });
 
   const post_on_focus = (e) => {
     const post_id = e.detail;
-    posts.current_id.set(post_id);
+    $current_id = post_id
   };
 
   const post_on_starred = (e) => {
@@ -50,6 +31,7 @@
   };
 
   afterUpdate(() => {
+    // temporary!
     jQuery("#load_more_posts button").button();
   })
 
@@ -60,23 +42,23 @@
 
 <PostHeader />
 <div id="posts">
-  {#each posts_value as post}
+  {#each $posts as post}
     <Post
       {post}
-      {is_feed}
-      is_current={current_post_id_value === post.id}
+      is_feed={$outline.is_feed}
+      is_current={$current_id === post.id}
       on:focus={post_on_focus}
       on:starred={post_on_starred}
       on:read={post_on_read}
     />
   {/each}
 </div>
-{#if !loading}
+{#if !$loading}
   <div id="load_more_posts">
     <button class="button" on:click={load_more_posts}>Load more posts</button>
   </div>
 {/if}
-{#if no_more_posts}
+{#if $no_more_posts}
 <div id="no_more_posts">No more posts.</div>
 {/if}
 <div style="height: 50%" />
