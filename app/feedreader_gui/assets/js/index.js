@@ -128,7 +128,7 @@ var get_unread_counts = debounce(
   function (outline_id) {
     api_request("get_unread", { outline_id: outline_id }, function (data) {
       document.title =
-        data.total > 0 ? "Feedreader (" + data.total + ")" : "Feedreader";
+        data.total > 0 ? `Feedreader (${data.total})` : "Feedreader";
       if (!data.counts) return;
       for (const [outline_id, unread_count] of Object.entries(data.counts)) {
         set_unread_count(outline_id, unread_count);
