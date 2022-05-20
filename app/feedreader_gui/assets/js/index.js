@@ -285,7 +285,7 @@ const set_post_attr_state = (post_id, attr, state) => {
     { post: post_id, action: attr, state: state },
     (data) => {
       toast_store.set(data);
-      if (data.success) get_unread_counts(g_outline_id);
+      if (data.success) get_unread_counts();
     }
   );
 };

@@ -30,7 +30,7 @@ export const load_posts = debounce(
             id: a_outline_id,
             ...rest,
           });
-          get_unread_counts(a_outline_id);
+          get_unread_counts();
 
           jquery("#content").scrollTop(0);
           posts_store.current_id.set(null);
@@ -76,8 +76,9 @@ export const load_more_posts = debounce(
 );
 
 export const get_unread_counts = debounce(
-  (outline_id) => {
-    api_request("get_unread", { outline_id: outline_id }, (data) => {
+  () => {
+    const { id: outline_id } = get(outline_store);
+    api_request("get_unread", { outline_id }, (data) => {
       document.title =
         data.total > 0 ? `Feedreader (${data.total})` : "Feedreader";
       if (!data.counts) return;
