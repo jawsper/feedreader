@@ -132,7 +132,9 @@ var get_unread_counts = debounce(
       document.title =
         data.total > 0 ? "Feedreader (" + data.total + ")" : "Feedreader";
       if (!data.counts) return;
-      $.each(data.counts, set_unread_count);
+      for (const [outline_id, unread_count] of Object.entries(data.counts)) {
+        set_unread_count(outline_id, unread_count);
+      }
       set_outline_unread_count(data.counts["" + outline_id]);
     });
   },
@@ -169,12 +171,9 @@ var options = {
 };
 
 function load_options() {
-  var opts = [];
-  $.each(options, function (k) {
-    opts.push(k);
-  });
+  const opts = Object.keys(options);
   api_request("get_option", { keys: opts }, function (result) {
-    $.each(options, function (name, data) {
+    for (const [name, data] of Object.entries(options)) {
       if (typeof result.options[name] == "undefined") {
         // key not found
         data.value = data.default;
@@ -188,7 +187,7 @@ function load_options() {
         $(`#btn-option-${name}`).button("option", "icons", { primary: icon });
       }
       if (data.callback) data.callback.apply(data);
-    });
+    }
   });
 }
 
@@ -257,7 +256,7 @@ $(function () {
     );
 
   // make a button for all options
-  $.each(options, function (name, option) {
+  for (const [name, option] of Object.entries(options)) {
     var button = $("<a>")
       .attr("id", `btn-option-${name}`)
       .on("click", function () {
@@ -268,7 +267,7 @@ $(function () {
         label: option.title,
       });
     $("#navigation .options ul").append($("<li>").append(button));
-  });
+  }
   // load the options
   load_options();
 
