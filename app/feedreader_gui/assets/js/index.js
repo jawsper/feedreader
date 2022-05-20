@@ -93,10 +93,6 @@ $(function () {
   $("input:submit, button, a.button").button();
 });
 
-function show_result(data) {
-  toast_store.set(data);
-}
-
 var get_unread_counts = debounce(
   function (outline_id) {
     api_request("get_unread", { outline_id: outline_id }, function (data) {
@@ -518,7 +514,7 @@ function set_post_attr_state(post_id, attr, state) {
     "post_action",
     { post: post_id, action: attr, state: state },
     function (data) {
-      show_result(data);
+      toast_store.set(data);
       if (data.success) get_unread_counts(g_outline_id);
     }
   );
