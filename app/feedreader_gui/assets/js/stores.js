@@ -7,6 +7,8 @@ function createPosts() {
   const { subscribe, set, update } = writable([]);
   const current_id = writable(null);
   const current = writable(null);
+  const loading = writable(false);
+  const no_more_posts = writable(false);
 
   let posts_value;
   let current_post_id_value;
@@ -110,6 +112,9 @@ function createPosts() {
     update_current_post,
 
     current_open_link,
+
+    loading,
+    no_more_posts,
   };
 }
 

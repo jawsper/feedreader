@@ -35,7 +35,7 @@ const outline_header = new OutlineHeader({
 });
 
 const posts_component = new Posts({
-  target: document.querySelector("#posts"),
+  target: document.querySelector("#content"),
   props: {
     is_feed: false,
   },
@@ -62,6 +62,10 @@ posts_component.$on("read", (e) => {
   const { id, value } = e.detail;
   console.log("read", e.detail);
   set_post_attr_state(id, "read", value);
+});
+
+posts_component.$on("load_more_posts", () => {
+  load_more_posts(g_outline_id, null, null);
 });
 
 /*
@@ -422,9 +426,6 @@ $(function () {
   $("#button_next_post").on("click", function () {
     posts.move_post(+1);
   });
-  $("#load_more_posts a").on("click", function () {
-    load_more_posts(g_outline_id, null, null);
-  });
 });
 
 /* outline functions */
@@ -452,7 +453,6 @@ function set_outline_data(a_outline_id, data) {
     ...data,
   });
   g_outline_data = data;
-  $("#outline_title > a").text(data.title).attr("href", data.html_url);
   get_unread_counts(a_outline_id);
 }
 
@@ -478,8 +478,8 @@ var load_outline = debounce(
   function (a_outline_id, forced_refresh) {
     if (!a_outline_id) return;
 
-    $("#load_more_posts").hide();
-    $("#no_more_posts").hide();
+    posts.loading.set(true);
+    posts.no_more_posts.set(false);
 
     api_request(
       "get_posts",
@@ -496,11 +496,11 @@ var load_outline = debounce(
             posts_component.$set({
               is_feed: data.is_feed,
             });
-            $("#no_more_posts").hide();
+            posts.no_more_posts.set(false);
           } else {
-            $("#no_more_posts").show();
+            posts.no_more_posts.set(true);
           }
-          $("#load_more_posts").show();
+          posts.loading.set(false);
         }
       }
     );
@@ -520,8 +520,8 @@ const load_more_posts = debounce(
   function (a_outline_id, on_success, on_failure) {
     if (!a_outline_id) return;
 
-    $("#load_more_posts").hide();
-    $("#no_more_posts").hide();
+    posts.loading.set(true);
+    posts.no_more_posts.set(false);
 
     let skip = count_visible_unread_posts();
 
@@ -532,13 +532,13 @@ const load_more_posts = debounce(
         if (!data.error) {
           if (data.posts.length > 0) {
             posts.append(data.posts);
-            $("#no_more_posts").hide();
+            posts.no_more_posts.set(false);
             if (on_success) on_success();
           } else {
-            $("#no_more_posts").show();
+            posts.no_more_posts.set(true);
             if (on_failure) on_failure();
           }
-          $("#load_more_posts").show();
+          posts.loading.set(false);
         }
       }
     );
