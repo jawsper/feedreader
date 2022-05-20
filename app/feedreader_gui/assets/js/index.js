@@ -13,7 +13,7 @@ import Posts from "./Posts";
 
 import {
   outline as outline_store,
-  posts,
+  posts as posts_store,
   load_more_posts as load_more_posts_store,
 } from "./stores";
 
@@ -36,9 +36,6 @@ const outline_header = new OutlineHeader({
 
 const posts_component = new Posts({
   target: document.querySelector("#content"),
-  props: {
-    is_feed: false,
-  },
   hydrate: true,
 });
 
@@ -369,17 +366,17 @@ $(function () {
         $("#button_refresh").trigger("click");
         break;
       case "j":
-        posts.move_post(+1);
+        posts_store.move_post(+1);
         break;
       case "k":
-        posts.move_post(-1);
+        posts_store.move_post(-1);
         break;
       case "f":
         $("body").toggleClass("fullscreen");
         if ($("body").hasClass("fullscreen")) $("#content").trigger("focus");
         break;
       case "m":
-        posts.update_current_post((post) => {
+        posts_store.update_current_post((post) => {
           set_post_attr_state(post.id, "read", !post.read);
           return {
             ...post,
@@ -388,7 +385,7 @@ $(function () {
         });
         break;
       case "s":
-        posts.update_current_post((post) => {
+        posts_store.update_current_post((post) => {
           set_post_attr_state(post.id, "starred", !post.starred);
           return {
             ...post,
@@ -397,7 +394,7 @@ $(function () {
         });
         break;
       case "v":
-        posts.current_open_link();
+        posts_store.current_open_link();
         break;
       default:
         return true; // don't care
@@ -421,10 +418,10 @@ $(function () {
     if ($("body").hasClass("fullscreen")) $("#content").trigger("focus");
   });
   $("#button_prev_post").on("click", function () {
-    posts.move_post(-1);
+    posts_store.move_post(-1);
   });
   $("#button_next_post").on("click", function () {
-    posts.move_post(+1);
+    posts_store.move_post(+1);
   });
 });
 
@@ -478,8 +475,8 @@ var load_outline = debounce(
   function (a_outline_id, forced_refresh) {
     if (!a_outline_id) return;
 
-    posts.loading.set(true);
-    posts.no_more_posts.set(false);
+    posts_store.loading.set(true);
+    posts_store.no_more_posts.set(false);
 
     api_request(
       "get_posts",
@@ -490,17 +487,14 @@ var load_outline = debounce(
           set_outline_data(a_outline_id, data);
 
           $("#content").scrollTop(0);
-          posts.current_id.set(null);
+          posts_store.current_id.set(null);
           if (data.posts.length > 0) {
-            posts.set(data.posts);
-            posts_component.$set({
-              is_feed: data.is_feed,
-            });
-            posts.no_more_posts.set(false);
+            posts_store.set(data.posts);
+            posts_store.no_more_posts.set(false);
           } else {
-            posts.no_more_posts.set(true);
+            posts_store.no_more_posts.set(true);
           }
-          posts.loading.set(false);
+          posts_store.loading.set(false);
         }
       }
     );
@@ -520,8 +514,8 @@ const load_more_posts = debounce(
   function (a_outline_id, on_success, on_failure) {
     if (!a_outline_id) return;
 
-    posts.loading.set(true);
-    posts.no_more_posts.set(false);
+    posts_store.loading.set(true);
+    posts_store.no_more_posts.set(false);
 
     let skip = count_visible_unread_posts();
 
@@ -531,14 +525,14 @@ const load_more_posts = debounce(
       function (data) {
         if (!data.error) {
           if (data.posts.length > 0) {
-            posts.append(data.posts);
-            posts.no_more_posts.set(false);
+            posts_store.append(data.posts);
+            posts_store.no_more_posts.set(false);
             if (on_success) on_success();
           } else {
-            posts.no_more_posts.set(true);
+            posts_store.no_more_posts.set(true);
             if (on_failure) on_failure();
           }
-          posts.loading.set(false);
+          posts_store.loading.set(false);
         }
       }
     );
