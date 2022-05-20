@@ -2,7 +2,6 @@ import $ from "jquery";
 import "jquery-ui/ui/widgets/button";
 import "jquery-ui/ui/widgets/dialog";
 import { debounce } from "lodash";
-import Cookies from "js-cookie";
 
 import "../css/main.scss";
 
@@ -11,6 +10,8 @@ import Navigation from "./Navigation";
 import OutlineHeader from "./OutlineHeader";
 import Posts from "./Posts";
 import Toast from "./Toast";
+
+import { api_request } from "./api";
 
 import {
   outline as outline_store,
@@ -77,34 +78,6 @@ posts_component.$on("load_more_posts", () => {
 	Copyright: 2013 Jasper Seidel
 	License: MIT
 */
-
-const urls = JSON.parse(document.getElementById("urls").textContent);
-
-function api_request(path, args, callback) {
-  let fetch_args = {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      "X-CSRFToken": Cookies.get("csrftoken"),
-    },
-    credentials: "include",
-  };
-  if (args) {
-    fetch_args["body"] = JSON.stringify(args);
-  }
-  fetch(urls[path].url, fetch_args)
-    .then((response) => response.json())
-    .catch((error) => {
-      show_result({
-        caption: "Error",
-        message: error,
-        success: false,
-      });
-    })
-    .then(callback)
-    .catch(console.log);
-}
 
 function add_new_feed(url) {
   api_request("feed_add", { url: url }, function (result) {
