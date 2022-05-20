@@ -10,6 +10,7 @@ import Navigation from "./Navigation";
 import OutlineHeader from "./OutlineHeader";
 import Posts from "./Posts";
 import Toast from "./Toast";
+import Options from "./Options";
 
 import { api_request } from "./api";
 
@@ -44,6 +45,11 @@ const posts_component = new Posts({
 
 const toast_component = new Toast({
   target: document.querySelector("#toast"),
+  hydrate: true,
+});
+
+new Options({
+  target: document.querySelector("#navigation .options ul"),
   hydrate: true,
 });
 
@@ -117,67 +123,6 @@ function set_unread_count(outline_id, unread_count) {
   $("> .outline-line > .outline-unread-count", outline).text(unread_count);
 }
 
-var options = {
-  show_only_unread: {
-    title: "Show only unread posts",
-    type: "boolean",
-    default: false,
-    callback: function () {
-      $("#outlines").toggleClass("show-only-unread", this["value"]);
-    },
-  },
-  show_nsfw_feeds: {
-    title: "Show NSFW feeds",
-    type: "boolean",
-    default: false,
-    callback: () => {
-      load_navigation();
-      $("#button_refresh").trigger("click");
-    },
-  },
-};
-
-function load_options() {
-  const opts = Object.keys(options);
-  api_request("get_option", { keys: opts }, function (result) {
-    for (const [name, data] of Object.entries(options)) {
-      if (typeof result.options[name] == "undefined") {
-        // key not found
-        data.value = data.default;
-      } else {
-        data.value = result.options[name];
-      }
-      if (data.type === "boolean") {
-        const icon = data.value
-          ? "ui-icon-circle-check"
-          : "ui-icon-circle-close";
-        $(`#btn-option-${name}`).button("option", "icons", { primary: icon });
-      }
-      if (data.callback) data.callback.apply(data);
-    }
-  });
-}
-
-function option_button_click(name) {
-  const btn = $(this);
-  if (options[name].type == "boolean") {
-    const new_value = !options[name].value;
-    save_option(name, new_value);
-    const icon = new_value ? "ui-icon-circle-check" : "ui-icon-circle-close";
-    btn.button("option", "icons", { primary: icon });
-  }
-}
-
-function save_option(name, value) {
-  var data = {};
-  data[name] = value;
-  api_request("set_option", data, function (result) {
-    if (result.success) {
-      load_options();
-    }
-  });
-}
-
 function url_change(url) {
   var m = url.match(/\/outline\/(\d+)\//);
   if (m) {
@@ -221,22 +166,6 @@ $(function () {
       },
       ".folder > .outline-line"
     );
-
-  // make a button for all options
-  for (const [name, option] of Object.entries(options)) {
-    var button = $("<a>")
-      .attr("id", `btn-option-${name}`)
-      .on("click", function () {
-        option_button_click.bind(this)(name);
-      })
-      .button({
-        icons: { primary: "ui-icon-circle-check" },
-        label: option.title,
-      });
-    $("#navigation .options ul").append($("<li>").append(button));
-  }
-  // load the options
-  load_options();
 
   $("#new-feed-popup").dialog({
     autoOpen: false,
