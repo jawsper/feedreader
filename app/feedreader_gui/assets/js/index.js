@@ -57,7 +57,7 @@ navigation.$on("outline", (outline_id) => {
 
 load_more_posts_store.subscribe((more) => {
   if (more) {
-    load_more_posts(g_outline_id, null, null);
+    load_more_posts(g_outline_id);
     load_more_posts_store.set(false);
   }
 });

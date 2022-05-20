@@ -51,7 +51,7 @@ export const load_posts = debounce(
 );
 
 export const load_more_posts = debounce(
-  (a_outline_id, on_success, on_failure) => {
+  (a_outline_id) => {
     if (!a_outline_id) return;
 
     posts_store.loading.set(true);
@@ -67,10 +67,8 @@ export const load_more_posts = debounce(
           if (data.posts.length > 0) {
             posts_store.append(data.posts);
             posts_store.no_more_posts.set(false);
-            if (on_success) on_success();
           } else {
             posts_store.no_more_posts.set(true);
-            if (on_failure) on_failure();
           }
           posts_store.loading.set(false);
         }
