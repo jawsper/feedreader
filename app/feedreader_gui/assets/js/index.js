@@ -36,6 +36,11 @@ const outline_header = new OutlineHeader({
   hydrate: true,
 });
 
+outline_header.$on("toggle-fullscreen", () => {
+  $("body").toggleClass("fullscreen");
+  if ($("body").hasClass("fullscreen")) $("#content").trigger("focus");
+});
+
 const posts_component = new Posts({
   target: document.querySelector("#content"),
   hydrate: true,
@@ -175,9 +180,6 @@ $(function () {
 	License: MIT
 */
 
-/* globals */
-var g_outline_id = null;
-
 /* directly after load init everything */
 
 $(function () {
@@ -227,54 +229,12 @@ $(function () {
     }
     //e.preventDefault();
   });
-  $("#button_refresh").on("click", function () {
-    load_posts(g_outline_id);
-  });
-  $("#button_mark_all_as_read").on("click", function () {
-    mark_all_as_read(g_outline_id);
-  });
-  $("#button_show_only_new").on("click", function () {
-    set_outline_param(g_outline_id, "show_only_new");
-  });
-  $("#button_sort_order").on("click", function () {
-    set_outline_param(g_outline_id, "sort_order");
-  });
-  $("#button_toggle_fullscreen").on("click", function () {
-    $("body").toggleClass("fullscreen");
-    if ($("body").hasClass("fullscreen")) $("#content").trigger("focus");
-  });
-  $("#button_prev_post").on("click", function () {
-    posts_store.move_post(-1);
-  });
-  $("#button_next_post").on("click", function () {
-    posts_store.move_post(+1);
-  });
 });
 
 /* outline functions */
 
 function set_outline(a_outline_id) {
   outline_id.set(a_outline_id);
-  g_outline_id = a_outline_id;
-}
-
-function set_outline_param(a_outline_id, key, value, no_load) {
-  if (!a_outline_id) return;
-  let data = { outline: a_outline_id, action: key };
-  if (value) data["value"] = value;
-
-  api_request("outline_set", data, function (data) {
-    if (data.success) {
-      if (!no_load) load_posts(a_outline_id);
-    }
-  });
-}
-
-function mark_all_as_read(a_outline_id) {
-  if (!a_outline_id) return;
-  api_request("outline_mark_read", { outline: a_outline_id }, function (data) {
-    if (!data.error) load_posts(a_outline_id);
-  });
 }
 
 /* post functions */

@@ -24,7 +24,6 @@ export const load_posts = debounce(
       { limit: g_limit, outline: a_outline_id },
       (data) => {
         if (data.success) {
-          // if (g_outline_id != a_outline_id) return; // attempt to prevent slow loads from overwriting the current outline
           const { posts, ...rest } = data;
           outline_store.set({
             id: a_outline_id,
