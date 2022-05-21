@@ -30,7 +30,7 @@ new NewFeed({
   hydrate: true,
 });
 
-const navigation = new Navigation({
+new Navigation({
   target: document.querySelector("#outlines"),
   hydrate: true,
 });
@@ -50,7 +50,7 @@ const posts_component = new Posts({
   hydrate: true,
 });
 
-const toast_component = new Toast({
+new Toast({
   target: document.querySelector("#toast"),
   hydrate: true,
 });
@@ -60,25 +60,19 @@ new Sidebar({
   hydrate: true,
 });
 
-navigation.$on("outline", (outline_id) => {
-  console.log("on outline", outline_id);
-});
-
 load_more_posts_store.subscribe((more) => {
   if (more) {
-    load_more_posts();
     load_more_posts_store.set(false);
+    load_more_posts();
   }
 });
 
 posts_component.$on("starred", (e) => {
   const { id, value } = e.detail;
-  console.log("starred", e.detail);
   set_post_attr_state(id, "starred", value);
 });
 posts_component.$on("read", (e) => {
   const { id, value } = e.detail;
-  console.log("read", e.detail);
   set_post_attr_state(id, "read", value);
 });
 
@@ -88,34 +82,23 @@ posts_component.$on("read", (e) => {
 	License: MIT
 */
 
-$(() => {
-  $("input:submit, button, a.button").button();
-});
-
-function url_change(url) {
-  var m = url.match(/\/outline\/(\d+)\//);
+const url_change = (url) => {
+  const m = url.match(/\/outline\/(\d+)\//);
   if (m) {
     outline_id.set(m[1]);
   }
-}
+};
 
-$(function () {
+/* directly after load init everything */
+
+$(() => {
+  $("input:submit, button, a.button").button();
   window.addEventListener("popstate", () => {
     url_change(location.pathname);
   });
 
   url_change(location.pathname);
-});
 
-/*
-	File: outline.js
-	Copyright: 2013 Jasper Seidel
-	License: MIT
-*/
-
-/* directly after load init everything */
-
-$(function () {
   $("body").on("keypress", function (e) {
     var key = e.key.toLowerCase();
     if (e.shiftKey) key = "shift+" + key;
