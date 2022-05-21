@@ -110,38 +110,6 @@ function on_popstate(e) {
 }
 
 $(function () {
-  // make sure to not propagate when clicked to prevent folders from opening/closing
-  //$( '#outlines a' ).click( function(e) { e.stopPropagation(); } );
-
-  $("#outlines")
-    .on(
-      {
-        click: function (e) {
-          history.pushState(null, null, this.href);
-          url_change(this.href);
-          e.preventDefault();
-          e.stopPropagation();
-        },
-      },
-      "a"
-    )
-    .on(
-      {
-        click: function () {
-          var outline = $(this).parent();
-          var outline_id = outline.attr("id").match(outline_regex)[1];
-          outline.toggleClass("folder-closed");
-          set_outline_param(
-            outline_id,
-            "folder_opened",
-            outline.hasClass("folder-closed") ? 0 : 1,
-            true
-          );
-        },
-      },
-      ".folder > .outline-line"
-    );
-
   $("#new-feed-popup").dialog({
     autoOpen: false,
     modal: true,

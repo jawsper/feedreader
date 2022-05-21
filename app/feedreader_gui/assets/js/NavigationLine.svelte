@@ -2,6 +2,7 @@
   export let outline;
 
   import { createEventDispatcher } from "svelte";
+  import { set_outline_param } from "./api";
 
   const dispatch = createEventDispatcher();
 
@@ -11,17 +12,16 @@
 
   $: outlineStyle = outline.icon && `background-image: url(${outline.icon})`;
 
-  function handleOpenFolder(e) {
+  const handleOpenFolder = () => {
     if (outline.feed_id) return;
-    console.log("handleOpenFolder", e);
-  }
-  function handleOpenOutline(e) {
-    console.log("handleClick", e);
-    e.preventDefault();
-    const url = e.target.href;
-    console.log(url, outline.id);
-    dispatch("outline", outline.id);
-  }
+    dispatch("folder-open", {
+      id: outline.id,
+      folder_opened: outline.folder_opened,
+    });
+  };
+  const handleOpenOutline = () => {
+    dispatch("open-outline", { id: outline.id });
+  };
 </script>
 
 <li
@@ -33,7 +33,8 @@
     <a
       class="outline-text"
       href="outline/{outline.id}/"
-      on:click={handleOpenOutline}>{outline.title}</a
+      on:click|preventDefault|stopPropagation={handleOpenOutline}
+      >{outline.title}</a
     >
     <span class="outline-unread-count" id="outline-unread-count-{outline.id}"
       >{outline.unread_count}</span
@@ -42,7 +43,7 @@
   {#if outline.children}
     <ul>
       {#each outline.children as child}
-        <svelte:self outline={child} />
+        <svelte:self outline={child} on:folder-open on:open-outline />
       {/each}
     </ul>
   {/if}
