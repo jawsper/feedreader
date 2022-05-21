@@ -12,13 +12,12 @@ import Posts from "./Posts";
 import Toast from "./Toast";
 import Sidebar from "./Sidebar";
 
-import { api_request, load_more_posts } from "./api";
-import { get_unread_counts } from "./api/posts";
+import { load_more_posts } from "./api";
+import { set_post_attr_state } from "./api/posts";
 
 import {
   posts as posts_store,
   load_more_posts as load_more_posts_store,
-  toast as toast_store,
 } from "./stores";
 import { outline_id } from "./stores/outline";
 
@@ -164,16 +163,3 @@ $(function () {
     //e.preventDefault();
   });
 });
-
-/* post functions */
-
-const set_post_attr_state = (post_id, attr, state) => {
-  api_request(
-    "post_action",
-    { post: post_id, action: attr, state: state },
-    (data) => {
-      toast_store.set(data);
-      if (data.success) get_unread_counts();
-    }
-  );
-};

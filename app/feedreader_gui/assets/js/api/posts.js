@@ -7,6 +7,7 @@ import {
   posts as posts_store,
   outline as outline_store,
   outlines as outlines_store,
+  toast as toast_store,
   unreadPosts,
 } from "../stores";
 
@@ -104,3 +105,14 @@ export const get_unread_counts = debounce(
   500,
   { trailing: true }
 );
+
+export const set_post_attr_state = (post_id, attr, state) => {
+  api_request(
+    "post_action",
+    { post: post_id, action: attr, state: state },
+    (data) => {
+      toast_store.set(data);
+      if (data.success) get_unread_counts();
+    }
+  );
+};
