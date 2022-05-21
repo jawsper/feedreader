@@ -6,6 +6,7 @@ import "../css/main.scss";
 
 // import App from "./App";
 import Navigation from "./Navigation";
+import NewFeed from "./NewFeed";
 import OutlineHeader from "./OutlineHeader";
 import Posts from "./Posts";
 import Toast from "./Toast";
@@ -19,12 +20,16 @@ import {
   load_more_posts as load_more_posts_store,
   toast as toast_store,
 } from "./stores";
-import { load_posts } from "./api/posts";
 import { outline_id } from "./stores/outline";
 
 // const app = new App({
 //   target: document.querySelector("#app")
 // })
+
+new NewFeed({
+  target: document.querySelector("#new-feed-popup"),
+  hydrate: true,
+});
 
 const navigation = new Navigation({
   target: document.querySelector("#outlines"),
@@ -84,49 +89,21 @@ posts_component.$on("read", (e) => {
 	License: MIT
 */
 
-function add_new_feed(url) {
-  api_request("feed_add", { url: url }, function (result) {
-    if (result.success) {
-      location.reload();
-    }
-  });
-}
-
-var outline_regex = /^outline-(\d+)$/;
-
-$(function () {
+$(() => {
   $("input:submit, button, a.button").button();
 });
 
 function url_change(url) {
   var m = url.match(/\/outline\/(\d+)\//);
   if (m) {
-    set_outline(m[1]);
+    outline_id.set(m[1]);
   }
 }
 
-function on_popstate(e) {
-  url_change(location.pathname);
-}
-
 $(function () {
-  $("#new-feed-popup").dialog({
-    autoOpen: false,
-    modal: true,
-    buttons: {
-      "Add feed": function () {
-        add_new_feed($("#new-feed-url").val());
-      },
-      Cancel: function () {
-        $(this).dialog("close");
-      },
-    },
-    close: function () {
-      $("#new-feed-url").val("");
-    },
+  window.addEventListener("popstate", () => {
+    url_change(location.pathname);
   });
-
-  window.addEventListener("popstate", on_popstate);
 
   url_change(location.pathname);
 });
@@ -187,12 +164,6 @@ $(function () {
     //e.preventDefault();
   });
 });
-
-/* outline functions */
-
-function set_outline(a_outline_id) {
-  outline_id.set(a_outline_id);
-}
 
 /* post functions */
 
