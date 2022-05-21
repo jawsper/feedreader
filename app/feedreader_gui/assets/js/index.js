@@ -126,17 +126,6 @@ $(function () {
     },
   });
 
-  $("#button-new-feed").on("click", function () {
-    $("#new-feed-popup").dialog("open");
-  });
-
-  // trigger initial hash change, and set window.hashchange event
-  //on_hash_change();
-  //$( window ).on( 'hashchange', on_hash_change );
-
-  // if is outline url, then set the outline
-
-  //url_change( location.pathname );
   window.addEventListener("popstate", on_popstate);
 
   url_change(location.pathname);

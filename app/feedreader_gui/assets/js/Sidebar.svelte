@@ -35,10 +35,16 @@
 
     load_navigation();
   });
+
+  const on_new_feed_click = () => {
+    jquery("#new-feed-popup").dialog("open");
+  };
 </script>
 
 <p>
-  <button id="button-new-feed">Add a new feed</button>
+  <button id="button-new-feed" on:click={on_new_feed_click}
+    >Add a new feed</button
+  >
 </p>
 <p>
   <button
