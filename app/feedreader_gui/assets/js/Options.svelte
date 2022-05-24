@@ -1,8 +1,9 @@
 <script>
   import jquery from "jquery";
   import { onMount } from "svelte";
-  import { slide } from "svelte/transition"
-  import { api_request } from "./api";
+  import { slide } from "svelte/transition";
+  import { api_request, load_navigation, load_posts } from "./api";
+  import { outline_id } from "./stores";
 
   const options = {
     show_only_unread: {
@@ -19,9 +20,8 @@
       type: "boolean",
       default: false,
       callback: () => {
-        // TODO: svelte this
-        jquery("#button_refresh_page").trigger("click");
-        jquery("#button_refresh").trigger("click");
+        load_navigation();
+        load_posts($outline_id);
       },
     },
   };
