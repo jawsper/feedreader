@@ -3,7 +3,7 @@
 
   import { mark_all_as_read, set_outline_param } from "./api";
   import { load_posts } from "./api/posts";
-  import { outline, posts } from "./stores";
+  import { outline_id, outline, posts } from "./stores";
 
   const dispatch = createEventDispatcher();
 </script>
@@ -19,7 +19,7 @@
   id="button_refresh"
   title="Refresh"
   on:click={() => {
-    load_posts($outline?.id);
+    load_posts($outline_id);
   }}
 >
   <span class="ui-icon ui-icon-refresh" />

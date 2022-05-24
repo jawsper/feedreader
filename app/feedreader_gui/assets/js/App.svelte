@@ -11,7 +11,7 @@
 
   import { load_more_posts, posts, outline_id } from "./stores";
   import { load_more_posts as api_load_more_posts } from "./api";
-  import { set_post_attr_state } from "./api/posts";
+  import { load_posts, set_post_attr_state } from "./api/posts";
 
   load_more_posts.subscribe((more) => {
     if (more) {
@@ -21,9 +21,10 @@
   });
 
   const on_toggle_fullscreen = () => {
-    jquery("body").toggleClass("fullscreen");
-    if (jquery("body").hasClass("fullscreen")) {
-      jquery("#content").trigger("focus");
+    const body = document.querySelector("body");
+    const fullscreen = body.classList.toggle("fullscreen");
+    if (fullscreen) {
+      document.querySelector("#content").focus();
     }
   };
 
@@ -44,7 +45,7 @@
     if (e.altKey) key = "alt+" + key;
     switch (key) {
       case "r":
-        jquery("#button_refresh").trigger("click");
+        load_posts($outline_id);
         break;
       case "j":
         posts.move_post(+1);
