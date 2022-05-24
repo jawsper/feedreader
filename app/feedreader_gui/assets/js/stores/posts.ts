@@ -1,4 +1,5 @@
 import { writable } from "svelte/store";
+import { load_more_posts } from ".";
 
 function createPosts() {
   const { subscribe, set, update } = writable([]);
