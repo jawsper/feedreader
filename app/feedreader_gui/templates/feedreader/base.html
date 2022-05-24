@@ -14,7 +14,12 @@
 
 {% block head %}{% endblock head %}
 </head>
-<body data-media-url="{% get_media_prefix %}">
+<body
+	data-media-url="{% get_media_prefix %}"
+	data-username="{{ user.username }}"
+	data-manage-url="{% url 'admin:index' %}"
+	data-logout-url="{% url 'logout' %}"
+>
 <div id="toast"></div>
 {% if user.is_authenticated %}
 <div id="new-feed-popup" class="ui-helper-hidden" title="Add new feed">
