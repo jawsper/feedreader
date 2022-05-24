@@ -2,24 +2,11 @@
   import { onMount } from "svelte";
   import jquery from "jquery";
 
-  import { api_request } from "./api";
   import { outlines } from "./stores";
   import Options from "./Options";
+  import { load_navigation } from "./api/outline";
 
   let show_options = false;
-
-  const load_navigation = () => {
-    outlines.update(($outline) => ({
-      ...$outline,
-      loading: true,
-    }));
-    api_request("outline_get_all_outlines", {}, (data) => {
-      $outlines = {
-        loading: false,
-        outlines: data.outlines,
-      };
-    });
-  };
 
   outlines.subscribe((data) => {
     jquery("#button-refresh-page").button("option", "disabled", data.loading);
