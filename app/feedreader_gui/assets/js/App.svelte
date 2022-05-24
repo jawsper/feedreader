@@ -10,8 +10,11 @@
   import Toast from "./Toast.svelte";
 
   import { load_more_posts, posts, outline_id } from "./stores";
-  import { load_more_posts as api_load_more_posts } from "./api";
-  import { load_posts, set_post_attr_state } from "./api/posts";
+  import {
+    load_more_posts as api_load_more_posts,
+    load_posts,
+    set_post_attr_state,
+  } from "./api";
 
   load_more_posts.subscribe((more) => {
     if (more) {

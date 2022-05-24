@@ -1,8 +1,7 @@
 <script>
   import { createEventDispatcher } from "svelte";
 
-  import { mark_all_as_read, set_outline_param } from "./api";
-  import { load_posts } from "./api/posts";
+  import { mark_all_as_read, set_outline_param, load_posts } from "./api";
   import { outline_id, outline, posts } from "./stores";
 
   const dispatch = createEventDispatcher();
