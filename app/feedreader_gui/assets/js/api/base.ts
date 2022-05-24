@@ -5,7 +5,7 @@ import { toast } from "../stores";
 const urls = JSON.parse(document.getElementById("urls").textContent);
 
 export const api_request = (path, args, callback) => {
-  let fetch_args = {
+  let fetch_args: RequestInit = {
     method: "POST",
     headers: {
       Accept: "application/json",
