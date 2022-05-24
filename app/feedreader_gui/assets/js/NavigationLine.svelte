@@ -1,8 +1,7 @@
-<script>
+<script lang="ts">
   export let outline;
 
   import { createEventDispatcher } from "svelte";
-  import { set_outline_param } from "./api";
 
   const dispatch = createEventDispatcher();
 

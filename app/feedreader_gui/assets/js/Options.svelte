@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import jquery from "jquery";
   import { onMount } from "svelte";
   import { slide } from "svelte/transition";

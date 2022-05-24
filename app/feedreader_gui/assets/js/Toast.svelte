@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { afterUpdate } from "svelte/internal";
   import { fade } from "svelte/transition";
 

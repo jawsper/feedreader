@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { afterUpdate, createEventDispatcher } from "svelte";
   import jQuery from "jquery";
   import { outline, posts } from "./stores";

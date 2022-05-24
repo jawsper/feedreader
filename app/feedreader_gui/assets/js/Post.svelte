@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import DOMPurify from "dompurify";
   import { createEventDispatcher } from "svelte";
 

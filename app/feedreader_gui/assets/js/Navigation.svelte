@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { outlines, outline_id } from "./stores";
 
   import NavigationLine from "./NavigationLine.svelte";

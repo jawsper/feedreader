@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { createEventDispatcher } from "svelte";
 
   import { mark_all_as_read, set_outline_param, load_posts } from "./api";
