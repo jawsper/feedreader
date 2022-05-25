@@ -2,7 +2,7 @@ import { derived, writable } from "svelte/store";
 import { load_posts } from "../api/posts";
 import { posts } from "./posts";
 
-export const outline_id = writable(null);
+export const outline_id = writable<number | null>(null);
 
 const createOutline = () => {
   const { subscribe, set, update } = writable(null);

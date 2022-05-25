@@ -1,10 +1,11 @@
 import { outlines } from "../stores";
 import { api_request } from "./base";
 import { load_posts } from "./posts";
+import type { IGetAllOutlinesResult } from "./types";
 
 export const set_outline_param = (
   outline_id: number,
-  key: "read" | "starred",
+  key: "folder_opened",
   value: boolean,
   no_load: boolean | null
 ) => {
@@ -31,7 +32,7 @@ export const load_navigation = () => {
     ...$outline,
     loading: true,
   }));
-  api_request("outline_get_all_outlines", {}, (data) => {
+  api_request("outline_get_all_outlines", {}, (data: IGetAllOutlinesResult) => {
     outlines.set({
       loading: false,
       outlines: data.outlines,

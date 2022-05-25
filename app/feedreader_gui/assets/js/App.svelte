@@ -27,7 +27,7 @@
     const body = document.querySelector("body");
     const fullscreen = body.classList.toggle("fullscreen");
     if (fullscreen) {
-      document.querySelector("#content").focus();
+      document.querySelector<HTMLElement>("#content").focus();
     }
   };
 
@@ -86,7 +86,7 @@
   const url_change = (url) => {
     const m = url.match(/\/outline\/(\d+)\//);
     if (m) {
-      outline_id.set(m[1]);
+      outline_id.set(parseInt(m[1], 10));
     }
   };
   const on_window_popstate = (e) => {

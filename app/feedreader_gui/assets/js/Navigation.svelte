@@ -24,7 +24,6 @@
     const { id } = detail;
     const href = `outline/${id}/`;
     outline_id.set(id);
-    console.log(id, href)
     history.pushState(null, null, href);
   };
 </script>

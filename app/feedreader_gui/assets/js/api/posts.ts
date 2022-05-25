@@ -10,11 +10,16 @@ import {
   toast as toast_store,
   unreadPosts,
 } from "../stores";
+import type {
+  IGetPostsResult,
+  IGetUnreadResult,
+  IPostActionResult,
+} from "./types";
 
 const g_limit = 10;
 
 export const load_posts = debounce(
-  (a_outline_id) => {
+  (a_outline_id: number) => {
     if (!a_outline_id) return;
 
     posts_store.loading.set(true);
@@ -23,7 +28,7 @@ export const load_posts = debounce(
     api_request(
       "get_posts",
       { limit: g_limit, outline: a_outline_id },
-      (data) => {
+      (data: IGetPostsResult) => {
         if (data.success) {
           const { posts, ...rest } = data;
           outline_store.set({
@@ -59,17 +64,21 @@ export const load_more_posts = debounce(
 
     let skip = get(unreadPosts);
 
-    api_request("get_posts", { outline, skip, limit: g_limit }, (data) => {
-      if (!data.error) {
-        if (data.posts.length > 0) {
-          posts_store.append(data.posts);
-          posts_store.no_more_posts.set(false);
-        } else {
-          posts_store.no_more_posts.set(true);
+    api_request(
+      "get_posts",
+      { outline, skip, limit: g_limit },
+      (data: IGetPostsResult) => {
+        if (data.success) {
+          if (data.posts.length > 0) {
+            posts_store.append(data.posts);
+            posts_store.no_more_posts.set(false);
+          } else {
+            posts_store.no_more_posts.set(true);
+          }
+          posts_store.loading.set(false);
         }
-        posts_store.loading.set(false);
       }
-    });
+    );
   },
   500,
   { leading: true }
@@ -78,7 +87,7 @@ export const load_more_posts = debounce(
 export const get_unread_counts = debounce(
   () => {
     const { id: outline_id } = get(outline_store);
-    api_request("get_unread", { outline_id }, (data) => {
+    api_request("get_unread", { outline_id }, (data: IGetUnreadResult) => {
       document.title =
         data.total > 0 ? `Feedreader (${data.total})` : "Feedreader";
       if (!data.counts) return;
@@ -106,11 +115,15 @@ export const get_unread_counts = debounce(
   { trailing: true }
 );
 
-export const set_post_attr_state = (post_id, attr, state) => {
+export const set_post_attr_state = (
+  post_id: number,
+  attr: "read" | "starred",
+  state: boolean
+) => {
   api_request(
     "post_action",
     { post: post_id, action: attr, state: state },
-    (data) => {
+    (data: IPostActionResult) => {
       toast_store.set(data);
       if (data.success) get_unread_counts();
     }

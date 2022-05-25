@@ -1,7 +1,9 @@
 <script lang="ts">
-  export let outline;
-
   import { createEventDispatcher } from "svelte";
+
+  import type { IOutline } from "./types";
+
+  export let outline: IOutline;
 
   const dispatch = createEventDispatcher();
 
@@ -35,9 +37,7 @@
       on:click|preventDefault|stopPropagation={handleOpenOutline}
       >{outline.title}</a
     >
-    <span class="outline-unread-count" id="outline-unread-count-{outline.id}"
-      >{outline.unread_count}</span
-    >
+    <span class="outline-unread-count">{outline.unread_count}</span>
   </div>
   {#if outline.children}
     <ul>

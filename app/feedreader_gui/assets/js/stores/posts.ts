@@ -1,16 +1,18 @@
 import { writable } from "svelte/store";
 import { load_more_posts } from ".";
 
-function createPosts() {
-  const { subscribe, set, update } = writable([]);
-  const current_id = writable(null);
-  const current = writable(null);
-  const loading = writable(false);
-  const no_more_posts = writable(false);
+import type { IUserPost } from "../api/types";
 
-  let posts_value;
-  let current_post_id_value;
-  let current_post_value;
+function createPosts() {
+  const { subscribe, set, update } = writable<IUserPost[]>([]);
+  const current_id = writable<number | null>(null);
+  const current = writable<IUserPost | null>(null);
+  const loading = writable<boolean>(false);
+  const no_more_posts = writable<boolean>(false);
+
+  let posts_value: IUserPost[];
+  let current_post_id_value: number | null;
+  let current_post_value: IUserPost | null;
   subscribe((new_value) => {
     posts_value = new_value;
   });
@@ -24,7 +26,7 @@ function createPosts() {
     current_post_value = new_value;
   });
 
-  const append = (new_posts) => {
+  const append = (new_posts: IUserPost[]) => {
     update((posts) => {
       const filtered_new_posts = new_posts.filter(
         (new_post) => !posts.find((post) => post.id === new_post.id)
@@ -33,7 +35,7 @@ function createPosts() {
     });
   };
 
-  const update_post = (post_id, value) => {
+  const update_post = (post_id: number, value: IUserPost) => {
     update((posts) => {
       return posts.map((post) => {
         if (post.id === post_id) {
@@ -47,7 +49,7 @@ function createPosts() {
     });
   };
 
-  const update_current_post = (callback) => {
+  const update_current_post = (callback: (post: IUserPost) => IUserPost) => {
     update((posts) => {
       return posts.map((post) => {
         if (post.id === current_post_id_value) return callback(post);
@@ -56,7 +58,7 @@ function createPosts() {
     });
   };
 
-  const move_post = (direction) => {
+  const move_post = (direction: -1 | 1) => {
     let current_post_idx =
       current_post_id_value !== null
         ? posts_value.findIndex((post) => post.id === current_post_id_value)
