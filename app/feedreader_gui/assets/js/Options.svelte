@@ -1,5 +1,4 @@
 <script lang="ts">
-  import jquery from "jquery";
   import { cloneDeep } from "lodash";
   import { onMount } from "svelte";
   import { slide } from "svelte/transition";
@@ -60,16 +59,11 @@
       {#each Object.entries($options) as [name, option]}
         <li>
           <button
-            class="option-button ui-button ui-corner-all ui-widget"
+            class="option-button btn btn-outline-dark"
             on:click={() => option_button_click(name)}
           >
             {#if option.type === "boolean"}
-              <span
-                class={`ui-button-icon ui-icon ui-icon-circle-${
-                  option.value ? "check" : "close"
-                }`}
-              />
-              <span class="ui-button-icon-space" />
+              <i class={`bi bi-${option.value ? "toggle-on" : "toggle-off"}`} />
             {/if}
             {option.title}
           </button>
