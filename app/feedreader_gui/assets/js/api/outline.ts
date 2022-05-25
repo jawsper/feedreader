@@ -5,9 +5,9 @@ import type { IGetAllOutlinesResult } from "./types";
 
 export const set_outline_param = (
   outline_id: number,
-  key: "folder_opened",
-  value: boolean,
-  no_load: boolean | null
+  key: "folder_opened" | "show_only_new" | "sort_order",
+  value?: boolean,
+  no_load?: boolean | null
 ) => {
   if (!outline_id) return;
   let request = { outline: outline_id, action: key };
