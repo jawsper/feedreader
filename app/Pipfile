@@ -19,6 +19,7 @@ aiohttp = "==3.7.4.post0"
 django-webpack-loader = "~=1.4.1"
 whitenoise = "~=6.1.0"
 requests = "*"
+pillow = "~=9.0.0"
 
 [dev-packages]
 django-debug-toolbar = "~=3.2.1"
