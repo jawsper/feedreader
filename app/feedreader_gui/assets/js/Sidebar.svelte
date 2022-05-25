@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import jquery from "jquery";
 
   import Options from "./Options.svelte";
 
@@ -16,18 +15,16 @@
   onMount(() => {
     load_navigation();
   });
-
-  const on_new_feed_click = () => {
-    jquery("#new-feed-popup").dialog("open");
-  };
 </script>
 
 <p>
   <button
-    id="button-new-feed"
-    class="ui-button ui-corner-all ui-widget"
-    on:click={on_new_feed_click}>Add a new feed</button
+    class="btn btn-outline-dark"
+    data-bs-toggle="modal"
+    data-bs-target="#new-feed-modal"
   >
+    Add a new feed
+  </button>
 </p>
 <p>
   <button

@@ -102,10 +102,8 @@
 <svelte:window on:popstate={on_window_popstate} />
 <svelte:body on:keypress={on_body_keypress} />
 
-<div id="new-feed-popup" class="ui-helper-hidden" title="Add new feed">
-  <NewFeed />
-</div>
 <Toast />
+<NewFeed />
 <div id="navigation" class="left col scroll-y">
   <h1>Feedreader</h1>
   <p>
