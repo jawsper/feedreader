@@ -1,5 +1,4 @@
 <script lang="ts">
-  import jquery from "jquery";
   import { onMount } from "svelte";
 
   import Navigation from "./Navigation.svelte";
@@ -94,7 +93,6 @@
   };
 
   onMount(() => {
-    jquery("input:submit, button, a.button").button();
     url_change(location.pathname);
   });
 
