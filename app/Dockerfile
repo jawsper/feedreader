@@ -1,4 +1,4 @@
-FROM node:14 AS node-builder
+FROM node:16 AS node-builder
 
 WORKDIR /app
 
@@ -16,7 +16,7 @@ RUN yarn --frozen-lockfile && \
 ######################################
 
 # pull official base image
-FROM python:3.9-slim as builder
+FROM python:3.10-slim as builder
 
 # set environment varibles
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIPENV_VENV_IN_PROJECT=1
@@ -35,7 +35,7 @@ RUN pipenv sync
 
 ######################################
 
-FROM python:3.9-slim as runtime
+FROM python:3.10-slim as runtime
 
 WORKDIR /app
 
