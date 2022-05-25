@@ -8,14 +8,14 @@
 </script>
 
 <button
-  id="button_toggle_fullscreen"
+  class="ui-button ui-corner-all ui-widget"
   title="Toggle fullscreen"
   on:click={() => dispatch("toggle-fullscreen")}
 >
   <span class="ui-icon ui-icon-arrow-4-diag" />
 </button>
 <button
-  id="button_refresh"
+  class="ui-button ui-corner-all ui-widget"
   title="Refresh"
   on:click={() => {
     load_posts($outline_id);
@@ -24,13 +24,13 @@
   <span class="ui-icon ui-icon-refresh" />
 </button>
 <button
-  id="button_mark_all_as_read"
+  class="ui-button ui-corner-all ui-widget ui-button-disabled ui-state-disabled"
   on:click={() => {
     if ($outline) mark_all_as_read($outline.id);
   }}>Mark all as read</button
 >
 <button
-  id="button_show_only_new"
+  class="ui-button ui-corner-all ui-widget"
   on:click={() => {
     if ($outline) set_outline_param($outline.id, "show_only_new");
   }}
@@ -44,7 +44,7 @@
   {/if}
 </button>
 <button
-  id="button_sort_order"
+  class="ui-button ui-corner-all ui-widget"
   on:click={() => {
     if ($outline) set_outline_param($outline.id, "sort_order");
   }}
@@ -59,14 +59,14 @@
 </button>
 <div style="float:right">
   <button
-    id="button_prev_post"
+    class="ui-button ui-corner-all ui-widget"
     title="Previous post"
     on:click={() => posts.move_post(-1)}
   >
     <span class="ui-icon ui-icon-triangle-1-n" />
   </button>
   <button
-    id="button_next_post"
+    class="ui-button ui-corner-all ui-widget"
     title="Next post"
     on:click={() => posts.move_post(1)}
   >
