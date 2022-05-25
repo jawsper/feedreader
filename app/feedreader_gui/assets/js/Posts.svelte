@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { afterUpdate, createEventDispatcher } from "svelte";
-  import jQuery from "jquery";
+  import { createEventDispatcher } from "svelte";
+
   import { outline, posts } from "./stores";
   const { current_id, loading, no_more_posts } = posts;
 
@@ -30,11 +30,6 @@
     });
     dispatch("read", e.detail);
   };
-
-  afterUpdate(() => {
-    // temporary!
-    jQuery("#load_more_posts button").button();
-  });
 </script>
 
 <PostHeader />
@@ -52,7 +47,9 @@
 </div>
 {#if !$loading}
   <div id="load_more_posts">
-    <button class="button" on:click={load_more_posts}>Load more posts</button>
+    <button class="button ui-button ui-corner-all ui-widget" on:click={load_more_posts}
+      >Load more posts</button
+    >
   </div>
 {/if}
 {#if $no_more_posts}
