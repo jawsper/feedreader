@@ -1,6 +1,7 @@
 var path = require("path");
 var BundleTracker = require("webpack-bundle-tracker");
 var MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const preprocess = require("svelte-preprocess");
 
 module.exports = {
   context: __dirname,
@@ -60,6 +61,7 @@ module.exports = {
             compilerOptions: {
               hydratable: true,
             },
+            preprocess: preprocess(),
           },
         },
       },
