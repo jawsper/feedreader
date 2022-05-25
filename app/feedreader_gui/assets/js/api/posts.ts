@@ -15,6 +15,7 @@ import type {
   IGetUnreadResult,
   IPostActionResult,
 } from "./types";
+import type { IOutline } from "../types";
 
 const g_limit = 10;
 
@@ -91,11 +92,21 @@ export const get_unread_counts = debounce(
       document.title =
         data.total > 0 ? `Feedreader (${data.total})` : "Feedreader";
       if (!data.counts) return;
+
+      const update_outline = (outline: IOutline) => {
+        if (data.counts[`${outline.id}`] !== undefined) {
+          outline.unread_count = data.counts[`${outline.id}`];
+        }
+        if (outline.children) {
+          for (const child of outline.children) {
+            update_outline(child);
+          }
+        }
+      };
+
       outlines_store.update(($outlines) => {
         for (const outline of $outlines.outlines) {
-          if (data.counts[`${outline.id}`] !== undefined) {
-            outline.unread_count = data.counts[`${outline.id}`];
-          }
+          update_outline(outline);
         }
         return $outlines;
       });
