@@ -19,9 +19,6 @@
         (previous_value === undefined || previous_value !== new_value)
       ) {
         switch (name) {
-          case "show_only_unread":
-            jquery("#outlines").toggleClass("show-only-unread", new_value);
-            break;
           case "show_nsfw_feeds":
             load_navigation();
             load_posts($outline_id);

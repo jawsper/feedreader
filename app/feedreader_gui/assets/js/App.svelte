@@ -113,9 +113,7 @@
   <div id="sidebar">
     <Sidebar />
   </div>
-  <ul id="outlines" class="feeds">
-    <Navigation />
-  </ul>
+  <Navigation />
 </div>
 <div id="body" class="right col">
   <div class="content_header row">
