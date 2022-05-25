@@ -2,24 +2,18 @@
   import { onMount } from "svelte";
   import jquery from "jquery";
 
+  import Options from "./Options.svelte";
+
   import { outlines } from "./stores";
-  import Options from "./Options";
   import { load_navigation } from "./api/outline";
 
   let show_options = false;
-
+  let loading = false;
   outlines.subscribe((data) => {
-    jquery("#button-refresh-page").button("option", "disabled", data.loading);
+    loading = data.loading;
   });
 
   onMount(() => {
-    jquery("#button-options").button({
-      icon: "ui-icon-caret-1-s",
-    });
-    jquery("#button-refresh-page").button({
-      icon: "ui-icon-refresh",
-    });
-
     load_navigation();
   });
 
@@ -29,22 +23,39 @@
 </script>
 
 <p>
-  <button id="button-new-feed" on:click={on_new_feed_click}
-    >Add a new feed</button
+  <button
+    id="button-new-feed"
+    class="ui-button ui-corner-all ui-widget"
+    on:click={on_new_feed_click}>Add a new feed</button
   >
 </p>
 <p>
   <button
     id="button-options"
+    class="ui-button ui-corner-all ui-widget"
     on:click={() => {
       show_options = !show_options;
-
-      jquery("#button-options").button("option", "icons", {
-        primary: show_options ? "ui-icon-caret-1-n" : "ui-icon-caret-1-s",
-      });
-    }}>Options</button
+    }}
   >
-  <button id="button-refresh-page" on:click={load_navigation}>Refresh</button>
+    <span
+      class={`ui-button-icon ui-icon ui-icon-caret-1-${
+        show_options ? "n" : "s"
+      }`}
+    />
+    <span class="ui-button-icon-space" />
+    Options
+  </button>
+  <button
+    id="button-refresh-page"
+    class={`ui-button ui-corner-all ui-widget ${
+      loading && "ui-button-disabled ui-state-disabled"
+    }`}
+    on:click={load_navigation}
+  >
+    <span class="ui-button-icon ui-icon ui-icon-refresh" />
+    <span class="ui-button-icon-space" />
+    Refresh
+  </button>
 </p>
 {#if show_options}
   <Options />
