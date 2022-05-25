@@ -20,6 +20,7 @@
 	data-manage-url="{% url 'admin:index' %}"
 	data-logout-url="{% url 'logout' %}"
 >
+<div id="app">
 <div id="toast"></div>
 {% if user.is_authenticated %}
 <div id="new-feed-popup" class="ui-helper-hidden" title="Add new feed">
@@ -53,6 +54,7 @@
 	<div id="content" class="content row scroll-y" tabindex="0">
 		{% block content %}{% endblock content %}
 	</div>
+</div>
 </div>
 <div id="version" class="footer row"><a target="_blank" href="https://github.com/jawsper/feedreader">Feedreader</a> v{% app_version %}</div>
 
