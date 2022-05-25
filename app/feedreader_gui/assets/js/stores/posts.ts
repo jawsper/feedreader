@@ -35,7 +35,7 @@ function createPosts() {
     });
   };
 
-  const update_post = (post_id: number, value: IUserPost) => {
+  const update_post = (post_id: number, value: Partial<IUserPost>) => {
     update((posts) => {
       return posts.map((post) => {
         if (post.id === post_id) {
