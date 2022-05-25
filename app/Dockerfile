@@ -5,11 +5,11 @@ WORKDIR /app
 COPY feedreader_gui/package.json \
     feedreader_gui/yarn.lock \
     feedreader_gui/webpack.config.js \
+    feedreader_gui/tsconfig.json \
     /app/
 COPY feedreader_gui/assets /app/assets/
 
 RUN yarn --frozen-lockfile && \
-    ls /app && \
     yarn run build && \
     rm -r node_modules
 
