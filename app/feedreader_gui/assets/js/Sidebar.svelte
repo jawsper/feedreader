@@ -57,6 +57,4 @@
     Refresh
   </button>
 </p>
-{#if show_options}
-  <Options />
-{/if}
+<Options visible={show_options} />
