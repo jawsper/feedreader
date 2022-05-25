@@ -19,39 +19,30 @@
 
 <p>
   <button
-    class="btn btn-outline-dark"
+    class="btn btn-sm btn-outline-dark"
     data-bs-toggle="modal"
     data-bs-target="#new-feed-modal"
   >
     Add a new feed
   </button>
 </p>
-<p>
+<div class="btn-group btn-group-sm mb-3">
   <button
-    id="button-options"
-    class="ui-button ui-corner-all ui-widget"
+    class="btn btn-outline-dark"
     on:click={() => {
       show_options = !show_options;
     }}
   >
-    <span
-      class={`ui-button-icon ui-icon ui-icon-caret-1-${
-        show_options ? "n" : "s"
-      }`}
-    />
-    <span class="ui-button-icon-space" />
+    <i class={`bi bi-caret-${show_options ? "up" : "down"}-fill`} />
     Options
   </button>
   <button
-    id="button-refresh-page"
-    class={`ui-button ui-corner-all ui-widget ${
-      loading && "ui-button-disabled ui-state-disabled"
-    }`}
+    class="btn btn-outline-dark"
+    disabled={loading}
     on:click={load_navigation}
   >
-    <span class="ui-button-icon ui-icon ui-icon-refresh" />
-    <span class="ui-button-icon-space" />
+    <i class="bi bi-arrow-clockwise" />
     Refresh
   </button>
-</p>
+</div>
 <Options visible={show_options} />
