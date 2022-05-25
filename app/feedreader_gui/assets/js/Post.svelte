@@ -57,7 +57,7 @@
   bind:this={div}
   class={postClasses}
   id="post_{post.id}"
-  on:mouseup={dispatch("focus", post.id)}
+  on:mouseup={() => dispatch("focus", post.id)}
 >
   <div class="body">
     <div class="link">
