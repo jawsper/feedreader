@@ -1,5 +1,4 @@
 import { debounce } from "lodash";
-import jquery from "jquery";
 import { get } from "svelte/store";
 
 import { api_request } from "./base";
@@ -38,7 +37,6 @@ export const load_posts = debounce(
           });
           get_unread_counts();
 
-          jquery("#content").scrollTop(0);
           posts_store.current_id.set(null);
           if (data.posts.length > 0) {
             posts_store.set(posts);
