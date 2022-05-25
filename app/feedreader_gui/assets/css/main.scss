@@ -31,6 +31,7 @@ body { margin: 0; -webkit-text-size-adjust: 100%; }
 #version {
 	padding: 1em;
 	font-size: .75em;
+	width: 200px;
 }
 
 body
@@ -69,7 +70,6 @@ body
 
 #result
 {
-	display: none;
 	position:fixed;
 	bottom:0;
 	right:0;
@@ -121,11 +121,6 @@ ul.clean li
 #navigation .button .ui-button-text
 {
 	line-height: 1;
-}
-
-#navigation .options
-{
-	display: none;
 }
 
 #outlines
@@ -217,9 +212,6 @@ ul.clean li
 #posts
 {
 }
-
-#load_more_posts { display: none; }
-#no_more_posts { display: none; }
 
 .post
 {

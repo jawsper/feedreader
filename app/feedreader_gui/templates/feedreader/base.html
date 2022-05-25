@@ -14,16 +14,13 @@
 
 {% block head %}{% endblock head %}
 </head>
-<body data-media-url="{% get_media_prefix %}">
-<div id="result" class="ui-helper-hidden ui-widget">
-	<div id="result_container" class="ui-state-error ui-corner-all">
-		<p>
-			<span id="result_icon" class="ui-icon ui-icon-alert"></span>
-			<strong id="result_caption"><span id="result_caption_text">Result</span>: </strong>
-			<span id="result_text"></span>
-		</p>
-	</div>
-</div>
+<body
+	data-media-url="{% get_media_prefix %}"
+	data-username="{{ user.username }}"
+	data-manage-url="{% url 'admin:index' %}"
+	data-logout-url="{% url 'logout' %}"
+>
+<div id="toast"></div>
 {% if user.is_authenticated %}
 <div id="new-feed-popup" class="ui-helper-hidden" title="Add new feed">
 	<label for="new-feed-url">URL: <input id="new-feed-url" type="text"></label>
@@ -33,16 +30,18 @@
 	<h1>Feedreader</h1>
 	{% if user.is_authenticated %}
 		<p>Welcome, {{ user.username }} [<a href="{% url 'admin:index' %}">manage</a>] [<a href="{% url 'logout' %}">Logout</a>]</p>
-		<p>
-			<a id="button-new-feed" class="button">Add a new feed</a>
-			<br>
-			<a id="button-options" class="button">Options</a>
-			<a id="button_refresh_page" class="button">Refresh</a>
-		</p>
-		<div class="options">
-			<ul class="clean">
-			</ul>
-			<hr class="" />
+		<div id="sidebar">
+			<p>
+				<a id="button-new-feed" class="button">Add a new feed</a>
+				<br>
+				<a id="button-options" class="button">Options</a>
+				<a id="button_refresh_page" class="button">Refresh</a>
+			</p>
+			<div class="options">
+				<ul class="clean">
+				</ul>
+				<hr class="" />
+			</div>
 		</div>
 		{% include "feedreader/navigation.html" %}
 	{% else %}

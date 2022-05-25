@@ -1,6 +1,7 @@
 var path = require("path");
 var BundleTracker = require("webpack-bundle-tracker");
 var MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const preprocess = require("svelte-preprocess");
 
 module.exports = {
   context: __dirname,
@@ -26,8 +27,21 @@ module.exports = {
     }),
   ],
 
+  resolve: {
+    alias: {
+      svelte: path.resolve("node_modules", "svelte"),
+    },
+    extensions: [".mjs", ".js", ".ts", ".svelte"],
+    mainFields: ["svelte", "browser", "module", "main"],
+  },
+
   module: {
     rules: [
+      {
+        test: /\.ts$/,
+        loader: "ts-loader",
+        exclude: /node_modules/,
+      },
       {
         test: /\.(sa|sc|c)ss$/,
         use: [MiniCssExtractPlugin.loader, "css-loader", "sass-loader"],
@@ -37,6 +51,25 @@ module.exports = {
         type: "asset/resource",
         generator: {
           filename: "images/[hash][ext][query]",
+        },
+      },
+      {
+        test: /\.(html|svelte)$/,
+        use: {
+          loader: "svelte-loader",
+          options: {
+            compilerOptions: {
+              hydratable: true,
+            },
+            preprocess: preprocess(),
+          },
+        },
+      },
+      {
+        // required to prevent errors from Svelte on Webpack 5+, omit on Webpack 4
+        test: /node_modules\/svelte\/.*\.mjs$/,
+        resolve: {
+          fullySpecified: false,
         },
       },
     ],
