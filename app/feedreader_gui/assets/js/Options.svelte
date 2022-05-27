@@ -63,7 +63,7 @@
             on:click={() => option_button_click(name)}
           >
             {#if option.type === "boolean"}
-              <i class={`bi bi-${option.value ? "toggle-on" : "toggle-off"}`} />
+              <i class={`bi bi-${option.value ? "toggle-on" : "toggle-off"} text-${option.value ? "success" : "danger"}`} />
             {/if}
             {option.title}
           </button>

@@ -19,14 +19,14 @@
 
 <p>
   <button
-    class="btn btn-sm btn-outline-dark"
+    class="btn btn-outline-dark"
     data-bs-toggle="modal"
     data-bs-target="#new-feed-modal"
   >
     Add a new feed
   </button>
 </p>
-<div class="btn-group btn-group-sm mb-3">
+<div class="btn-group mb-3">
   <button
     class="btn btn-outline-dark"
     on:click={() => {
