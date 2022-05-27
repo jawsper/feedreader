@@ -15,6 +15,7 @@
 {% block head %}{% endblock head %}
 </head>
 <body
+	data-version="{% app_version %}"
 	data-media-url="{% get_media_prefix %}"
 	data-username="{{ user.username }}"
 	data-manage-url="{% url 'admin:index' %}"
@@ -55,8 +56,8 @@
 		{% block content %}{% endblock content %}
 	</div>
 </div>
-</div>
 <div id="version" class="footer row"><a target="_blank" href="https://github.com/jawsper/feedreader">Feedreader</a> v{% app_version %}</div>
+</div>
 
 {% if user.is_authenticated %}
 {{ urls | json_script:"urls" }}
