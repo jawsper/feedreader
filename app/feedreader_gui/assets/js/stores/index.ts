@@ -1,6 +1,7 @@
 import { writable } from "svelte/store";
 
 export const load_more_posts = writable<boolean>(false);
+export const fullscreen = writable<boolean>(false);
 
 export { toasts } from "./toast";
 export { posts } from "./posts";
