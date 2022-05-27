@@ -47,7 +47,7 @@
 </div>
 {#if !$loading}
   <div id="load_more_posts">
-    <button class="button ui-button ui-corner-all ui-widget" on:click={load_more_posts}
+    <button class="btn btn-outline-primary" on:click={load_more_posts}
       >Load more posts</button
     >
   </div>
