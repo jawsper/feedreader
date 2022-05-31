@@ -1,38 +1,67 @@
 {% extends "feedreader/base.html" %}
-
-{% block head %}
-{% endblock head %}
-
-{% block content_header %}
-<button id="button_toggle_fullscreen" title="Toggle fullscreen"><span class="ui-icon ui-icon-arrow-4-diag"></span></button>
-<button id="button_refresh" title="Refresh"><span class="ui-icon ui-icon-refresh"></span></button>
-<button id="button_mark_all_as_read">Mark all as read</button>
-<button id="button_show_only_new"></button>
-<button id="button_sort_order"></button>
-<span id="scroll_pos"></span>
-<div style="float:right">
-	<button id="button_prev_post" title="Previous post"><span class="ui-icon ui-icon-triangle-1-n"></span></button>
-	<button id="button_next_post" title="Next post"><span class="ui-icon ui-icon-triangle-1-s"></span></button>
-</div>
-{% endblock content_header %}
-
+{% block head %}{% endblock head %}
 {% block content %}
-<script type="text/template" id="postTemplate">
-<div class="post" id="post_{0}">
-	<div class="body">
-		<div class="link"><a href="{1}" target="_blank">{2}</a></div>
-		<div class="pubDate">{3}</div>
-		<div class="source">{4}</div>
-		<br>
-		<div class="content">{5}</div>
-	</div>
-	<div class="footer">
-		<label for="cb_action_starred_post_{0}"><input id="cb_action_starred_post_{0}" class="action starred" type="checkbox" name="starred" value="1"{6}> Starred</label>
-		<label for="cb_action_read_post_{0}"><input id="cb_action_read_post_{0}" class="action read" type="checkbox" name="read" value="1"{7}> Mark as read</label>
+<div class="d-block navbar-right-half">
+	<div class="navbar navbar-expand-sm navbar-light global-header">
+		<div class="collapse navbar-collapse content-max">
+      <div class="navbar-nav">
+        <div class="nav-item btn-group">
+          <button
+            class="btn btn-outline-dark"
+            type="button"
+            title="Toggle fullscreen"
+          >
+            <i class="bi bi-arrows-fullscreen"></i>
+          </button>
+          <button class="btn btn-outline-dark" type="button" title="Refresh">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+          <button class="btn btn-outline-dark" type="button" disabled>
+            Mark all as read
+          </button>
+          <button class="btn btn-outline-dark" type="button">&nbsp;</button>
+          <button class="btn btn-outline-dark">&nbsp;</button>
+        </div>
+      </div>
+			<div class="justify-content-end nav" style="flex:1">
+        <span class="navbar-text">Welcome, {{ user.username }}</span>
+        <div class="btn-group ms-3">
+          <a
+            class="nav-item btn btn-outline-dark"
+            href="{% url 'admin:index' %}"
+          >
+            <i class="bi bi-gear"></i>
+            Manage
+          </a>
+          <a class="btn btn-outline-dark" href="{% url 'logout' %}">
+            <i class="bi bi-box-arrow-left"></i>
+            Logout
+          </a>
+        </div>
+        <div class="nav-item btn-group ms-3">
+          <button
+            class="btn btn-outline-dark"
+            type="button"
+            title="Previous post"
+          >
+            <i class="bi bi-caret-up-fill"></i>
+          </button>
+          <button class="btn btn-outline-dark" type="button" title="Next post">
+            <i class="bi bi-caret-down-fill"></i>
+          </button>
+        </div>
+			</div>
+		</div>
 	</div>
 </div>
-</script>
-<h3 id="outline_title"><a target="_blank">{% if outline %}{{ outline }}{% endif %}</a></h3>
-<div id="posts"></div>
-<div style="height: 50%"></div>
+<section class="pt-3 px-3 content-max prose">
+	<!-- PostHeader -->
+	<h4 class="my-3">
+		<a target="_blank">{% if outline %}{{ outline }}{% endif %}</a>
+	</h4>
+	<!-- /PostHeader -->
+	<div id="posts"></div>
+	<!-- <div style="height: 50vh"></div> -->
+</section>
+
 {% endblock content %}

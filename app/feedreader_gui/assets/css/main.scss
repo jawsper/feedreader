@@ -1,5 +1,108 @@
 @import "custom";
 
+body, html {
+	height: 100%;
+}
+
+#app {
+	display: flex;
+	flex-direction: row;
+	min-height: 100%;
+	max-height: 100%;
+}
+
+.sidebar {
+	position: fixed;
+	width: 18rem;
+	top: 0;
+	bottom: 0;
+	flex-direction: column;
+	display: flex;
+	z-index: 1;
+
+	flex-basis: 270px;
+	flex-shrink: 0;
+
+	.navbar-brand h6 {
+		padding: 1rem;
+		line-height: 29px;
+		font-size: 1.3rem;
+	}
+
+	.global-header {
+		flex-shrink: 0;
+	}
+	.navbar {
+		z-index: 1;
+		box-shadow: 0 1px 1px 0 rgba(0,0,0,.1),0 3px 5px 0 rgba(0,0,0,.02);
+	}
+
+	#sidebar {
+		min-height: 0;
+		.aside, #version {
+			border-right: 1px solid #0000001a;
+		}
+		.aside {
+
+			display: block;
+			flex: 1 1;
+			overflow-x: hidden;
+			overflow-y: hidden;
+			&:hover {
+				overflow-y: auto;
+			}
+		}
+	}
+}
+
+.navbar {
+	padding-left: 1rem;
+	padding-right: 1rem;
+}
+
+.global-header {
+	height: 4rem;
+	width: 100%;
+
+	// makes the shadow between the navbars disappear
+	&:before {
+    display: block;
+    content: "";
+    background-color: #fff;
+    width: 10px;
+    left: -5px;
+    height: 100%;
+    position: absolute
+	}
+}
+
+.content-max {
+	box-sizing: content-box;
+	max-width: 1000px;
+}
+
+main {
+	margin-left: 18rem;
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 auto;
+	min-width: 0;
+}
+.navbar-right-half {
+	background-color: #fff;
+	z-index: 10;
+	position: fixed;
+	width: calc(100% - 18rem);
+	box-shadow: 0 1px 1px 0 rgb(0 0 0 / 10%), 0 3px 5px 0 rgb(0 0 0 / 2%);
+}
+
+.content-max.prose {
+	margin-top: 4rem;
+}
+
+#new-feed-popup {
+	display: none;
+}
 
 ul.clean
 {

@@ -1,6 +1,13 @@
 {% extends "feedreader/base.html" %}
 
 {% block content %}
+<div class="d-block navbar-right-half">
+	<div class="navbar navbar-expand-sm navbar-light global-header">
+		<div class="collapse navbar-collapse content-max">
+        </div>
+    </div>
+</div>
+<section class="pt-3 px-3 content-max prose">
 
 {% if form.errors %}
 <p>Your username and password didn't match. Please try again.</p>
@@ -22,5 +29,5 @@
 <input type="submit" value="login" />
 <input type="hidden" name="next" value="{{ next }}" />
 </form>
-
+</section>
 {% endblock content %}
