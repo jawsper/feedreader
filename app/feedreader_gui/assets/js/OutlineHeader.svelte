@@ -6,22 +6,12 @@
   const { loading } = posts;
 
   const dispatch = createEventDispatcher();
+  const body = document.querySelector("body");
 </script>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
-  <div class="container-fluid">
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarNav"
-      aria-controls="navbarNav"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-    >
-      <span class="navbar-toggler-icon" />
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
+<div class="d-block navbar-right-half">
+	<div class="navbar navbar-expand-sm navbar-light global-header">
+		<div class="collapse navbar-collapse content-max">
       <div class="navbar-nav">
         <div class="nav-item btn-group">
           <button
@@ -85,7 +75,18 @@
         </div>
       </div>
       <div class="navbar-nav ms-auto">
-        <div class="nav-item btn-group">
+        <span class="navbar-text">Welcome, {body.dataset.username}</span>
+        <div class="btn-group ms-3">
+          <a class="nav-item btn btn-outline-dark" href={body.dataset.manageUrl}>
+            <i class="bi bi-gear" />
+            Manage
+          </a>
+          <a class="btn btn-outline-dark" href={body.dataset.logoutUrl}>
+            <i class="bi bi-box-arrow-left" />
+            Logout
+          </a>
+        </div>
+        <div class="nav-item btn-group ms-3">
           <button
             class="btn btn-outline-dark"
             type="button"
@@ -106,4 +107,4 @@
       </div>
     </div>
   </div>
-</nav>
+</div>

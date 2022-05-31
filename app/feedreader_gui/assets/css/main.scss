@@ -87,6 +87,11 @@ main {
 	flex-direction: column;
 	flex: 1 1 auto;
 	min-width: 0;
+
+	&.fullscreen section {
+		margin-left: -18rem;
+		max-width: calc(1000px + 18rem);
+	}
 }
 .navbar-right-half {
 	background-color: #fff;

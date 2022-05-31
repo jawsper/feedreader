@@ -96,37 +96,40 @@
 <Toast />
 <NewFeed />
 
-<div class="container-fluid">
-  <div class="row">
-    <div
-      class="col-sm-2 position-fixed overflow-auto top-0 bottom-0 pt-2"
-      class:d-none={$fullscreen}
-    >
-      <h2>Feedreader</h2>
-      <p>
-        Welcome, {body.dataset.username} [<a href={body.dataset.manageUrl}
-          >manage</a
-        >] [<a href={body.dataset.logoutUrl}>Logout</a>]
-      </p>
-      <Sidebar />
-      <Navigation />
-      <div class="position-fixed bottom-0 p-2 fs-6">
-        <a target="_blank" href="https://github.com/jawsper/feedreader"
-          >Feedreader</a
-        >
-        v{body.dataset.version}
+<div class="sidebar">
+  <div class="navbar navbar-expand-md navbar-light bg-white global-header">
+    <a class="navbar-brand pb-0" title="Feedreader" href="/">
+      <h6>Feedreader</h6>
+    </a>
+  </div>
+  <div
+    id="sidebar"
+    class="d-flex flex-column align-items-stretch collapse navbar-collapse"
+    class:d-none={$fullscreen}
+  >
+    <div class="aside">
+      <div class="px-3 pt-3">
+        <Sidebar />
+      </div>
+      <div class="px-3">
+        <Navigation />
       </div>
     </div>
-    <div class="col-sm-2" class:d-none={$fullscreen} />
-    <div class:col-sm-10={!$fullscreen} class="position-relative">
-      <OutlineHeader
-        on:toggle-fullscreen={() => {
-          $fullscreen = !$fullscreen;
-        }}
-      />
-      <div id="content" tabindex="0">
-        <Posts on:read={on_posts_read} on:starred={on_posts_starred} />
-      </div>
+    <div id="version" class="p-2 fs-6">
+      <a target="_blank" href="https//github.com/jawsper/feedreader"
+        >Feedreader</a
+      >
+      v{body.dataset.version}
     </div>
   </div>
 </div>
+<main class="px-0" class:fullscreen={$fullscreen}>
+	<div class="flex-grow-1">
+    <OutlineHeader
+      on:toggle-fullscreen={() => {
+        $fullscreen = !$fullscreen;
+      }}
+    />
+    <Posts on:read={on_posts_read} on:starred={on_posts_starred} />
+  </div>
+</main>
