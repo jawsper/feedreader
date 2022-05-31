@@ -40,6 +40,15 @@ export const load_posts = debounce(
           });
           get_unread_counts();
 
+          requestAnimationFrame(() =>
+            window.scrollTo({
+              top: 0,
+              left: 0,
+              // @ts-ignore
+              behavior: "instant",
+            })
+          );
+
           posts_store.current_id.set(null);
           if (data.posts.length > 0) {
             posts_store.set(posts);
