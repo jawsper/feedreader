@@ -6,7 +6,6 @@
   const { loading } = posts;
 
   const dispatch = createEventDispatcher();
-  const body = document.querySelector("body");
 </script>
 
 <div class="d-block navbar-right-half">
@@ -75,13 +74,13 @@
         </div>
       </div>
       <div class="navbar-nav ms-auto">
-        <span class="navbar-text">Welcome, {body.dataset.username}</span>
+        <span class="navbar-text">Welcome, {document.body.dataset.username}</span>
         <div class="btn-group ms-3">
-          <a class="nav-item btn btn-outline-dark" href={body.dataset.manageUrl}>
+          <a class="nav-item btn btn-outline-dark" href={document.body.dataset.manageUrl}>
             <i class="bi bi-gear" />
             Manage
           </a>
-          <a class="btn btn-outline-dark" href={body.dataset.logoutUrl}>
+          <a class="btn btn-outline-dark" href={document.body.dataset.logoutUrl}>
             <i class="bi bi-box-arrow-left" />
             Logout
           </a>

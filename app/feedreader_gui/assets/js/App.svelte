@@ -88,8 +88,6 @@
   onMount(() => {
     url_change(location.pathname);
   });
-
-  const body = document.querySelector("body");
 </script>
 
 <svelte:window on:popstate={() => url_change(location.pathname)} />
@@ -121,7 +119,7 @@
       <a target="_blank" href="https//github.com/jawsper/feedreader"
         >Feedreader</a
       >
-      v{body.dataset.version}
+      v{document.body.dataset.version}
     </div>
   </div>
 </div>
