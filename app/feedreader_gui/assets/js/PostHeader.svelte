@@ -2,7 +2,7 @@
   import { outline } from "./stores";
 </script>
 
-<h4 class="my-3">
+<h4 class="mb-3">
   {#if $outline}
     <a href={$outline.html_url} target="_blank">
       {$outline.title}
