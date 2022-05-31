@@ -80,6 +80,8 @@
     const m = url.match(/\/outline\/(\d+)\//);
     if (m) {
       outline_id.set(parseInt(m[1], 10));
+    } else {
+      outline_id.set(null);
     }
   };
 

@@ -64,7 +64,7 @@
               if ($outline) set_outline_param($outline.id, "sort_order");
             }}
           >
-            {#if $outline?.sort_order === "ASC"}
+            {#if $outline?.sort_order === "asc"}
               Oldest first
             {:else if $outline}
               Newest first
