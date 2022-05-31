@@ -78,7 +78,7 @@ body, html {
 
 .content-max {
 	box-sizing: content-box;
-	max-width: 1000px;
+	// max-width: 1000px;
 }
 
 main {
@@ -90,7 +90,7 @@ main {
 
 	&.fullscreen section {
 		margin-left: -18rem;
-		max-width: calc(1000px + 18rem);
+		// max-width: calc(1000px + 18rem);
 	}
 }
 .navbar-right-half {
