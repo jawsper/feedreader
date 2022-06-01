@@ -123,87 +123,61 @@ ul.clean li
 }
 /* navigation */
 
-#navigation .button .ui-button-text
-{
-	line-height: 1;
-}
+#outlines {
+  list-style: none;
+  padding-left: 0;
 
-#outlines
-{
-	/*border: 1px solid red; /**/
-	list-style: none;
-	padding-left: 0;
-}
-#outlines > li
-{
-	/*border: 1px solid green; /**/
-}
+  a {
+    color: #333;
+    text-decoration: none;
+  }
 
-#outlines ul
-{
-	/*border: 1px solid pink; /**/
-	list-style: none;
-	margin-left: 20px;
-	padding-left: 0em;
-}
+  ul {
+    list-style: none;
+    margin-left: 20px;
+    padding-left: 0em;
+  }
+  .outline-line {
+    background-image: url("../images/icons/silk/feed.png");
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    padding-left: 20px;
+    margin-bottom: 0.5em;
+    vertical-align: center;
+  }
+  .outline-text {
+    height: 16px;
+    line-height: 16px;
+    display: inline-block;
+    overflow: hidden;
+    max-width: 125px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
-#outlines ul > li
-{
-	/*border: 1px solid blue;*/
-}
+  .outline.has-unread > .outline-line > .outline-text {
+    font-weight: bold;
+  }
 
-#outlines .outline-line
-{
-	background-image: url('../images/icons/silk/feed.png');
-	background-repeat: no-repeat;
-	background-size: 16px 16px;
-	padding-left: 20px;
-	margin-bottom: .5em;
-	vertical-align: center;
-}
+  .outline-unread-count {
+    font-size: 0.8em;
+    color: #666;
+    display: inline-block;
+    padding: 0 0 0 4px;
+    margin-right: 16px;
+  }
 
-#outlines .outline-text
-{
-	height: 16px;
-	line-height: 16px;
-	display: inline-block;
-	overflow: hidden;
-	max-width: 125px;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-#outlines .outline.has-unread > .outline-line > .outline-text
-{
-	font-weight: bold;
-}
-
-#outlines .outline-unread-count
-{
-	font-size: 0.8em;
-	color: #666;
-	display: inline-block;
-	padding: 0 0 0 4px;
-	margin-right: 16px;
-}
-
-#outlines li.folder > .outline-line
-{
-	background-image: url( '../images/icons/silk/folder.png' );
-}
-#outlines li.folder-closed > .outline-line
-{
-	background-image: url( '../images/icons/silk/folder_feed.png' );
-}
-#outlines li.folder-closed > ul
-{
-	display: none;
-}
-
-#outlines a, #outlines a:active, #outlines a:hover, #outlines a:visited
-{
-	color: #333;
-	text-decoration: none;
+  li:not(.feed) > .outline-line {
+    background-image: url("../images/icons/silk/folder.png");
+  }
+  li.folder-closed {
+    > .outline-line {
+      background-image: url("../images/icons/silk/folder_feed.png");
+    }
+    > ul {
+      display: none;
+    }
+  }
 }
 
 /* end navigation */
