@@ -178,9 +178,6 @@ ul.clean li
 	font-weight: bold;
 }
 
-#outlines.show-only-unread .outline > .outline-line { display: none; }
-#outlines.show-only-unread .outline.has-unread > .outline-line { display: block; }
-
 #outlines .outline-unread-count
 {
 	font-size: 0.8em;
@@ -210,12 +207,6 @@ ul.clean li
 }
 
 /* end navigation */
-
-#content { outline: none; }
-
-#posts
-{
-}
 
 .post
 {

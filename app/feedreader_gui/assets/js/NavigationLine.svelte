@@ -1,5 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
+  import { options } from "./stores";
 
   import type { IOutline } from "./types";
 
@@ -23,27 +24,32 @@
   const handleOpenOutline = () => {
     dispatch("open-outline", { id: outline.id });
   };
+
+  $: visible = !$options.show_only_unread.value || outline.unread_count > 0;
 </script>
 
-<li
-  id="outline-{outline.id}"
-  data-unread-count={outline.unread_count}
-  class={outlineClasses}
->
-  <div class="outline-line" style={outlineStyle} on:click={handleOpenFolder}>
-    <a
-      class="outline-text"
-      href="outline/{outline.id}/"
-      on:click|preventDefault|stopPropagation={handleOpenOutline}
-      >{outline.title}</a
-    >
-    <span class="outline-unread-count">{outline.unread_count}</span>
-  </div>
-  {#if outline.children}
-    <ul>
-      {#each outline.children as child}
-        <svelte:self outline={child} on:folder-open on:open-outline />
-      {/each}
-    </ul>
-  {/if}
-</li>
+{#if visible}
+  <li
+    id="outline-{outline.id}"
+    data-unread-count={outline.unread_count}
+    class={outlineClasses}
+  >
+    <div class="outline-line" style={outlineStyle} on:click={handleOpenFolder}>
+      <a
+        class="outline-text"
+        href="outline/{outline.id}/"
+        on:click|preventDefault|stopPropagation={handleOpenOutline}
+      >
+        {outline.title}
+      </a>
+      <span class="outline-unread-count">{outline.unread_count}</span>
+    </div>
+    {#if outline.children}
+      <ul>
+        {#each outline.children as child}
+          <svelte:self outline={child} on:folder-open on:open-outline />
+        {/each}
+      </ul>
+    {/if}
+  </li>
+{/if}
