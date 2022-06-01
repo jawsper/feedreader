@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher, onMount } from "svelte";
 
-  import { outline, posts } from "./stores";
+  import { header_offsets, outline, posts } from "./stores";
   const { current_id, loading, no_more_posts } = posts;
 
   import { load_more_posts } from "./api";
@@ -30,9 +30,20 @@
     });
     dispatch("read", e.detail);
   };
+
+  let section: HTMLElement;
+
+  onMount(() => {
+    header_offsets.update((value) => ({
+      ...value,
+      padding: parseFloat(
+        window.getComputedStyle(section, null).getPropertyValue("padding-top")
+      ),
+    }));
+  });
 </script>
 
-<section class="pt-3 px-3 content-max prose">
+<section class="pt-3 px-3 content-max prose" bind:this={section}>
 <PostHeader />
 <div id="posts">
   {#each $posts as post}

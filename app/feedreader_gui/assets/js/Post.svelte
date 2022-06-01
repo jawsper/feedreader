@@ -11,7 +11,7 @@
     return node;
   });
 
-  import { posts } from "./stores";
+  import { header_offset, posts } from "./stores";
 
   export let post;
   export let is_feed;
@@ -19,14 +19,20 @@
 
   const dispatch = createEventDispatcher();
 
-  let div;
+  let div: HTMLDivElement;
   let dont_auto_mark_read = false;
   $: is_starred = post.starred;
   $: is_read = post.read;
 
   posts.current_id.subscribe((new_id) => {
     if (new_id === post.id) {
-      div.scrollIntoView(true);
+      const offset = div.getBoundingClientRect().top
+      const top = offset + window.pageYOffset - $header_offset;
+      window.scrollTo({
+        top,
+        // @ts-ignore
+        behavior: "instant",
+      })
       if (!dont_auto_mark_read && !is_read) {
         mark_post_read();
       }

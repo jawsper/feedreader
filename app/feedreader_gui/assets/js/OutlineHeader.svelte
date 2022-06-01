@@ -1,14 +1,22 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher, onMount } from "svelte";
 
   import { mark_all_as_read, set_outline_param, load_posts } from "./api";
-  import { outline_id, outline, posts } from "./stores";
+  import { outline_id, outline, posts, header_offsets } from "./stores";
   const { loading } = posts;
 
   const dispatch = createEventDispatcher();
+
+  let navbar: HTMLDivElement;
+  onMount(() => {
+    header_offsets.update((value) => ({
+      ...value,
+      height: navbar.getBoundingClientRect().height,
+    }));
+  });
 </script>
 
-<div class="d-block navbar-right-half">
+<div class="d-block navbar-right-half" bind:this={navbar}>
 	<div class="navbar navbar-expand-sm navbar-light global-header">
 		<div class="collapse navbar-collapse content-max">
       <div class="navbar-nav">
