@@ -70,6 +70,5 @@
         </li>
       {/each}
     </ul>
-    <hr class="" />
   </div>
 {/if}
