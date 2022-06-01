@@ -124,7 +124,7 @@
   </div>
 </div>
 <main class="px-0" class:fullscreen={$fullscreen}>
-	<div class="flex-grow-1">
+  <div class="flex-grow-1">
     <OutlineHeader
       on:toggle-fullscreen={() => {
         $fullscreen = !$fullscreen;

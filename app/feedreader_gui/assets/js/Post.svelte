@@ -14,8 +14,8 @@
   import { header_offset, posts } from "./stores";
 
   export let post;
-  export let is_feed;
-  export let is_current;
+  export let is_feed: boolean;
+  export let is_current: boolean;
 
   const dispatch = createEventDispatcher();
 
@@ -26,13 +26,13 @@
 
   posts.current_id.subscribe((new_id) => {
     if (new_id === post.id) {
-      const offset = div.getBoundingClientRect().top
+      const offset = div.getBoundingClientRect().top;
       const top = offset + window.pageYOffset - $header_offset;
       window.scrollTo({
         top,
         // @ts-ignore
         behavior: "instant",
-      })
+      });
       if (!dont_auto_mark_read && !is_read) {
         mark_post_read();
       }

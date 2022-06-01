@@ -17,8 +17,8 @@
 </script>
 
 <div class="d-block navbar-right-half" bind:this={navbar}>
-	<div class="navbar navbar-expand-sm navbar-light global-header">
-		<div class="collapse navbar-collapse content-max">
+  <div class="navbar navbar-expand-sm navbar-light global-header">
+    <div class="collapse navbar-collapse content-max">
       <div class="navbar-nav">
         <div class="nav-item btn-group">
           <button
@@ -82,13 +82,21 @@
         </div>
       </div>
       <div class="navbar-nav ms-auto">
-        <span class="navbar-text">Welcome, {document.body.dataset.username}</span>
+        <span class="navbar-text"
+          >Welcome, {document.body.dataset.username}</span
+        >
         <div class="btn-group ms-3">
-          <a class="nav-item btn btn-outline-dark" href={document.body.dataset.manageUrl}>
+          <a
+            class="nav-item btn btn-outline-dark"
+            href={document.body.dataset.manageUrl}
+          >
             <i class="bi bi-gear" />
             Manage
           </a>
-          <a class="btn btn-outline-dark" href={document.body.dataset.logoutUrl}>
+          <a
+            class="btn btn-outline-dark"
+            href={document.body.dataset.logoutUrl}
+          >
             <i class="bi bi-box-arrow-left" />
             Logout
           </a>

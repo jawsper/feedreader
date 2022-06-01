@@ -44,28 +44,26 @@
 </script>
 
 <section class="pt-3 px-3 content-max prose" bind:this={section}>
-<PostHeader />
-<div id="posts">
-  {#each $posts as post}
-    <Post
-      {post}
-      is_feed={$outline?.is_feed}
-      is_current={$current_id === post.id}
-      on:focus={post_on_focus}
-      on:starred={post_on_starred}
-      on:read={post_on_read}
-    />
-  {/each}
-</div>
-{#if !$loading}
-  <div id="load_more_posts">
-    <button class="btn btn-outline-primary" on:click={load_more_posts}
-      >Load more posts</button
-    >
+  <PostHeader />
+  <div id="posts">
+    {#each $posts as post}
+      <Post
+        {post}
+        is_feed={$outline?.is_feed}
+        is_current={$current_id === post.id}
+        on:focus={post_on_focus}
+        on:starred={post_on_starred}
+        on:read={post_on_read}
+      />
+    {/each}
   </div>
-{/if}
-{#if $no_more_posts}
-  <div id="no_more_posts">No more posts.</div>
-{/if}
-<div style="height: 50vh" />
+  {#if !$loading}
+    <button class="btn btn-outline-primary" on:click={load_more_posts}>
+      Load more posts
+    </button>
+  {/if}
+  {#if $no_more_posts}
+    <div id="no_more_posts">No more posts.</div>
+  {/if}
+  <div style="height: 50vh" />
 </section>
