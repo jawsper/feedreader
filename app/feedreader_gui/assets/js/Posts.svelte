@@ -32,12 +32,13 @@
   };
 </script>
 
+<section class="pt-3 px-3 content-max prose">
 <PostHeader />
 <div id="posts">
   {#each $posts as post}
     <Post
       {post}
-      is_feed={$outline.is_feed}
+      is_feed={$outline?.is_feed}
       is_current={$current_id === post.id}
       on:focus={post_on_focus}
       on:starred={post_on_starred}
@@ -47,7 +48,7 @@
 </div>
 {#if !$loading}
   <div id="load_more_posts">
-    <button class="button ui-button ui-corner-all ui-widget" on:click={load_more_posts}
+    <button class="btn btn-outline-primary" on:click={load_more_posts}
       >Load more posts</button
     >
   </div>
@@ -55,4 +56,5 @@
 {#if $no_more_posts}
   <div id="no_more_posts">No more posts.</div>
 {/if}
-<div style="height: 50%" />
+<div style="height: 50vh" />
+</section>

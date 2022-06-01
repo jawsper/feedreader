@@ -17,18 +17,21 @@ export interface IUserPost extends IPost {
   read: boolean;
 }
 
-export interface IGetPostsResult {
-  success: boolean;
+export interface ICurrentOutline {
+  id: number;
   title: string;
   html_url: string | null;
   is_feed: boolean;
   show_only_new: boolean;
   sort_order: TSortOrder;
   skip: number;
-  limit: number;
-  posts: IUserPost[];
   unread_count: number;
   next_page: unknown;
+}
+
+export interface IGetPostsResult extends Omit<ICurrentOutline, "id"> {
+  success: boolean;
+  posts: IUserPost[];
 }
 
 export interface IGetUnreadResult {

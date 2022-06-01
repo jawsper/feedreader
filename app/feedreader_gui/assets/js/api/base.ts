@@ -1,6 +1,6 @@
 import Cookies from "js-cookie";
 
-import { toast } from "../stores";
+import { toasts } from "../stores";
 
 const urls = JSON.parse(document.getElementById("urls").textContent);
 
@@ -20,7 +20,7 @@ export const api_request = (path, args, callback) => {
   fetch(urls[path].url, fetch_args)
     .then((response) => response.json())
     .catch((error) => {
-      toast.set({
+      toasts.push({
         caption: "Error",
         message: error,
         success: false,

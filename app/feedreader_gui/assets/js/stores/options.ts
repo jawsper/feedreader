@@ -20,20 +20,12 @@ const optionsDefault: Options = {
     title: "Show only unread posts",
     type: "boolean",
     default: false,
-    // callback: function () {
-    //   // TODO: svelte this
-    //   jquery("#outlines").toggleClass("show-only-unread", this.value);
-    // },
     value: undefined,
   },
   show_nsfw_feeds: {
     title: "Show NSFW feeds",
     type: "boolean",
     default: false,
-    // callback: () => {
-    //   load_navigation();
-    //   load_posts($outline_id);
-    // },
     value: undefined,
   },
 };

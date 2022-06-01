@@ -1,89 +1,112 @@
-@import url("smoothness/jquery-ui.css");
+@import "custom";
 
-/* BOF panes.css */
-
-/* Generic pane rules */
-body { margin: 0; -webkit-text-size-adjust: 100%; }
-.page { left: 0; right: 0; top: 0; bottom: 0; }
-.row, .col, .page { overflow: hidden; position: absolute; }
-.row { left: 0; right: 0; }
-.col { top: 0; bottom: 0; }
-.scroll-x { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-.scroll-y { overflow-y: auto; -webkit-overflow-scrolling: touch; }
-.fill, .pane { position: absolute; left: 0; top: 0; right: 0; bottom: 0; width: 100%; height: 100% }
-.pane { display: none; }
-
-/* Workaround: in landscape mode, IEMobile makes bottom toolbar overlap the page, so shorten the page by 75px to compensate */
-.iemobile .page { bottom: -6px; }
-@media screen and (orientation:landscape) { .iemobile .page { bottom: 75px; } }
-
-/* EOF panes.css */
-
-/* Pane configuration */
-.left.col { left: 5px; width: 250px; top: 5px; bottom: 30px; }
-.right.col { left: 260px; right: 5px; top: 5px; }
-.content_header.row { padding-bottom: .5em; position: relative; }
-.content.row { top: 40px; bottom: 0; }
-.footer.row { bottom: 0;  }
-
-.content_header.row { border-bottom: 1px solid gray; }
-
-#version {
-	padding: 1em;
-	font-size: .75em;
-	width: 200px;
+body, html {
+	height: 100%;
 }
 
-body
-{
-	font-family: Verdana, Arial, sans-serif;
-	font-size: 12px;
+#app {
+	display: flex;
+	flex-direction: row;
+	min-height: 100%;
+	max-height: 100%;
 }
 
-.ui-widget-table
-{
-	border-collapse: collapse;
+.sidebar {
+	position: fixed;
+	width: 18rem;
+	top: 0;
+	bottom: 0;
+	flex-direction: column;
+	display: flex;
+	z-index: 1;
+
+	flex-basis: 270px;
+	flex-shrink: 0;
+
+	.navbar-brand h6 {
+		padding: 1rem;
+		line-height: 29px;
+		font-size: 1.3rem;
+	}
+
+	.global-header {
+		flex-shrink: 0;
+	}
+	.navbar {
+		z-index: 1;
+		box-shadow: 0 1px 1px 0 rgba(0,0,0,.1),0 3px 5px 0 rgba(0,0,0,.02);
+	}
+
+	#sidebar {
+		min-height: 0;
+		.aside, #version {
+			border-right: 1px solid #0000001a;
+		}
+		.aside {
+
+			display: block;
+			flex: 1 1;
+			overflow-x: hidden;
+			overflow-y: hidden;
+			&:hover {
+				overflow-y: auto;
+			}
+		}
+	}
 }
 
-.ui-widget-table td, .ui-widget-table th
-{
-	border: 1px solid #eee;
-	padding: .6em 10px;
-}
-.ui-widget-table.black-border td, .ui-widget-table.black-border th
-{
-	border-color: #111;
+.navbar {
+	padding-left: 1rem;
+	padding-right: 1rem;
 }
 
-.ui-form label, .ui-form input, .ui-form select
-{
-	display: block;
-	padding: 1px 3px;
-}
-.ui-form fieldset
-{
-	border: 0;
-	padding: 0;
+.global-header {
+	height: 4rem;
+	width: 100%;
+
+	// makes the shadow between the navbars disappear
+	&:before {
+    display: block;
+    content: "";
+    background-color: #fff;
+    width: 10px;
+    left: -5px;
+    height: 100%;
+    position: absolute
+	}
 }
 
-.button { margin-bottom: 1em; }
+.content-max {
+	box-sizing: content-box;
+	// max-width: 1000px;
+}
 
-#result
-{
-	position:fixed;
-	bottom:0;
-	right:0;
-	z-index:100;
-	margin: 1.5em;
+main {
+	margin-left: 18rem;
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 auto;
+	min-width: 0;
+
+	&.fullscreen section {
+		margin-left: -18rem;
+		// max-width: calc(1000px + 18rem);
+	}
 }
-#result_container
-{
-	padding: 0 .7em;
+.navbar-right-half {
+	background-color: #fff;
+	z-index: 10;
+	position: fixed;
+	width: calc(100% - 18rem);
+	box-shadow: 0 1px 1px 0 rgb(0 0 0 / 10%), 0 3px 5px 0 rgb(0 0 0 / 2%);
 }
-#result_icon
-{
-	float:left;
-	margin-right:.3em;
+
+.content-max.prose {
+	margin-top: 4rem;
+}
+
+#new-feed-popup {
+	display: none;
 }
 
 ul.clean
@@ -98,24 +121,6 @@ ul.clean li
 	text-align: left;
 	margin-bottom: 1em;
 }
-
-#header
-{
-	padding-left: 10px;
-}
-#header h1
-{
-	margin: 0;
-}
-
-#spinner
-{
-	display: none;
-	margin: 0;
-	padding: 0;
-	vertical-align: middle;
-}
-
 /* navigation */
 
 #navigation .button .ui-button-text
@@ -204,7 +209,6 @@ ul.clean li
 	text-decoration: none;
 }
 
-
 /* end navigation */
 
 #content { outline: none; }
@@ -262,7 +266,3 @@ ul.clean li
 	background-color: #e0e0e0;
 	padding: .5em;
 }
-
-body.fullscreen #header { display: none; }
-body.fullscreen #navigation { display: none; }
-body.fullscreen #body { left: 5px; }

@@ -8,9 +8,10 @@
   import Sidebar from "./Sidebar.svelte";
   import Toast from "./Toast.svelte";
 
-  import { load_more_posts, posts, outline_id } from "./stores";
+  import { load_more_posts, posts, outline_id, fullscreen } from "./stores";
   import {
     load_more_posts as api_load_more_posts,
+    load_navigation,
     load_posts,
     set_post_attr_state,
   } from "./api";
@@ -21,14 +22,6 @@
       api_load_more_posts();
     }
   });
-
-  const on_toggle_fullscreen = () => {
-    const body = document.querySelector("body");
-    const fullscreen = body.classList.toggle("fullscreen");
-    if (fullscreen) {
-      document.querySelector<HTMLElement>("#content").focus();
-    }
-  };
 
   const on_posts_read = (e) => {
     const { id, value } = e.detail;
@@ -47,6 +40,7 @@
     if (e.altKey) key = "alt+" + key;
     switch (key) {
       case "r":
+        load_navigation();
         load_posts($outline_id);
         break;
       case "j":
@@ -56,7 +50,7 @@
         posts.move_post(-1);
         break;
       case "f":
-        on_toggle_fullscreen();
+        $fullscreen = !$fullscreen;
         break;
       case "m":
         posts.update_current_post((post) => {
@@ -82,50 +76,60 @@
     }
   };
 
-  const url_change = (url) => {
+  const url_change = (url: string) => {
     const m = url.match(/\/outline\/(\d+)\//);
     if (m) {
       outline_id.set(parseInt(m[1], 10));
+    } else {
+      outline_id.set(null);
     }
-  };
-  const on_window_popstate = (e) => {
-    url_change(location.pathname);
   };
 
   onMount(() => {
     url_change(location.pathname);
   });
-
-  const body = document.querySelector("body");
 </script>
 
-<svelte:window on:popstate={on_window_popstate} />
+<svelte:window on:popstate={() => url_change(location.pathname)} />
 <svelte:body on:keypress={on_body_keypress} />
 
-<div id="toast">
-  <Toast />
-</div>
-<div id="new-feed-popup" class="ui-helper-hidden" title="Add new feed">
-  <NewFeed />
-</div>
-<div id="navigation" class="left col scroll-y">
-  <h1>Feedreader</h1>
-  <p>
-    Welcome, {body.dataset.username} [<a href={body.dataset.manageUrl}>manage</a
-    >] [<a href={body.dataset.logoutUrl}>Logout</a>]
-  </p>
-  <div id="sidebar">
-    <Sidebar />
+<Toast />
+<NewFeed />
+
+<div class="sidebar">
+  <div class="navbar navbar-expand-md navbar-light bg-white global-header">
+    <a class="navbar-brand pb-0" title="Feedreader" href="/">
+      <h6>Feedreader</h6>
+    </a>
   </div>
-  <ul id="outlines" class="feeds">
-    <Navigation />
-  </ul>
-</div>
-<div id="body" class="right col">
-  <div class="content_header row">
-    <OutlineHeader on:toggle-fullscreen={on_toggle_fullscreen} />
+  <div
+    id="sidebar"
+    class="d-flex flex-column align-items-stretch collapse navbar-collapse"
+    class:d-none={$fullscreen}
+  >
+    <div class="aside">
+      <div class="px-3 pt-3">
+        <Sidebar />
+      </div>
+      <div class="px-3">
+        <Navigation />
+      </div>
+    </div>
+    <div id="version" class="p-2 fs-6">
+      <a target="_blank" href="https//github.com/jawsper/feedreader"
+        >Feedreader</a
+      >
+      v{document.body.dataset.version}
+    </div>
   </div>
-  <div id="content" class="content row scroll-y" tabindex="0">
+</div>
+<main class="px-0" class:fullscreen={$fullscreen}>
+	<div class="flex-grow-1">
+    <OutlineHeader
+      on:toggle-fullscreen={() => {
+        $fullscreen = !$fullscreen;
+      }}
+    />
     <Posts on:read={on_posts_read} on:starred={on_posts_starred} />
   </div>
-</div>
+</main>

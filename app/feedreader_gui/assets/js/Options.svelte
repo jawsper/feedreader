@@ -1,5 +1,4 @@
 <script lang="ts">
-  import jquery from "jquery";
   import { cloneDeep } from "lodash";
   import { onMount } from "svelte";
   import { slide } from "svelte/transition";
@@ -19,9 +18,6 @@
         (previous_value === undefined || previous_value !== new_value)
       ) {
         switch (name) {
-          case "show_only_unread":
-            jquery("#outlines").toggleClass("show-only-unread", new_value);
-            break;
           case "show_nsfw_feeds":
             load_navigation();
             load_posts($outline_id);
@@ -63,22 +59,16 @@
       {#each Object.entries($options) as [name, option]}
         <li>
           <button
-            class="option-button ui-button ui-corner-all ui-widget"
+            class="option-button btn btn-outline-dark"
             on:click={() => option_button_click(name)}
           >
             {#if option.type === "boolean"}
-              <span
-                class={`ui-button-icon ui-icon ui-icon-circle-${
-                  option.value ? "check" : "close"
-                }`}
-              />
-              <span class="ui-button-icon-space" />
+              <i class={`bi bi-${option.value ? "toggle-on" : "toggle-off"} text-${option.value ? "success" : "danger"}`} />
             {/if}
             {option.title}
           </button>
         </li>
       {/each}
     </ul>
-    <hr class="" />
   </div>
 {/if}

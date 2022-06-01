@@ -15,47 +15,65 @@
 {% block head %}{% endblock head %}
 </head>
 <body
+	data-version="{% app_version %}"
 	data-media-url="{% get_media_prefix %}"
 	data-username="{{ user.username }}"
 	data-manage-url="{% url 'admin:index' %}"
 	data-logout-url="{% url 'logout' %}"
 >
-<div id="toast"></div>
-{% if user.is_authenticated %}
-<div id="new-feed-popup" class="ui-helper-hidden" title="Add new feed">
-	<label for="new-feed-url">URL: <input id="new-feed-url" type="text"></label>
-</div>
-{% endif %}
-<div id="navigation" class="left col scroll-y">
-	<h1>Feedreader</h1>
+<div id="app">
+	<div id="toast"></div>
 	{% if user.is_authenticated %}
-		<p>Welcome, {{ user.username }} [<a href="{% url 'admin:index' %}">manage</a>] [<a href="{% url 'logout' %}">Logout</a>]</p>
-		<div id="sidebar">
-			<p>
-				<a id="button-new-feed" class="button">Add a new feed</a>
-				<br>
-				<a id="button-options" class="button">Options</a>
-				<a id="button_refresh_page" class="button">Refresh</a>
-			</p>
-			<div class="options">
-				<ul class="clean">
-				</ul>
-				<hr class="" />
+	<div id="new-feed-popup" class="ui-helper-hidden" title="Add new feed">
+		<label for="new-feed-url">URL: <input id="new-feed-url" type="text"></label>
+	</div>
+	{% endif %}
+	<div class="sidebar">
+		<div class="navbar navbar-expand-md navbar-light bg-white global-header">
+			<a class="navbar-brand pb-0" title="Feedreader" href="/">
+				<h6>Feedreader</h6>
+			</a>
+		</div>
+		<div id="sidebar" class="d-md-flex flex-column align-items-stretch collapse navbar-collapse">
+			<div class="aside">
+				{% if user.is_authenticated %}
+				<div class="px-3 pt-3">
+				<!-- Sidebar -->
+					<button class="btn btn-outline-dark mb-3" data-bs-toggle="modal" data-bs-target="#new-feed-modal">
+						Add a new feed
+					</button>
+					<div class="btn-group mb-3">
+						<button class="btn btn-outline-dark">
+							<i class="bi bi-caret-down-fill"></i>
+							Options
+						</button>
+						<button class="btn btn-outline-dark">
+							<i class="bi bi-arrow-clockwise"></i>
+							Refresh
+						</button>
+					</div>
+				</div>
+				<!-- /Sidebar -->
+				<div class="px-3">
+					{% include "feedreader/navigation.html" %}
+				</div>
+				{% else %}
+					<p class="px-3 pt-3">Welcome. Please log in.</p>
+				{% endif %}
+			</div>
+			<div id="version" class="p-2 fs-6">
+				<a target="_blank" href="https//github.com/jawsper/feedreader">Feedreader</a> v{% app_version %}
 			</div>
 		</div>
-		{% include "feedreader/navigation.html" %}
-	{% else %}
-		<p>Welcome. Please log in.</p>
-	{% endif %}
 </div>
-<div id="body" class="right col">
-	{% if user.is_authenticated %}<div class="content_header row">{% block content_header %}{% endblock content_header %} <!--img id="spinner" src="{{ STATIC_URL }}images/spinner.gif" alt="loading..."--></div>{% endif %}
-	<div id="content" class="content row scroll-y" tabindex="0">
+<main class="px-0">
+	<div class="flex-grow-1">
+		<!-- Posts -->
 		{% block content %}{% endblock content %}
+		<!-- /Posts -->
 	</div>
+</main>
 </div>
-<div id="version" class="footer row"><a target="_blank" href="https://github.com/jawsper/feedreader">Feedreader</a> v{% app_version %}</div>
-
 {% if user.is_authenticated %}
 {{ urls | json_script:"urls" }}
 {% render_bundle 'main' 'js' %}

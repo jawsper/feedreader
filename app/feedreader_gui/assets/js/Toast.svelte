@@ -1,34 +1,39 @@
 <script lang="ts">
-  import { afterUpdate } from "svelte/internal";
-  import { fade } from "svelte/transition";
+  import { slide } from "svelte/transition";
 
-  import { toast } from "./stores";
-
-  $: classNames = $toast?.success ? "ui-state-highlight" : "ui-state-error";
-  $: icon = $toast?.success ? "ui-icon-info" : "ui-icon-alert";
-
-  let timeout;
-
-  afterUpdate(() => {
-    if (timeout) clearTimeout(timeout);
-    timeout = setTimeout(() => {
-      $toast = null;
-    }, 5000);
-  });
+  import { toasts } from "./stores";
 </script>
 
-{#if $toast}
-  <div id="result" class="ui-widget" transition:fade>
-    <div id="result_container" class={`ui-corner-all ${classNames}`}>
-      <p>
-        <span id="result_icon" class={`ui-icon ${icon}`} />
-        {#if $toast.caption}
-          <strong id="result_caption">
-            <span id="result_caption_text">{$toast.caption}</span>:
-          </strong>
-        {/if}
-        <span id="result_text">{$toast.message}</span>
-      </p>
-    </div>
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+  <div class="toast-container">
+    {#each $toasts as toast}
+      <div
+        class="toast show"
+        role="alert"
+        class:bg-primary={toast.success}
+        class:bg-danger={!toast.success}
+        transition:slide
+      >
+        <div class="toast-header">
+          <i
+            class="bi me-2"
+            class:text-primary={toast.success}
+            class:text-danger={!toast.success}
+            class:bi-info-square-fill={toast.success}
+            class:bi-exclamation-square-fill={!toast.success}
+          />
+          <strong class="me-auto">{toast.caption}</strong>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="toast"
+            aria-label="Close"
+          />
+        </div>
+        <div class="toast-body">
+          {toast.message}
+        </div>
+      </div>
+    {/each}
   </div>
-{/if}
+</div>

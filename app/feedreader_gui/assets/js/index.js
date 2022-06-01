@@ -1,11 +1,10 @@
-import "jquery-ui/ui/widgets/button";
-import "jquery-ui/ui/widgets/dialog";
+import "bootstrap";
 
 import "../css/main.scss";
 
 import App from "./App";
 
 new App({
-  target: document.querySelector("body"),
+  target: document.querySelector("#app"),
   hydrate: true,
 });

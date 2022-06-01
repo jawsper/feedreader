@@ -1,5 +1,4 @@
 import { debounce } from "lodash";
-import jquery from "jquery";
 import { get } from "svelte/store";
 
 import { api_request } from "./base";
@@ -7,7 +6,7 @@ import {
   posts as posts_store,
   outline as outline_store,
   outlines as outlines_store,
-  toast as toast_store,
+  toasts as toasts_store,
   unreadPosts,
 } from "../stores";
 import type {
@@ -21,7 +20,10 @@ const g_limit = 10;
 
 export const load_posts = debounce(
   (a_outline_id: number) => {
-    if (!a_outline_id) return;
+    if (!a_outline_id) {
+      posts_store.set([]);
+      return;
+    }
 
     posts_store.loading.set(true);
     posts_store.no_more_posts.set(false);
@@ -31,14 +33,22 @@ export const load_posts = debounce(
       { limit: g_limit, outline: a_outline_id },
       (data: IGetPostsResult) => {
         if (data.success) {
-          const { posts, ...rest } = data;
+          const { posts, success, ...rest } = data;
           outline_store.set({
             id: a_outline_id,
             ...rest,
           });
           get_unread_counts();
 
-          jquery("#content").scrollTop(0);
+          requestAnimationFrame(() =>
+            window.scrollTo({
+              top: 0,
+              left: 0,
+              // @ts-ignore
+              behavior: "instant",
+            })
+          );
+
           posts_store.current_id.set(null);
           if (data.posts.length > 0) {
             posts_store.set(posts);
@@ -58,7 +68,9 @@ export const load_posts = debounce(
 
 export const load_more_posts = debounce(
   () => {
-    const { id: outline } = get(outline_store);
+    const outline = get(outline_store);
+    if (!outline) return;
+    const { id: outline_id } = outline;
 
     posts_store.loading.set(true);
     posts_store.no_more_posts.set(false);
@@ -67,7 +79,7 @@ export const load_more_posts = debounce(
 
     api_request(
       "get_posts",
-      { outline, skip, limit: g_limit },
+      { outline: outline_id, skip, limit: g_limit },
       (data: IGetPostsResult) => {
         if (data.success) {
           if (data.posts.length > 0) {
@@ -87,7 +99,9 @@ export const load_more_posts = debounce(
 
 export const get_unread_counts = debounce(
   () => {
-    const { id: outline_id } = get(outline_store);
+    const outline = get(outline_store);
+    if (!outline) return;
+    const { id: outline_id } = outline;
     api_request("get_unread", { outline_id }, (data: IGetUnreadResult) => {
       document.title =
         data.total > 0 ? `Feedreader (${data.total})` : "Feedreader";
@@ -112,7 +126,7 @@ export const get_unread_counts = debounce(
       });
 
       outline_store.update(($outline) => {
-        if ($outline.id === outline_id) {
+        if ($outline?.id === outline_id) {
           return {
             ...$outline,
             unread_count: data.counts[`${outline_id}`],
@@ -135,7 +149,7 @@ export const set_post_attr_state = (
     "post_action",
     { post: post_id, action: attr, state: state },
     (data: IPostActionResult) => {
-      toast_store.set(data);
+      toasts_store.push(data, { context: `${post_id}` });
       if (data.success) get_unread_counts();
     }
   );

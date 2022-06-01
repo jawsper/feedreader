@@ -9,20 +9,23 @@
     "build": "webpack --config webpack.config.js"
   },
   "dependencies": {
+    "@popperjs/core": "^2.10.2",
+    "bootstrap": "^5.1.0",
+    "bootstrap-icons": "^1.8.2",
     "dompurify": "^2.3.8",
-    "jquery": "3.6",
-    "jquery-ui": "1.13.1",
     "js-cookie": "^3.0.1",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@tsconfig/svelte": "^3.0.0",
+    "@types/bootstrap": "^5.1.0",
     "@types/dompurify": "^2.3.3",
-    "@types/jquery": "^3.5.14",
     "@types/js-cookie": "^3.0.1",
     "@types/lodash": "^4.14.177",
+    "autoprefixer": "^10.4.7",
     "css-loader": "^6.5.1",
     "mini-css-extract-plugin": "^2.4.5",
+    "postcss": "^8.0.1",
     "postcss-loader": "^6.2.1",
     "sass": "^1.44.0",
     "sass-loader": "^12.3.0",

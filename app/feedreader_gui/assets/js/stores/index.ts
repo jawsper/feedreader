@@ -1,10 +1,9 @@
 import { writable } from "svelte/store";
 
-import type { IToast } from "../types";
-
 export const load_more_posts = writable<boolean>(false);
+export const fullscreen = writable<boolean>(false);
 
-export const toast = writable<IToast | null>(null);
+export { toasts } from "./toast";
 export { posts } from "./posts";
 export { options } from "./options";
 export { outlines } from "./outlines";

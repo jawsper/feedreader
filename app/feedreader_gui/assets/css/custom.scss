@@ -1,0 +1,16 @@
+html {
+  font-size: 12px;
+}
+
+@import "~bootstrap/scss/bootstrap";
+@import "~bootstrap-icons/font/bootstrap-icons.css";
+
+.custom-form {
+  max-width: 32rem;
+  label {
+    @extend .form-label;
+  }
+  input {
+    @extend .form-control;
+  }
+}
