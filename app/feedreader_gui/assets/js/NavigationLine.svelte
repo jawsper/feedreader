@@ -8,10 +8,6 @@
 
   const dispatch = createEventDispatcher();
 
-  $: outlineClasses = `outline ${outline.feed_id ? "feed" : "folder"} ${
-    !outline.folder_opened && "folder-closed"
-  } ${outline.unread_count > 0 && "has-unread"}`;
-
   $: outlineStyle = outline.icon && `background-image: url(${outline.icon})`;
 
   const handleOpenFolder = () => {
@@ -30,9 +26,10 @@
 
 {#if visible}
   <li
-    id="outline-{outline.id}"
-    data-unread-count={outline.unread_count}
-    class={outlineClasses}
+    class="outline"
+    class:feed={outline.feed_id}
+    class:folder-closed={!outline.folder_opened}
+    class:has-unread={outline.unread_count > 0}
   >
     <div class="outline-line" style={outlineStyle} on:click={handleOpenFolder}>
       <a

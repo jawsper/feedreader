@@ -125,6 +125,7 @@ ul.clean li {
 #outlines {
   list-style: none;
   padding-left: 0;
+  margin-left: -20px;
 
   a {
     color: #333;
@@ -133,23 +134,32 @@ ul.clean li {
 
   ul {
     list-style: none;
-    margin-left: 20px;
-    padding-left: 0em;
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    margin: 0;
+    padding: 0 0 0 20px;
   }
   .outline-line {
     background-image: url("../images/icons/silk/feed.png");
     background-repeat: no-repeat;
     background-size: 16px 16px;
+
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
     padding-left: 20px;
-    margin-bottom: 0.5em;
-    vertical-align: center;
+
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    column-gap: 1rem;
   }
+
   .outline-text {
-    height: 16px;
-    line-height: 16px;
-    display: inline-block;
+    height: 100%;
     overflow: hidden;
-    max-width: 125px;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -159,11 +169,10 @@ ul.clean li {
   }
 
   .outline-unread-count {
+    flex-shrink: 0;
     font-size: 0.8em;
     color: #666;
     display: inline-block;
-    padding: 0 0 0 4px;
-    margin-right: 16px;
   }
 
   li:not(.feed) > .outline-line {
