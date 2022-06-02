@@ -5,7 +5,6 @@
   import NewFeed from "./NewFeed.svelte";
   import OutlineHeader from "./OutlineHeader.svelte";
   import Posts from "./Posts.svelte";
-  import Sidebar from "./Sidebar.svelte";
   import Toast from "./Toast.svelte";
 
   import { load_more_posts, posts, outline_id, fullscreen } from "./stores";
@@ -108,9 +107,6 @@
     class:d-none={$fullscreen}
   >
     <div class="aside">
-      <div class="px-3 pt-3">
-        <Sidebar />
-      </div>
       <div class="px-3">
         <Navigation />
       </div>

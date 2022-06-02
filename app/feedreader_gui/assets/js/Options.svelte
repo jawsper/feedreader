@@ -1,12 +1,9 @@
 <script lang="ts">
   import { cloneDeep } from "lodash";
   import { onMount } from "svelte";
-  import { slide } from "svelte/transition";
   import { api_request, load_navigation, load_posts } from "./api";
   import { outline_id, options } from "./stores";
   import type { Options } from "./stores/options";
-
-  export let visible: boolean = false;
 
   let previous_options: Options | undefined;
   options.subscribe((new_options) => {
@@ -53,22 +50,21 @@
   };
 </script>
 
-{#if visible}
-  <div class="options" transition:slide>
-    <ul class="clean">
-      {#each Object.entries($options) as [name, option]}
-        <li>
-          <button
-            class="option-button btn btn-outline-dark"
-            on:click={() => option_button_click(name)}
-          >
-            {#if option.type === "boolean"}
-              <i class={`bi bi-${option.value ? "toggle-on" : "toggle-off"} text-${option.value ? "success" : "danger"}`} />
-            {/if}
-            {option.title}
-          </button>
-        </li>
-      {/each}
-    </ul>
-  </div>
-{/if}
+{#each Object.entries($options) as [name, option]}
+  <li>
+    <button
+      type="button"
+      class="dropdown-item"
+      on:click|preventDefault={() => option_button_click(name)}
+    >
+      {#if option.type === "boolean"}
+        <i
+          class={`bi bi-${option.value ? "toggle-on" : "toggle-off"} text-${
+            option.value ? "success" : "danger"
+          }`}
+        />
+      {/if}
+      {option.title}
+    </button>
+  </li>
+{/each}

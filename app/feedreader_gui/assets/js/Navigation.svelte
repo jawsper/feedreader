@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { outlines, outline_id, options } from "./stores";
+  import { outlines, outline_id } from "./stores";
 
   import NavigationLine from "./NavigationLine.svelte";
-  import { set_outline_param } from "./api";
+  import { load_navigation, set_outline_param } from "./api";
+  import { onMount } from "svelte";
 
   const handleOpenFolder = ({ detail }) => {
     const { id: outline_id, folder_opened } = detail;
@@ -26,9 +27,13 @@
     outline_id.set(id);
     history.pushState(null, null, href);
   };
+
+  onMount(() => {
+    load_navigation();
+  });
 </script>
 
-<ul id="outlines" class="feeds" class:show-only-unread={$options.show_only_unread.value}>
+<ul id="outlines" class="feeds">
   {#each $outlines.outlines as outline}
     <NavigationLine
       {outline}

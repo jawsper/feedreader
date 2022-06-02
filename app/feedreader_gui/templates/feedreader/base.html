@@ -37,23 +37,6 @@
 		<div id="sidebar" class="d-md-flex flex-column align-items-stretch collapse navbar-collapse">
 			<div class="aside">
 				{% if user.is_authenticated %}
-				<div class="px-3 pt-3">
-				<!-- Sidebar -->
-					<button class="btn btn-outline-dark mb-3" data-bs-toggle="modal" data-bs-target="#new-feed-modal">
-						Add a new feed
-					</button>
-					<div class="btn-group mb-3">
-						<button class="btn btn-outline-dark">
-							<i class="bi bi-caret-down-fill"></i>
-							Options
-						</button>
-						<button class="btn btn-outline-dark">
-							<i class="bi bi-arrow-clockwise"></i>
-							Refresh
-						</button>
-					</div>
-				</div>
-				<!-- /Sidebar -->
 				<div class="px-3">
 					{% include "feedreader/navigation.html" %}
 				</div>
