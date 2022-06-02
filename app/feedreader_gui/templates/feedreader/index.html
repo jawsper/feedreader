@@ -2,8 +2,8 @@
 {% block head %}{% endblock head %}
 {% block content %}
 <div class="d-block navbar-right-half">
-	<div class="navbar navbar-expand-sm navbar-light global-header">
-		<div class="collapse navbar-collapse content-max">
+  <div class="navbar navbar-expand-sm navbar-light global-header">
+    <div class="collapse navbar-collapse content-max">
       <div class="navbar-nav">
         <div class="nav-item btn-group">
           <button
@@ -28,7 +28,7 @@
           <button class="btn btn-outline-dark">&nbsp;</button>
         </div>
       </div>
-      <div class="justify-content-end nav" style="flex:1">
+      <div class="justify-content-end nav" style="flex: 1">
         <span class="navbar-text">Welcome, {{ user.username }} |</span>
         <div class="nav-item dropdown">
           <a
@@ -36,13 +36,17 @@
             data-bs-toggle="dropdown"
             href="#"
             role="button"
-            aria-expanded="false">Display options</a
+            aria-expanded="false"
+            >Display options</a
           >
-          <ul class="dropdown-menu">
-          </ul>
+          <ul class="dropdown-menu"><li></li></ul>
         </div>
         <div class="btn-group ms-3">
-          <button class="nav-item btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#new-feed-modal">
+          <button
+            class="nav-item btn btn-outline-dark"
+            data-bs-toggle="modal"
+            data-bs-target="#new-feed-modal"
+          >
             Add a new feed
           </button>
           <a
@@ -69,18 +73,17 @@
             <i class="bi bi-caret-down-fill"></i>
           </button>
         </div>
-			</div>
-		</div>
-	</div>
+      </div>
+    </div>
+  </div>
 </div>
 <section class="pt-3 px-3 content-max prose">
-	<!-- PostHeader -->
-	<h4 class="my-3">
-		<a target="_blank">{% if outline %}{{ outline }}{% endif %}</a>
-	</h4>
-	<!-- /PostHeader -->
-	<div id="posts"></div>
-	<!-- <div style="height: 50vh"></div> -->
+  <!-- PostHeader -->
+  <h4 class="my-3">
+    <a target="_blank">{% if outline %}{{ outline }}{% endif %}</a>
+  </h4>
+  <!-- /PostHeader -->
+  <div id="posts"></div>
 </section>
 
 {% endblock content %}
