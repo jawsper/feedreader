@@ -2,7 +2,8 @@
   import { outlines, outline_id } from "./stores";
 
   import NavigationLine from "./NavigationLine.svelte";
-  import { set_outline_param } from "./api";
+  import { load_navigation, set_outline_param } from "./api";
+  import { onMount } from "svelte";
 
   const handleOpenFolder = ({ detail }) => {
     const { id: outline_id, folder_opened } = detail;
@@ -26,6 +27,10 @@
     outline_id.set(id);
     history.pushState(null, null, href);
   };
+
+  onMount(() => {
+    load_navigation();
+  });
 </script>
 
 <ul id="outlines" class="feeds">

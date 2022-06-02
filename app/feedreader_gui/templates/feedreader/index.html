@@ -13,8 +13,13 @@
           >
             <i class="bi bi-arrows-fullscreen"></i>
           </button>
-          <button class="btn btn-outline-dark" type="button" title="Refresh">
+          <button class="btn btn-outline-dark" type="button">
             <i class="bi bi-arrow-clockwise"></i>
+            Refresh navigation
+          </button>
+          <button class="btn btn-outline-dark" type="button">
+            <i class="bi bi-arrow-clockwise"></i>
+            Refresh posts
           </button>
           <button class="btn btn-outline-dark" type="button" disabled>
             Mark all as read
@@ -23,9 +28,23 @@
           <button class="btn btn-outline-dark">&nbsp;</button>
         </div>
       </div>
-			<div class="justify-content-end nav" style="flex:1">
-        <span class="navbar-text">Welcome, {{ user.username }}</span>
+      <div class="justify-content-end nav" style="flex:1">
+        <span class="navbar-text">Welcome, {{ user.username }} |</span>
+        <div class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle"
+            data-bs-toggle="dropdown"
+            href="#"
+            role="button"
+            aria-expanded="false">Display options</a
+          >
+          <ul class="dropdown-menu">
+          </ul>
+        </div>
         <div class="btn-group ms-3">
+          <button class="nav-item btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#new-feed-modal">
+            Add a new feed
+          </button>
           <a
             class="nav-item btn btn-outline-dark"
             href="{% url 'admin:index' %}"
