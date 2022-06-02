@@ -4,7 +4,7 @@
     {% recursetree nodes %}
         <li data-unread-count="{{ node.unread_count }}" class="outline {% if node.unread_count > 0 %}has-unread {% endif %}{% if node.feed_id %}feed{% else %}folder{% if not node.folder_opened %} folder-closed{% endif %}{% endif %}" id="outline-{{ node.id }}">
             <div class="outline-line"{% if node.feed %} style="background-image:url('{%url 'favicon' node.pk %}')"{% endif %}>
-                <a class="outline-text" href="outline/{{ node.id }}/">{{ node.title }}</a>
+                <a class="outline-text" href="outline/{{ node.id }}/" title="{{ node.title }}">{{ node.title }}</a>
                 <span class="outline-unread-count">{{ node.unread_count }}</span>
             </div>
             {% if not node.is_leaf_node %}
@@ -15,13 +15,3 @@
         </li>
     {% endrecursetree %}
 </ul>
-
-
-<script type="text/template" id="templateNavigationItem">
-	<li class="outline" id="outline-${outline.id}">
-		<div class="outline-line">
-			<a class="outline-text" href="outline/${outline.id}/">${outline.title}</a>
-			<span class="outline-unread-count" id="outline-unread-count-${outline.id}">${outline.unread_count}</span>
-		</div>
-	</li>
-</script>

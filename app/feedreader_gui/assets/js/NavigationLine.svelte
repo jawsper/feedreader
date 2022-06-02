@@ -36,6 +36,7 @@
         class="outline-text"
         href="outline/{outline.id}/"
         on:click|preventDefault|stopPropagation={handleOpenOutline}
+        title={outline.title}
       >
         {outline.title}
       </a>
