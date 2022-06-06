@@ -118,11 +118,11 @@ export const get_unread_counts = debounce(
         }
       };
 
-      outlines_store.update(($outlines) => {
-        for (const outline of $outlines.outlines) {
+      outlines_store.update((outlines) => {
+        for (const outline of outlines) {
           update_outline(outline);
         }
-        return $outlines;
+        return outlines;
       });
 
       outline_store.update(($outline) => {

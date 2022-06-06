@@ -13,7 +13,7 @@
     outline,
     posts,
     header_offsets,
-    outlines,
+    outlines_loading,
   } from "./stores";
   const { loading } = posts;
 
@@ -44,7 +44,7 @@
           <button
             class="btn btn-outline-dark"
             type="button"
-            disabled={$outlines.loading}
+            disabled={$outlines_loading}
             on:click={() => {
               load_navigation();
             }}

@@ -1,22 +1,7 @@
 import { writable } from "svelte/store";
 import type { IOutline } from "../types";
 
-interface IOutlinesStore {
-  loading: boolean;
-  outlines: IOutline[];
-}
+const initial_outlines = JSON.parse(document.getElementById("navigation").textContent);
 
-const createOutlines = () => {
-  const { subscribe, set, update } = writable<IOutlinesStore>({
-    loading: false,
-    outlines: [],
-  });
-
-  return {
-    subscribe,
-    set,
-    update,
-  };
-};
-
-export const outlines = createOutlines();
+export const outlines = writable<IOutline[]>(initial_outlines);
+export const outlines_loading = writable<boolean>(false);

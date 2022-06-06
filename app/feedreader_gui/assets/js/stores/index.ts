@@ -10,5 +10,5 @@ export const header_offset = derived(header_offsets, value => value.height + val
 export { toasts } from "./toast";
 export { posts } from "./posts";
 export { options } from "./options";
-export { outlines } from "./outlines";
+export { outlines, outlines_loading } from "./outlines";
 export { outline_id, outline, unreadPosts } from "./outline";

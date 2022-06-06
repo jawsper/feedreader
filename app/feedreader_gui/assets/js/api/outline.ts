@@ -1,4 +1,4 @@
-import { outlines } from "../stores";
+import { outlines, outlines_loading } from "../stores";
 import { api_request } from "./base";
 import { load_posts } from "./posts";
 import type { IGetAllOutlinesResult } from "./types";
@@ -28,14 +28,9 @@ export const mark_all_as_read = (outline_id: number) => {
 };
 
 export const load_navigation = () => {
-  outlines.update(($outline) => ({
-    ...$outline,
-    loading: true,
-  }));
+  outlines_loading.set(true);
   api_request("outline_get_all_outlines", {}, (data: IGetAllOutlinesResult) => {
-    outlines.set({
-      loading: false,
-      outlines: data.outlines,
-    });
+    outlines.set(data.outlines);
+    outlines_loading.set(false);
   });
 };

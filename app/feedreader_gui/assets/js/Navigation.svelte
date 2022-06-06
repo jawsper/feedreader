@@ -8,16 +8,13 @@
   const handleOpenFolder = ({ detail }) => {
     const { id: outline_id, folder_opened } = detail;
     set_outline_param(outline_id, "folder_opened", !folder_opened, true);
-    outlines.update(({ outlines, ...rest }) => {
-      return {
-        ...rest,
-        outlines: outlines.map((outline) => {
-          if (outline.id === outline_id) {
-            return { ...outline, folder_opened: !folder_opened };
-          }
-          return outline;
-        }),
-      };
+    outlines.update((outlines) => {
+      return outlines.map((outline) => {
+        if (outline.id === outline_id) {
+          return { ...outline, folder_opened: !folder_opened };
+        }
+        return outline;
+      });
     });
   };
 
@@ -38,7 +35,7 @@
   class="feeds"
   class:show-only-unread={$options.show_only_unread.value}
 >
-  {#each $outlines.outlines as outline}
+  {#each $outlines as outline}
     <NavigationLine
       {outline}
       on:outline
