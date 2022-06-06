@@ -11,13 +11,17 @@ interface ToastOptions {
   context?: any;
 }
 
+const toast_expired = (expiry: Date) => {
+  const now = new Date();
+  return Math.abs(now.getTime() - expiry.getTime()) < 10
+}
+
 const makeToasts = () => {
   const { subscribe, update } = writable<IExpiringToast[]>([]);
 
   const expire_toasts = () => {
-    const now = new Date();
     update((toasts) => {
-      return toasts.filter((toast) => toast.expiry >= now);
+      return toasts.filter((toast) => toast_expired(toast.expiry));
     });
   };
 
