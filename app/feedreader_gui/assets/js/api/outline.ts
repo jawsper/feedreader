@@ -40,7 +40,7 @@ export const load_navigation = async () => {
       "outline_get_all_outlines"
     );
     outlines.set(data.outlines);
-    outlines_loading.set(false);
   } finally {
+    outlines_loading.set(false);
   }
 };

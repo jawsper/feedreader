@@ -58,9 +58,9 @@ export const load_posts = debounce(
           posts_store.set([]);
           posts_store.no_more_posts.set(true);
         }
-        posts_store.loading.set(false);
       }
     } finally {
+      posts_store.loading.set(false);
     }
   },
   500,
@@ -92,9 +92,9 @@ export const load_more_posts = debounce(
         } else {
           posts_store.no_more_posts.set(true);
         }
-        posts_store.loading.set(false);
       }
     } finally {
+      posts_store.loading.set(false);
     }
   },
   500,
