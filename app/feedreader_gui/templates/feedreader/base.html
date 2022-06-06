@@ -59,6 +59,8 @@
 </div>
 {% if user.is_authenticated %}
 {{ urls | json_script:"urls" }}
+{{ navigation | json_script:"navigation" }}
+{{ config | json_script:"config"}}
 {% render_bundle 'main' 'js' %}
 {% endif %}
 
