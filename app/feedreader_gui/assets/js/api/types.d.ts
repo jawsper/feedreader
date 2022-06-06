@@ -1,6 +1,6 @@
 import type { IOutline } from "../types";
 
-export type TSortOrder = "asc" | "desc";
+export type TSortOrder = "ASC" | "DESC";
 
 export interface IPost {
   id: number;
