@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
+from django.urls import reverse
+
 from bs4 import BeautifulSoup
 import re
 from mptt.models import MPTTModel, TreeForeignKey
@@ -105,6 +107,19 @@ class Outline(MPTTModel, DisplayTitleMixIn):
         if self.feed:
             return ensure_https_url(self.feed.favicon_url)
 
+    def to_dict(self, include_children=True):
+        outline = {
+            "id": self.pk,
+            "title": self.title,
+            "unread_count": self.unread_count,
+            "feed_id": self.feed_id,
+            "icon": reverse("favicon", args=(self.pk,)) if self.feed_id else None,
+            "folder_opened": self.folder_opened,
+        }
+        if include_children:
+            outline["children"] = [node.to_dict() for node in self.get_children()]
+        return outline
+
 
 class Post(models.Model, DisplayTitleMixIn):
     feed = models.ForeignKey(Feed, on_delete=models.CASCADE)
@@ -199,3 +214,9 @@ class UserConfig(models.Model):
             for field in cls._meta.get_fields()
             if not field.name in ignore_fields
         ]
+
+    def to_dict(self):
+        return {
+            "show_only_unread": self.show_only_unread,
+            "show_nsfw_feeds": self.show_nsfw_feeds,
+        }
