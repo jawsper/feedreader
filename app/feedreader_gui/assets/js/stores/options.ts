@@ -19,7 +19,7 @@ const optionsDefault: Options = {
   show_only_unread: {
     title: "Show only unread posts",
     type: "boolean",
-    default: false,
+    default: true,
     value: undefined,
   },
   show_nsfw_feeds: {
