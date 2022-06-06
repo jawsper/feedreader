@@ -31,7 +31,7 @@ const makeToasts = () => {
     const new_toast = { ...toast, expiry, context };
 
     update((current) => {
-      if (options.context) {
+      if (context) {
         return [
           ...current.filter((toast) => toast.context !== context),
           new_toast,
