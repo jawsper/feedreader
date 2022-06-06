@@ -2,8 +2,8 @@
 # Author: Jasper Seidel
 # Date: 2013-06-24
 
+from typing import List
 from django.db.models import Q
-from django.urls import reverse
 
 from feedreader.models import Outline, Post, Feed, UserConfig, UserPost
 from feedreader.functions import get_total_unread_count
@@ -52,26 +52,15 @@ class GetUnreadCountView(JsonResponseView):
 
 class GetAllOutlinesView(JsonResponseView):
     def get_response(self, user, args):
-        def recursive_node_to_dict(node):
-            return {
-                "id": node.pk,
-                "title": node.title,
-                "unread_count": node.unread_count,
-                "feed_id": node.feed_id,
-                "icon": reverse("favicon", args=(node.pk,)) if node.feed_id else None,
-                "folder_opened": node.folder_opened,
-                "children": [recursive_node_to_dict(c) for c in node.get_children()],
-            }
-
         filters = [Q(user=self.request.user)]
         config, _ = UserConfig.objects.get_or_create(user=user)
         if not config.show_nsfw_feeds:
             filters.append(Q(feed=None) | Q(feed__is_nsfw=False))
 
-        root_nodes = (
+        root_nodes: List[Outline] = (
             Outline.objects.select_related("feed").filter(*filters).get_cached_trees()
         )
-        return {"outlines": [recursive_node_to_dict(node) for node in root_nodes]}
+        return {"outlines": [node.to_dict() for node in root_nodes]}
 
 
 class GetAllPostsView(JsonResponseView):
