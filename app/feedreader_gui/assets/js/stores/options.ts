@@ -1,5 +1,4 @@
 import { writable } from "svelte/store";
-import { api_request } from "../api";
 
 const config = JSON.parse(document.getElementById("config").textContent);
 
@@ -41,24 +40,6 @@ const createOptions = () => {
 
   return {
     subscribe,
-    load: async () => {
-      const keys = Object.keys(optionsDefault);
-      try {
-        const result = await api_request<any>("get_option", { keys });
-        update((options) => {
-          for (const [name, option] of Object.entries(options)) {
-            if (typeof result.options[name] == "undefined") {
-              // key not found
-              option.value = option.default;
-            } else {
-              option.value = result.options[name];
-            }
-          }
-          return { ...options };
-        });
-      } finally {
-      }
-    },
     set: (name: keyof Options, value: any) => {
       update((values) => ({
         ...values,

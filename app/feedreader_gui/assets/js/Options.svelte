@@ -1,6 +1,5 @@
 <script lang="ts">
   import { cloneDeep } from "lodash";
-  import { onMount } from "svelte";
   import { api_request, load_navigation, load_posts } from "./api";
   import { outline_id, options } from "./stores";
   import type { Options } from "./stores/options";
@@ -24,10 +23,6 @@
     }
 
     previous_options = cloneDeep(new_options);
-  });
-
-  onMount(() => {
-    options.load();
   });
 
   const save_option = async (name: string, value: any) => {
