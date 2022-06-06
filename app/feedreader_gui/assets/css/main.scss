@@ -176,6 +176,12 @@ main {
       display: none;
     }
   }
+
+  &.show-only-unread {
+    .outline:not(.has-unread) {
+      display: none;
+    }
+  }
 }
 
 /* end navigation */
