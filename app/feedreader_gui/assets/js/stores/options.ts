@@ -1,6 +1,8 @@
 import { writable } from "svelte/store";
 import { api_request } from "../api";
 
+const config = JSON.parse(document.getElementById("config").textContent);
+
 type OptionType = "boolean";
 
 interface Option<T extends OptionType> {
@@ -29,6 +31,10 @@ const optionsDefault: Options = {
     value: undefined,
   },
 };
+
+for(const [k, v] of Object.entries(config)) {
+  optionsDefault[k].value = v
+}
 
 const createOptions = () => {
   const { subscribe, set, update } = writable<Options>(optionsDefault);
