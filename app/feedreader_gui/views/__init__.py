@@ -24,7 +24,6 @@ class IndexView(LoginRequiredMixin, TemplateView):
         filters = [Q(user=self.request.user)]
         if not config.show_nsfw_feeds:
             filters.append(Q(feed=None) | Q(feed__is_nsfw=False))
-        context["nodes"] = Outline.objects.select_related("feed").filter(*filters)
 
         root_nodes: List[Outline] = (
             Outline.objects.select_related("feed").filter(*filters).get_cached_trees()

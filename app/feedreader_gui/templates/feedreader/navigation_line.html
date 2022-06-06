@@ -1,0 +1,11 @@
+<li data-unread-count="{{ node.unread_count }}" class="outline {% if node.unread_count > 0 %}has-unread {% endif %}{% if node.feed_id %}feed{% else %}folder{% if not node.folder_opened %} folder-closed{% endif %}{% endif %}" id="outline-{{ node.id }}">
+  <div class="outline-line"{% if node.feed %} style="background-image:url('{%url 'favicon' node.pk %}')"{% endif %}>
+    <a class="outline-text" href="outline/{{ node.id }}/" title="{{ node.title }}">{{ node.title }}</a>
+    <span class="outline-unread-count">{{ node.unread_count }}</span>
+  </div>
+  {% if node.children %}
+    <ul>{% for child in node.children %}
+         {% include "feedreader/navigation_line.html" with node=child %}
+    {% endfor %}</ul>
+  {% endif %}
+</li>
