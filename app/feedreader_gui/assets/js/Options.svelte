@@ -30,15 +30,17 @@
     options.load();
   });
 
-  const save_option = (name: string, value: any) => {
+  const save_option = async (name: string, value: any) => {
     const data = {
       [name]: value,
     };
-    api_request("set_option", data, (result) => {
+    try {
+      const result = await api_request<any>("set_option", data);
       if (result.success) {
         options.set(name as any, value);
       }
-    });
+    } finally {
+    }
   };
 
   const option_button_click = (name) => {

@@ -3,7 +3,7 @@ import { api_request } from "./base";
 import { load_posts } from "./posts";
 import type { IGetAllOutlinesResult } from "./types";
 
-export const set_outline_param = (
+export const set_outline_param = async (
   outline_id: number,
   key: "folder_opened" | "show_only_new" | "sort_order",
   value?: boolean,
@@ -13,24 +13,34 @@ export const set_outline_param = (
   let request = { outline: outline_id, action: key };
   if (value) request["value"] = value;
 
-  api_request("outline_set", request, (response) => {
+  try {
+    const response = await api_request<any>("outline_set", request);
     if (response.success) {
       if (!no_load) load_posts(outline_id);
     }
-  });
+  } finally {
+  }
 };
 
-export const mark_all_as_read = (outline_id: number) => {
+export const mark_all_as_read = async (outline_id: number) => {
   if (!outline_id) return;
-  api_request("outline_mark_read", { outline: outline_id }, (response) => {
+  try {
+    const response = await api_request<any>("outline_mark_read", {
+      outline: outline_id,
+    });
     if (!response.error) load_posts(outline_id);
-  });
+  } finally {
+  }
 };
 
-export const load_navigation = () => {
+export const load_navigation = async () => {
   outlines_loading.set(true);
-  api_request("outline_get_all_outlines", {}, (data: IGetAllOutlinesResult) => {
+  try {
+    const data = await api_request<IGetAllOutlinesResult>(
+      "outline_get_all_outlines"
+    );
     outlines.set(data.outlines);
     outlines_loading.set(false);
-  });
+  } finally {
+  }
 };

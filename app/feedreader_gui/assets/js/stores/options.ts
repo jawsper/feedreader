@@ -41,9 +41,10 @@ const createOptions = () => {
 
   return {
     subscribe,
-    load: () => {
+    load: async () => {
       const keys = Object.keys(optionsDefault);
-      api_request("get_option", { keys }, (result) => {
+      try {
+        const result = await api_request<any>("get_option", { keys });
         update((options) => {
           for (const [name, option] of Object.entries(options)) {
             if (typeof result.options[name] == "undefined") {
@@ -55,7 +56,8 @@ const createOptions = () => {
           }
           return { ...options };
         });
-      });
+      } finally {
+      }
     },
     set: (name: keyof Options, value: any) => {
       update((values) => ({

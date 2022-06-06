@@ -19,7 +19,7 @@ import type { IOutline } from "../types";
 const g_limit = 10;
 
 export const load_posts = debounce(
-  (a_outline_id: number) => {
+  async (a_outline_id: number) => {
     if (!a_outline_id) {
       posts_store.set([]);
       return;
@@ -28,46 +28,47 @@ export const load_posts = debounce(
     posts_store.loading.set(true);
     posts_store.no_more_posts.set(false);
 
-    api_request(
-      "get_posts",
-      { limit: g_limit, outline: a_outline_id },
-      (data: IGetPostsResult) => {
-        if (data.success) {
-          const { posts, success, ...rest } = data;
-          outline_store.set({
-            id: a_outline_id,
-            ...rest,
-          });
-          get_unread_counts();
+    try {
+      const data = await api_request<IGetPostsResult>("get_posts", {
+        limit: g_limit,
+        outline: a_outline_id,
+      });
+      if (data.success) {
+        const { posts, success, ...rest } = data;
+        outline_store.set({
+          id: a_outline_id,
+          ...rest,
+        });
+        get_unread_counts();
 
-          requestAnimationFrame(() =>
-            window.scrollTo({
-              top: 0,
-              left: 0,
-              // @ts-ignore
-              behavior: "instant",
-            })
-          );
+        requestAnimationFrame(() =>
+          window.scrollTo({
+            top: 0,
+            left: 0,
+            // @ts-ignore
+            behavior: "instant",
+          })
+        );
 
-          posts_store.current_id.set(null);
-          if (data.posts.length > 0) {
-            posts_store.set(posts);
-            posts_store.no_more_posts.set(false);
-          } else {
-            posts_store.set([]);
-            posts_store.no_more_posts.set(true);
-          }
-          posts_store.loading.set(false);
+        posts_store.current_id.set(null);
+        if (data.posts.length > 0) {
+          posts_store.set(posts);
+          posts_store.no_more_posts.set(false);
+        } else {
+          posts_store.set([]);
+          posts_store.no_more_posts.set(true);
         }
+        posts_store.loading.set(false);
       }
-    );
+    } finally {
+    }
   },
   500,
   { leading: true }
 );
 
 export const load_more_posts = debounce(
-  () => {
+  async () => {
     const outline = get(outline_store);
     if (!outline) return;
     const { id: outline_id } = outline;
@@ -77,32 +78,38 @@ export const load_more_posts = debounce(
 
     let skip = get(unreadPosts);
 
-    api_request(
-      "get_posts",
-      { outline: outline_id, skip, limit: g_limit },
-      (data: IGetPostsResult) => {
-        if (data.success) {
-          if (data.posts.length > 0) {
-            posts_store.append(data.posts);
-            posts_store.no_more_posts.set(false);
-          } else {
-            posts_store.no_more_posts.set(true);
-          }
-          posts_store.loading.set(false);
+    try {
+      const data = await api_request<IGetPostsResult>("get_posts", {
+        outline: outline_id,
+        skip,
+        limit: g_limit,
+      });
+
+      if (data.success) {
+        if (data.posts.length > 0) {
+          posts_store.append(data.posts);
+          posts_store.no_more_posts.set(false);
+        } else {
+          posts_store.no_more_posts.set(true);
         }
+        posts_store.loading.set(false);
       }
-    );
+    } finally {
+    }
   },
   500,
   { leading: true }
 );
 
 export const get_unread_counts = debounce(
-  () => {
+  async () => {
     const outline = get(outline_store);
     if (!outline) return;
     const { id: outline_id } = outline;
-    api_request("get_unread", { outline_id }, (data: IGetUnreadResult) => {
+    try {
+      const data: IGetUnreadResult = await api_request("get_unread", {
+        outline_id,
+      });
       document.title =
         data.total > 0 ? `Feedreader (${data.total})` : "Feedreader";
       if (!data.counts) return;
@@ -134,23 +141,27 @@ export const get_unread_counts = debounce(
         }
         return $outline;
       });
-    });
+    } finally {
+    }
   },
   500,
   { trailing: true }
 );
 
-export const set_post_attr_state = (
+export const set_post_attr_state = async (
   post_id: number,
   attr: "read" | "starred",
   state: boolean
 ) => {
-  api_request(
-    "post_action",
-    { post: post_id, action: attr, state: state },
-    (data: IPostActionResult) => {
-      toasts_store.push(data, { context: `${post_id}` });
-      if (data.success) get_unread_counts();
-    }
-  );
+  try {
+    const data = await api_request<IPostActionResult>("post_action", {
+      post: post_id,
+      action: attr,
+      state: state,
+    });
+
+    toasts_store.push(data, { context: `${post_id}` });
+    if (data.success) get_unread_counts();
+  } finally {
+  }
 };

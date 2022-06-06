@@ -3,12 +3,14 @@
 
   let value = "";
 
-  const add_new_feed = (url: string) => {
-    api_request("feed_add", { url }, (result) => {
+  const add_new_feed = async (url: string) => {
+    try {
+      const result = await api_request<any>("feed_add", { url });
       if (result.success) {
         location.reload();
       }
-    });
+    } finally {
+    }
   };
 
   const handle_add_feed = () => {
