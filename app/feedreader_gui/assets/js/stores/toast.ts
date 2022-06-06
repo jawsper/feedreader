@@ -26,11 +26,7 @@ const makeToasts = () => {
   };
 
   const push = (toast: IToast, options?: ToastOptions) => {
-    const { timeout, context } = Object.assign(
-      {},
-      { timeout: 5000, context: null },
-      options
-    );
+    const { timeout, context } = { timeout: 5000, context: null, ...options };
     const expiry = new Date(new Date().getTime() + timeout);
     const new_toast = { ...toast, expiry, context };
 
