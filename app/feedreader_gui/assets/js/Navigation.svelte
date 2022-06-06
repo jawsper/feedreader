@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { outlines, outline_id } from "./stores";
+  import { options, outlines, outline_id } from "./stores";
 
   import NavigationLine from "./NavigationLine.svelte";
   import { load_navigation, set_outline_param } from "./api";
@@ -33,7 +33,11 @@
   });
 </script>
 
-<ul id="outlines" class="feeds">
+<ul
+  id="outlines"
+  class="feeds"
+  class:show-only-unread={$options.show_only_unread.value}
+>
   {#each $outlines.outlines as outline}
     <NavigationLine
       {outline}
