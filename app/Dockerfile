@@ -39,7 +39,11 @@ FROM python:3.9-slim as runtime
 
 WORKDIR /app
 
-RUN addgroup \
+RUN DEBIAN_FRONTEND=noninteractive apt-get update \
+    && apt-get install --no-install-recommends -y libpq-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && addgroup \
     --system \
     feedreader \
     && adduser \
@@ -48,27 +52,21 @@ RUN addgroup \
     --disabled-password \
     --no-create-home \
     --ingroup feedreader \
-    feedreader
-
-RUN chown feedreader .
-
-RUN DEBIAN_FRONTEND=noninteractive apt-get update \
-    && apt-get install --no-install-recommends -y libpq-dev \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    feedreader \
+    && mkdir media static \
+    && chown -R feedreader .
 
 USER feedreader
 
 # copy project
-RUN mkdir media static
-ENV PATH /app/.venv/bin:$PATH
+ENV PATH=/app/.venv/bin:$PATH
 COPY --from=builder --chown=feedreader /app/.venv/ ./.venv/
 COPY --chown=feedreader feedreader ./feedreader
 COPY --chown=feedreader feedreader_api ./feedreader_api
 COPY --chown=feedreader feedreader_gui ./feedreader_gui
 COPY --chown=feedreader manage.py .
+COPY --chown=feedreader entrypoint.sh .
 COPY --from=node-builder --chown=feedreader /app/static ./feedreader_gui/static/
 COPY --from=node-builder --chown=feedreader /app/webpack-stats.json ./feedreader_gui/
 
-
-# ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
+# ENTRYPOINT ["/app/entrypoint.sh"]
