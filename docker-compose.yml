@@ -1,4 +1,4 @@
-version: '3.7'
+version: "3.7"
 
 x-app: &default-app
   build: ./app
@@ -6,6 +6,11 @@ x-app: &default-app
     - web-variables.env
   secrets:
     - secret_key
+
+x-celery: &celery-app
+  <<: *default-app
+  depends_on:
+    - redis
 
 services:
   db:
@@ -18,6 +23,7 @@ services:
 
   web:
     <<: *default-app
+    entrypoint: /app/entrypoint.sh
     command: gunicorn feedreader.wsgi:application --bind 0.0.0.0:8000 -w 5
     volumes:
       - static_volume:/app/static
@@ -26,16 +32,12 @@ services:
       - db
 
   celery:
-    <<: *default-app
+    <<: *celery-app
     command: celery -A feedreader worker -l info
-    depends_on:
-      - redis
 
   beat:
-    <<: *default-app
+    <<: *celery-app
     command: celery -A feedreader beat -l info
-    depends_on:
-      - redis
 
   ingress:
     image: nginx:1.21
