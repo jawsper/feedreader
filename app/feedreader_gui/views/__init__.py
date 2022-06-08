@@ -4,11 +4,10 @@
 
 from typing import List
 from django.db.models import Q
-from django.http import Http404, HttpResponseRedirect, HttpResponse
+from django.http import Http404
 from django.urls import reverse
-from django.views.generic.base import View, TemplateView
+from django.views.generic.base import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-import requests
 
 from feedreader.models import Outline, UserConfig
 from feedreader_api.api0 import urls as api_urls
@@ -44,21 +43,3 @@ class OutlineView(IndexView):
         except Outline.DoesNotExist:
             raise Http404
         return context
-
-
-class FaviconView(LoginRequiredMixin, View):
-    def get(self, request, outline_id: int):
-        try:
-            outline = Outline.objects.get(pk=outline_id)
-            if outline.feed and outline.feed.favicon_url:
-                response = requests.get(outline.feed.favicon_url, timeout=10)
-                content_type = response.headers.get("content-type", "image/icon")
-                return HttpResponse(
-                    response.content,
-                    content_type=content_type,
-                )
-        except requests.exceptions.RequestException:
-            pass  # if it failed for any reason, just return the default icon
-        except Outline.DoesNotExist:
-            pass
-        return HttpResponseRedirect("/static/images/4986817c45fa2df22ddd.png")

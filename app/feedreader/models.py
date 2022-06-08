@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
-from django.urls import reverse
 
 from bs4 import BeautifulSoup
 import re
@@ -113,7 +112,9 @@ class Outline(MPTTModel, DisplayTitleMixIn):
             "title": self.title,
             "unread_count": self.unread_count,
             "feed_id": self.feed_id,
-            "icon": reverse("favicon", args=(self.pk,)) if self.feed_id else None,
+            "icon": self.feed.favicon.url
+            if self.feed_id and self.feed.favicon
+            else None,
             "folder_opened": self.folder_opened,
         }
         if include_children:
