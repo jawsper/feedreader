@@ -7,12 +7,13 @@ services:
     restart: unless-stopped
   web:
     restart: unless-stopped
-    image: feedreader
-    ports:
-      - 127.0.0.1:1337:8000
+    image: jawsper/feedreader:latest
   celery:
     restart: unless-stopped
-    image: feedreader
+    image: jawsper/feedreader:latest
   beat:
     restart: unless-stopped
-    image: feedreader
+    image: jawsper/feedreader:latest
+  ingress:
+    ports:
+      - 127.0.0.1:1337:80
