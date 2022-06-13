@@ -65,7 +65,7 @@
   id="post_{post.id}"
   on:mouseup={() => dispatch("focus", post.id)}
 >
-  <div class="body">
+  <div class="header">
     <div class="link">
       <a
         href={post.link}
@@ -83,7 +83,8 @@
         by <span class="authorName">{post.author}</span>
       {/if}
     </div>
-    <br />
+  </div>
+  <div class="body">
     <div class="content">
       {@html DOMPurify.sanitize(post.content)}
     </div>
