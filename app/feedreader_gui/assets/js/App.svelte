@@ -95,7 +95,7 @@
 <Toast />
 <NewFeed />
 
-<div class="sidebar">
+<div class="sidebar" class:fullscreen={$fullscreen}>
   <div class="navbar navbar-expand-md navbar-light bg-white global-header">
     <a class="navbar-brand pb-0" title="Feedreader" href="/">
       <h6>Feedreader</h6>

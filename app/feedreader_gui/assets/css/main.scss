@@ -16,7 +16,9 @@ html {
   position: fixed;
   width: 18rem;
   top: 0;
-  bottom: 0;
+  &:not(.fullscreen) {
+    bottom: 0;
+  }
   flex-direction: column;
   display: flex;
   z-index: 1;
