@@ -191,7 +191,6 @@ main {
 .post {
   border: 1px solid lightgray;
   margin-bottom: 1em;
-  padding: 0.5em;
 
   &.current {
     border-left-color: blue;
@@ -201,7 +200,11 @@ main {
   }
 
   .header {
-    margin-bottom: 0.75rem;
+    padding: 0.5rem;
+  }
+
+  .content {
+    padding: 0.5rem;
   }
 
   .link {
