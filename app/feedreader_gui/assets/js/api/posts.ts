@@ -160,7 +160,8 @@ export const set_post_attr_state = async (
       state: state,
     });
 
-    toasts_store.push(data, { context: `${post_id}` });
+    // TODO: add config option to re-enable
+    // toasts_store.push(data, { context: `${post_id}` });
     if (data.success) get_unread_counts();
   } finally {
   }
