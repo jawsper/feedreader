@@ -28,9 +28,12 @@
   let highlight: number | null = null;
 
   const update_highlight = (id: number, next: boolean = true) => {
-    const flatten_outline = (outline: IOutline) =>
+    const flatten_outline = (outline: IOutline) : IOutline[] =>
       [outline, ...outline.children.map(flatten_outline)].flat();
-    const flattened = $outlines.flatMap(flatten_outline);
+    let flattened = $outlines.flatMap(flatten_outline);
+    if($options.show_only_unread.value) {
+      flattened = flattened.filter(o => o.unread_count > 0)
+    }
     let idx: number;
     if (id !== null) {
       idx = flattened.findIndex((ol) => ol.id === id);
