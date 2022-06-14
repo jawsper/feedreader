@@ -3,6 +3,7 @@
 
   import NavigationLine from "./NavigationLine.svelte";
   import { set_outline_param } from "./api";
+  import type { IOutline } from "./types";
 
   const handleOpenFolder = ({ detail }) => {
     const { id: outline_id, folder_opened } = detail;
@@ -23,6 +24,45 @@
     outline_id.set(id);
     history.pushState(null, null, href);
   };
+
+  let highlight: number | null = null;
+
+  const update_highlight = (id: number, next: boolean = true) => {
+    const flatten_outline = (outline: IOutline) =>
+      [outline, ...outline.children.map(flatten_outline)].flat();
+    const flattened = $outlines.flatMap(flatten_outline);
+    let idx: number;
+    if (id !== null) {
+      idx = flattened.findIndex((ol) => ol.id === id);
+    } else {
+      idx = -1;
+    }
+    let next_idx = next ? idx + 1 : idx - 1;
+    if (next_idx < 0 || next_idx >= flattened.length) {
+      next_idx = null;
+    }
+    if (next_idx !== null) {
+      const next_id = flattened[next_idx].id;
+      highlight = next_id;
+    } else {
+      highlight = null;
+    }
+  };
+
+  export const highlight_prev = () => {
+    update_highlight(highlight, false);
+  };
+  export const highlight_next = () => {
+    update_highlight(highlight);
+  };
+  export const highlight_open = () => {
+    if (highlight !== null) {
+      $outline_id = highlight;
+    }
+  };
+  export const highlight_clear = () => {
+    highlight = null;
+  };
 </script>
 
 <ul
@@ -33,6 +73,7 @@
   {#each $outlines as outline}
     <NavigationLine
       {outline}
+      {highlight}
       on:outline
       on:folder-open={handleOpenFolder}
       on:open-outline={handleOpenOutline}

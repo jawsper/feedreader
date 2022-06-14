@@ -4,6 +4,7 @@
   import type { IOutline } from "./types";
 
   export let outline: IOutline;
+  export let highlight : number | null;
 
   const dispatch = createEventDispatcher();
 
@@ -26,6 +27,7 @@
   class:feed={outline.feed_id}
   class:folder-closed={!outline.folder_opened}
   class:has-unread={outline.unread_count > 0}
+  class:highlight={highlight === outline.id}
 >
   <div class="outline-line" style={outlineStyle} on:click={handleOpenFolder}>
     <a
@@ -41,7 +43,7 @@
   {#if outline.children}
     <ul>
       {#each outline.children as child}
-        <svelte:self outline={child} on:folder-open on:open-outline />
+        <svelte:self outline={child} {highlight} on:folder-open on:open-outline />
       {/each}
     </ul>
   {/if}

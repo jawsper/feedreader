@@ -15,6 +15,8 @@
     set_post_attr_state,
   } from "./api";
 
+  let navigation;
+
   load_more_posts.subscribe((more) => {
     if (more) {
       load_more_posts.set(false);
@@ -47,6 +49,15 @@
         break;
       case "k":
         posts.move_post(-1);
+        break;
+      case "u":
+        navigation.highlight_next();
+        break;
+      case "i":
+        navigation.highlight_prev();
+        break;
+      case "o":
+        navigation.highlight_open();
         break;
       case "f":
         $fullscreen = !$fullscreen;
@@ -108,7 +119,7 @@
   >
     <div class="aside">
       <div class="px-3">
-        <Navigation />
+        <Navigation bind:this={navigation} />
       </div>
     </div>
     <div id="version" class="p-2 fs-6">

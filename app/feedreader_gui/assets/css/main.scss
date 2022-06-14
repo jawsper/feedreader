@@ -133,6 +133,10 @@ main {
   li {
     margin: 0;
     padding: 0 0 0 20px;
+
+    &.highlight > .outline-line {
+      outline: blue solid 1px;
+    }
   }
   .outline-line {
     background-image: url("../images/icons/silk/feed.png");
