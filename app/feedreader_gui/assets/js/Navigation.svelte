@@ -18,21 +18,22 @@
     });
   };
 
-  const handleOpenOutline = ({ detail }) => {
-    const { id } = detail;
+  const open_outline = (id: number) => {
     const href = `outline/${id}/`;
     outline_id.set(id);
     history.pushState(null, null, href);
   };
 
+  const handleOpenOutline = ({ detail }) => open_outline(detail.id);
+
   let highlight: number | null = null;
 
   const update_highlight = (id: number, next: boolean = true) => {
-    const flatten_outline = (outline: IOutline) : IOutline[] =>
+    const flatten_outline = (outline: IOutline): IOutline[] =>
       [outline, ...outline.children.map(flatten_outline)].flat();
     let flattened = $outlines.flatMap(flatten_outline);
-    if($options.show_only_unread.value) {
-      flattened = flattened.filter(o => o.unread_count > 0)
+    if ($options.show_only_unread.value) {
+      flattened = flattened.filter((o) => o.unread_count > 0);
     }
     let idx: number;
     if (id !== null) {
@@ -60,7 +61,7 @@
   };
   export const highlight_open = () => {
     if (highlight !== null) {
-      $outline_id = highlight;
+      open_outline(highlight);
     }
   };
   export const highlight_clear = () => {
