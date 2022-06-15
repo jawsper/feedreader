@@ -25,7 +25,7 @@
   $: is_read = post.read;
 
   posts.current_id.subscribe((new_id) => {
-    if (new_id === post.id) {
+    if (div && new_id === post.id) {
       const offset = div.getBoundingClientRect().top;
       const top = offset + window.pageYOffset - $header_offset;
       window.scrollTo({
