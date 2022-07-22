@@ -123,7 +123,7 @@
       </div>
     </div>
     <div id="version" class="p-2 fs-6">
-      <a target="_blank" href="https//github.com/jawsper/feedreader"
+      <a target="_blank" href="https://github.com/jawsper/feedreader"
         >Feedreader</a
       >
       v{document.body.dataset.version}
