@@ -1,7 +1,7 @@
 from celery import shared_task
 import asyncio
 
-from feedreader.functions.feedupdate import FeedUpdater
+from feedreader.functions.feedupdate import FeedsUpdater
 from feedreader.models import Feed
 from feedreader.functions import find_favicon
 
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 @shared_task(ignore_result=True)
 def update():
     logger.info("Starting feedupdate")
-    updater = FeedUpdater()
+    updater = FeedsUpdater()
     asyncio.run(updater.run())
     logger.info("Feedupdate completed, {} feeds updated".format(updater.imported))
 
@@ -29,7 +29,7 @@ def update_feed(feed_id):
         feed = Feed.objects.get(pk=feed_id)
     except Feed.DoesNotExist:
         return
-    updater = FeedUpdater()
+    updater = FeedsUpdater()
     asyncio.run(updater.update_feed(feed))
 
 

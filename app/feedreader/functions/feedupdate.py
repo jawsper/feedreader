@@ -30,7 +30,7 @@ class FeedUpdateFailure(Exception):
         self.message = message
 
 
-class FeedUpdater:
+class FeedsUpdater:
     def __init__(self, stdout=None, **options):
         self.stdout = stdout
         self.imported = 0
