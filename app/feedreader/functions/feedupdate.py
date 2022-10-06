@@ -54,8 +54,9 @@ class FeedsUpdater:
         all = self.options.get("all", False)
         qs = await self.get_queryset(range_=range_, all=all)
         if qs:
-            async with self._get_session() as self.session:
-                await asyncio.gather(*(self._update_feed(feed) for feed in qs))
+            async with self._get_session() as session:
+                result = await asyncio.gather(*(FeedUpdater(feed, session, self.options)() for feed in qs))
+                self.imported += sum(result)
 
     @sync_to_async
     def get_queryset(
@@ -75,8 +76,20 @@ class FeedsUpdater:
         return list(Feed.objects.filter(**filter_params))
 
     async def update_feed(self, feed: Feed):
-        async with self._get_session() as self.session:
-            await self._update_feed(feed=feed)
+        async with self._get_session() as session:
+            self.imported += await FeedUpdater(feed, session, self.options)()
+
+class FeedUpdater:
+    def __init__(self, feed: Feed, session: aiohttp.ClientSession, options):
+        self.imported = 0
+        self.feed = feed
+        self.session = session
+        self.options = options
+
+    async def __call__(self):
+        logger.info("calling feedupdater for feed %d", self.feed.pk)
+        await self._update_feed(self.feed)
+        return self.imported
 
     async def _update_feed(self, feed: Feed):
         try:
