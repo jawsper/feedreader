@@ -92,19 +92,18 @@ class FeedUpdater:
         return self.imported
 
     async def _update_feed(self, feed: Feed):
+        update_fields = ["last_updated", "last_status", "errored_since"]
         try:
-            if (result := await self.load_feed(feed=feed)) :
+            if result := await self.load_feed(feed=feed):
                 feed.last_updated = timezone.now()
                 feed.last_status = result
-                await sync_to_async(feed.save)(
-                    update_fields=["last_updated", "last_status"]
-                )
+                feed.errored_since = None
+                await sync_to_async(feed.save)(update_fields=update_fields)
         except FeedUpdateFailure as e:
             feed.last_updated = timezone.now()
             feed.last_status = e.message
-            await sync_to_async(feed.save)(
-                update_fields=["last_updated", "last_status"]
-            )
+            feed.errored_since = timezone.now()
+            await sync_to_async(feed.save)(update_fields=update_fields)
         except Exception as e:
             logger.exception("Feed error")
 

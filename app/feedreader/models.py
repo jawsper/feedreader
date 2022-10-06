@@ -32,6 +32,7 @@ class Feed(models.Model, DisplayTitleMixIn):
     last_status = models.CharField(max_length=1000, null=True, blank=True)
     last_etag = models.CharField(max_length=100, null=True, blank=True)
     is_nsfw = models.BooleanField(default=False)
+    errored_since = models.DateTimeField(null=True, blank=True, default=None)
 
     quirk_fix_invalid_publication_date = models.BooleanField(default=False)
     quirk_fix_override_encoding = models.CharField(max_length=32, null=True, blank=True)
