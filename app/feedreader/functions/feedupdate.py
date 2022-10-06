@@ -143,7 +143,7 @@ class FeedUpdater:
 
         if response.status >= 400:
             logger.warning(f"{prefix}Failed: status error {response.status}")
-            return f"Error in response | {response.status}"
+            raise FeedUpdateFailure(f"Error in response | {response.status}")
         elif response.status == 304:
             logger.info(f"{prefix}304 Not Changed")
             if not self.options.get("force", False):
@@ -153,7 +153,7 @@ class FeedUpdater:
 
         if not data:
             logger.warning("{}Failed: no data".format(prefix))
-            return "Error | No data"
+            raise FeedUpdateFailure("Error | No data")
         if data["bozo"]:
             logger.warning("{}Failed: {}".format(prefix, data["bozo_exception"]))
 
