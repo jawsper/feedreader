@@ -100,17 +100,21 @@ class FeedUpdater:
         return self.imported
 
     async def _update_feed(self):
-        update_fields = ["last_updated", "last_status", "errored_since"]
+        update_fields = ["last_updated", "last_status"]
         try:
             if result := await self.load_feed():
                 self.feed.last_updated = timezone.now()
                 self.feed.last_status = result
-                self.feed.errored_since = None
+                if self.feed.errored_since:
+                    self.feed.errored_since = None
+                    update_fields.append("errored_since")
                 await sync_to_async(self.feed.save)(update_fields=update_fields)
         except FeedUpdateFailure as e:
             self.feed.last_updated = timezone.now()
             self.feed.last_status = e.message
-            self.feed.errored_since = timezone.now()
+            if not self.feed.errored_since:
+                self.feed.errored_since = timezone.now()
+                update_fields.append("errored_since")
             await sync_to_async(self.feed.save)(update_fields=update_fields)
         except Exception as e:
             self.log.exception("Unexpected feed error")
