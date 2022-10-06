@@ -43,9 +43,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
     && apt-get install --no-install-recommends -y libpq-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
-    && addgroup \
-    --system \
-    feedreader \
+    && addgroup --system feedreader \
     && adduser \
     --system \
     --home "$(pwd)" \
@@ -54,19 +52,20 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
     --ingroup feedreader \
     feedreader \
     && mkdir media static \
-    && chown -R feedreader .
+    && chown feedreader media static
 
 USER feedreader
 
 # copy project
 ENV PATH=/app/.venv/bin:$PATH
-COPY --from=builder --chown=feedreader /app/.venv/ ./.venv/
-COPY --chown=feedreader feedreader ./feedreader
-COPY --chown=feedreader feedreader_api ./feedreader_api
-COPY --chown=feedreader feedreader_gui ./feedreader_gui
-COPY --chown=feedreader manage.py .
-COPY --chown=feedreader entrypoint.sh .
-COPY --from=node-builder --chown=feedreader /app/static ./feedreader_gui/static/
-COPY --from=node-builder --chown=feedreader /app/webpack-stats.json ./feedreader_gui/
+USER nobody
+COPY --from=builder /app/.venv/ ./.venv/
+COPY feedreader ./feedreader
+COPY feedreader_api ./feedreader_api
+COPY feedreader_gui ./feedreader_gui
+COPY manage.py .
+COPY entrypoint.sh .
+COPY --from=node-builder /app/static ./feedreader_gui/static/
+COPY --from=node-builder /app/webpack-stats.json ./feedreader_gui/
 
 # ENTRYPOINT ["/app/entrypoint.sh"]
