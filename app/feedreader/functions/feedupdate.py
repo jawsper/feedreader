@@ -96,51 +96,56 @@ class FeedUpdater:
         self.log = LoggerAdapter(logger.getChild(f"{feed.pk}"))
 
     async def __call__(self):
-        await self._update_feed(self.feed)
+        await self._update_feed()
         return self.imported
 
-    async def _update_feed(self, feed: Feed):
+    async def _update_feed(self):
         update_fields = ["last_updated", "last_status", "errored_since"]
         try:
-            if result := await self.load_feed(feed=feed):
-                feed.last_updated = timezone.now()
-                feed.last_status = result
-                feed.errored_since = None
-                await sync_to_async(feed.save)(update_fields=update_fields)
+            if result := await self.load_feed():
+                self.feed.last_updated = timezone.now()
+                self.feed.last_status = result
+                self.feed.errored_since = None
+                await sync_to_async(self.feed.save)(update_fields=update_fields)
         except FeedUpdateFailure as e:
-            feed.last_updated = timezone.now()
-            feed.last_status = e.message
-            feed.errored_since = timezone.now()
-            await sync_to_async(feed.save)(update_fields=update_fields)
+            self.feed.last_updated = timezone.now()
+            self.feed.last_status = e.message
+            self.feed.errored_since = timezone.now()
+            await sync_to_async(self.feed.save)(update_fields=update_fields)
         except Exception as e:
-            self.log.exception("Feed error")
+            self.log.exception("Unexpected feed error")
 
-    async def download_feed(self, feed: Feed):
-        if not feed.xml_url:
+    async def download_feed(self):
+        if not self.feed.xml_url:
             return None, None
         headers = {}
         if not self.options.get("force", False):
-            if feed.last_etag:
-                headers["If-None-Match"] = feed.last_etag
-            modified = feed.last_pub_date if feed.last_pub_date else feed.last_updated
+            if self.feed.last_etag:
+                headers["If-None-Match"] = self.feed.last_etag
+            modified = (
+                self.feed.last_pub_date
+                if self.feed.last_pub_date
+                else self.feed.last_updated
+            )
             if modified:
-                modified = mktime(modified.timetuple())
-                headers["If-Modified-Since"] = format_date_time(modified)
+                if_modified_since = mktime(modified.timetuple())
+                headers["If-Modified-Since"] = format_date_time(if_modified_since)
 
         # Fix for GDPR wall on tumblr sites (#14)
-        hostname = urlparse(feed.xml_url).hostname
+        hostname = urlparse(self.feed.xml_url).hostname
         if hostname.endswith(".tumblr.com"):
             headers[
                 "User-Agent"
             ] = "Mozilla/5.0 (compatible; Baiduspider; +http://www.baidu.com/search/spider.html)"
         try:
-            async with self.session.get(feed.xml_url, headers=headers) as response:
-                if feed.quirk_fix_override_encoding is not None:
+            async with self.session.get(self.feed.xml_url, headers=headers) as response:
+                if self.feed.quirk_fix_override_encoding is not None:
                     self.log.info(
-                        "Encoding overriden to %s", feed.quirk_fix_override_encoding
+                        "Encoding overriden to %s",
+                        self.feed.quirk_fix_override_encoding,
                     )
                 return (
-                    await response.text(encoding=feed.quirk_fix_override_encoding)
+                    await response.text(encoding=self.feed.quirk_fix_override_encoding)
                 ), response
         except aiohttp.ClientConnectionError as e:
             self.log.warning("Connection error | %s", str(e))
@@ -152,9 +157,9 @@ class FeedUpdater:
             self.log.exception("Timeout or client error | %s", str(e))
             raise FeedUpdateFailure(f"Error | {e}")
 
-    async def load_feed(self, feed: Feed):
+    async def load_feed(self):
         self.log.info("Loading feed")
-        raw_data, response = await self.download_feed(feed=feed)
+        raw_data, response = await self.download_feed()
 
         if not response:
             return f"Error | unknown error"
@@ -176,9 +181,9 @@ class FeedUpdater:
             self.log.warning("Failed: %s", data["bozo_exception"])
 
         if etag := response.headers.get("etag"):
-            if feed.last_etag != etag:
-                feed.last_etag = etag
-                await sync_to_async(feed.save)(update_fields=["last_etag"])
+            if self.feed.last_etag != etag:
+                self.feed.last_etag = etag
+                await sync_to_async(self.feed.save)(update_fields=["last_etag"])
 
         changed = True
         last_updated = None
@@ -195,13 +200,17 @@ class FeedUpdater:
         if last_updated:
             last_updated = struct_time_to_aware_datetime(last_updated)
 
-        if feed.quirk_fix_invalid_publication_date:
+        if self.feed.quirk_fix_invalid_publication_date:
             pass
-        elif feed.last_pub_date and last_updated and feed.last_pub_date == last_updated:
+        elif (
+            self.feed.last_pub_date
+            and last_updated
+            and self.feed.last_pub_date == last_updated
+        ):
             changed = False
         elif last_updated:
-            feed.last_pub_date = last_updated
-            await sync_to_async(feed.save)(update_fields=["last_pub_date"])
+            self.feed.last_pub_date = last_updated
+            await sync_to_async(self.feed.save)(update_fields=["last_pub_date"])
 
         if not changed:
             self.log.info("No changes detected")
@@ -213,7 +222,7 @@ class FeedUpdater:
         )
 
         outlines: List[Outline] = await sync_to_async(list)(
-            Outline.objects.filter(feed=feed).prefetch_related("user")
+            Outline.objects.filter(feed=self.feed).prefetch_related("user")
         )
 
         imported = 0
@@ -285,8 +294,7 @@ class FeedUpdater:
             except Post.MultipleObjectsReturned:
                 self.log.warning("Duplicate post! %s", str(insert_data))
             except Post.DoesNotExist:
-                insert_data["feed"] = feed
-                post = Post(**insert_data)
+                post = Post(**insert_data, feed=self.feed)
                 try:
                     await sync_to_async(post.save)()
                     for outline in outlines:
@@ -304,19 +312,19 @@ class FeedUpdater:
                     self.log.exception("IntegrityError %s", entry)
                     continue
 
-        if feed.quirk_fix_invalid_publication_date:
-            await self._fix_invalid_publication_date(feed=feed)
+        if self.feed.quirk_fix_invalid_publication_date:
+            await self._fix_invalid_publication_date()
 
         self.log.info("Inserted %d new posts", imported)
         self.imported += imported
         return f"Success | {imported} posts added"
 
     @sync_to_async
-    def _fix_invalid_publication_date(self, feed: Feed):
+    def _fix_invalid_publication_date(self):
         try:
-            (feed.last_pub_date,) = (
-                feed.post_set.order_by("-pubDate").values_list("pubDate").first()
+            (self.feed.last_pub_date,) = (
+                self.feed.post_set.order_by("-pubDate").values_list("pubDate").first()
             )
-            feed.save(update_fields=["last_pub_date"])
+            self.feed.save(update_fields=["last_pub_date"])
         except IndexError:
             pass
