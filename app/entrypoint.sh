@@ -13,5 +13,6 @@ fi
 
 python manage.py migrate
 python manage.py collectstatic --no-input
+python manage.py setup_celery_beat
 
 exec "$@"
