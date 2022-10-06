@@ -93,7 +93,7 @@ class FeedUpdater:
             def process(self, msg, kwargs):
                 return f"[{feed.xml_url}] {msg}", kwargs
 
-        self.log = LoggerAdapter(logger.getChild(f"{feed.pk}"))
+        self.log = LoggerAdapter(logger=logger.getChild(f"{feed.pk}"), extra=None)
 
     async def __call__(self):
         await self._update_feed()
