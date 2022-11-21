@@ -7,7 +7,7 @@ from .display_title import DisplayTitleMixIn
 from .feed import Feed
 
 
-class Outline(MPTTModel, DisplayTitleMixIn):
+class OldOutline(MPTTModel, DisplayTitleMixIn):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="outlines")
     parent = TreeForeignKey(
         "self",
@@ -48,3 +48,6 @@ class Outline(MPTTModel, DisplayTitleMixIn):
         if include_children:
             outline["children"] = [node.to_dict() for node in self.get_children()]
         return outline
+
+
+Outline = OldOutline
