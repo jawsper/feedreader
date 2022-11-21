@@ -41,6 +41,7 @@ THIRD_PARTY_APPS = [
     "django_extensions",
     "django_celery_beat",
     "webpack_loader",
+    "treebeard",
 ]
 
 INSTALLED_APPS = DJANGO_CORE_APPS + FEEDREADER_APPS + THIRD_PARTY_APPS

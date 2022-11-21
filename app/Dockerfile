@@ -29,7 +29,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
     && apt-get install --no-install-recommends -y python3-dev libpq-dev gcc
 
 # install dependencies
-RUN pip install pipenv==2022.5.2
+RUN python -m pip install pipenv==2022.8.5
 COPY ./Pipfile ./Pipfile.lock ./
 RUN pipenv sync
 
