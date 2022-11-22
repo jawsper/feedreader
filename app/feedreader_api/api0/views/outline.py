@@ -29,18 +29,15 @@ class GetUnreadCountView(JsonResponseView):
         counts = {}
         if "outline_id" in args:
             try:
-                outline = Outline.objects.select_related("parent").get(
-                    pk=int(args["outline_id"])
-                )
+                outline = Outline.objects.get(pk=int(args["outline_id"]))
             except Outline.DoesNotExist:
                 return dict(success=False, message="Invalid outline ID.")
 
+            for ancestor in outline.get_ancestors():
+                counts[ancestor.id] = ancestor.unread_count
             counts[outline.id] = outline.unread_count
-            if outline.parent:
-                counts[outline.parent.id] = outline.parent.unread_count
-            else:
-                for child in Outline.objects.filter(parent=outline):
-                    counts[child.id] = child.unread_count
+            for child in outline.get_children():
+                counts[child.id] = child.unread_count
             total = get_total_unread_count(user)
         else:
             for outline in Outline.objects.filter(user=user):
@@ -96,7 +93,7 @@ class GetPostsView(JsonResponseView):
 
         after = args.get("after", None)
 
-        feed_query = outline.get_descendants(include_self=True)
+        feed_query = Outline.get_tree(outline)
         if not config.show_nsfw_feeds:
             feed_query = feed_query.filter(feed__is_nsfw=False)
 
@@ -236,16 +233,14 @@ class OutlineMarkAsReadView(JsonResponseView):
     def get_response(self, user, args):
         try:
             outline_id = args.get("outline", None)
-            outline = Outline.objects.get(user=user, id=outline_id)
+            outline: Outline = Outline.objects.get(user=user, id=outline_id)
         except Outline.DoesNotExist:
             return dict(success=False, message="Outline does not exist.")
 
         if outline.feed:
             posts = Post.objects.filter(feed=outline.feed)
         else:
-            feed_ids = Outline.objects.filter(parent=outline).values_list(
-                "feed", flat=True
-            )
+            feed_ids = outline.get_children().values_list("feed", flat=True)
             feeds = Feed.objects.filter(pk__in=feed_ids)
             posts = Post.objects.filter(feed__in=feeds)
         post_count = change_count = 0
@@ -257,6 +252,6 @@ class OutlineMarkAsReadView(JsonResponseView):
                 u = UserPost(user=user, post=post)
             if not u.id or not u.read:
                 u.read = True
-                u.save()
+                u.save(update_fields=["read"])
                 change_count += 1
         return dict(success=True, post_count=post_count, change_count=change_count)
