@@ -6,7 +6,6 @@ name = "pypi"
 [packages]
 feedparser = "~=6.0.2"
 beautifulsoup4 = "~=4.11.1"
-django-mptt = "==0.11.0"
 celery = "~=5.2.2"
 redis = "~=4.3.4"
 django-extensions = "~=3.1.2"
@@ -23,8 +22,7 @@ django-treebeard = "~=4.5.1"
 typing-extensions = "~=4.3.0"
 
 [dev-packages]
-django-debug-toolbar = "~=3.5.0"
-django-debug-toolbar-request-history = "==0.1.4"
+django-debug-toolbar = "~=3.7.0"
 pre-commit = "~=2.20.0"
 
 [requires]

@@ -37,7 +37,6 @@ FEEDREADER_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-    "mptt",
     "django_extensions",
     "django_celery_beat",
     "webpack_loader",
