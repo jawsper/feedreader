@@ -16,5 +16,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(populate_dates),
+        migrations.RunPython(populate_dates, elidable=True),
     ]

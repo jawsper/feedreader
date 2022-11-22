@@ -49,4 +49,8 @@ class Migration(migrations.Migration):
         ("feedreader", "0018_outline"),
     ]
 
-    operations = [migrations.RunPython(move_oldoutline_to_outline, remove_new_outline)]
+    operations = [
+        migrations.RunPython(
+            move_oldoutline_to_outline, remove_new_outline, elidable=True
+        )
+    ]
