@@ -1,9 +1,17 @@
 from django.contrib import admin
 from mptt.admin import DraggableMPTTAdmin
+from treebeard.admin import TreeAdmin
+from treebeard.forms import movenodeform_factory
+from .models.outline import OldOutline
 from .models import Outline, Feed
 
 
 @admin.register(Outline)
+class NewOutlineAdmin(TreeAdmin):
+    form = movenodeform_factory(Outline)
+
+
+@admin.register(OldOutline)
 class OutlineAdmin(DraggableMPTTAdmin):
     list_display = (
         "tree_actions",
