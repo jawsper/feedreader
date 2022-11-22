@@ -28,15 +28,14 @@ class JsonErrorResponse(JsonResponse):
         super().__init__({"error": True, "caption": "Error", "message": message})
 
 
-def get_unread_count(user, outline):
+def get_unread_count(user, outline: Outline):
     if outline.feed:
         query = UserPost.objects.filter(
             user=outline.user, post__feed=outline.feed, read=False
         )
     else:
-        feed_query = Outline.objects.filter(parent=outline).values_list(
-            "feed", flat=True
-        )
+
+        feed_query = outline.get_children().values_list("feed", flat=True)
         post_query = Post.objects.filter(feed__in=feed_query)
         query = UserPost.objects.filter(
             user=outline.user, post__in=post_query, read=False
