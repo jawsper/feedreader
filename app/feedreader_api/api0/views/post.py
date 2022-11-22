@@ -2,24 +2,9 @@
 # Author: Jasper Seidel
 # Date: 2013-06-24
 
-from django.db.models import F
-
-from feedreader.models import Outline, Post, UserPost
+from feedreader.functions.outline import update_userpost_unread_count
+from feedreader.models import Post, UserPost
 from feedreader_api.functions import JsonResponseView
-
-
-def _find_post_outline(userpost):
-    user, post = userpost.user, userpost.post
-    return Outline.objects.get(user=user, feed=post.feed)
-
-
-def _update_unread_count(userpost, num):
-    outline = _find_post_outline(userpost)
-    if not outline:
-        return
-    outline.get_ancestors(include_self=True).update(
-        unread_count=F("unread_count") + num
-    )
 
 
 class PostActionView(JsonResponseView):
@@ -62,7 +47,7 @@ class PostActionView(JsonResponseView):
             setattr(user_post, action, state)
             user_post.save(update_fields=[action])
             if action == "read":
-                _update_unread_count(user_post, -1 if state else +1)
+                update_userpost_unread_count(user_post, -1 if state else +1)
 
             result_message = "Post {} marked as {}".format(
                 post_id, action if state else "not " + action
