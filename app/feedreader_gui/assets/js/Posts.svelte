@@ -1,5 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from "svelte";
+  import InfiniteScroll from "svelte-infinite-scroll";
 
   import { header_offsets, outline, posts } from "./stores";
   const { current_id, loading, no_more_posts } = posts;
@@ -42,6 +43,15 @@
     }));
   });
 </script>
+
+<InfiniteScroll
+  threshold={100}
+  window={true}
+  hasMore={!$no_more_posts}
+  on:loadMore={() => {
+    if (!$loading) load_more_posts();
+  }}
+/>
 
 <section class="pt-3 px-3 content-max prose" bind:this={section}>
   <PostHeader />
