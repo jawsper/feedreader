@@ -67,13 +67,20 @@
       />
     {/each}
   </div>
-  {#if !$loading}
-    <button class="btn btn-outline-primary" on:click={load_more_posts}>
-      Load more posts
-    </button>
-  {/if}
-  {#if $no_more_posts}
-    <div id="no_more_posts">No more posts.</div>
-  {/if}
-  <div style="height: 50vh" />
+  <div class="container-fluid mb-3">
+    <div class="row align-items-center">
+      <div class="col-md-auto">
+        <button
+          class="btn btn-outline-primary"
+          disabled={$loading}
+          on:click={load_more_posts}
+        >
+          Load more posts
+        </button>
+      </div>
+      {#if $no_more_posts}
+        <div class="col-md-auto">No more posts.</div>
+      {/if}
+    </div>
+  </div>
 </section>
