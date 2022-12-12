@@ -4,7 +4,7 @@ from typing_extensions import Self
 from django.contrib.auth.models import User
 from django.db import models
 
-from treebeard.mp_tree import MP_Node, MP_NodeManager, MP_NodeQuerySet
+from treebeard.mp_tree import MP_Node, MP_NodeManager, MP_NodeQuerySet, get_result_class
 
 from .display_title import DisplayTitleMixIn
 from .feed import Feed
@@ -54,7 +54,6 @@ class OutlineQueryset(MP_NodeQuerySet):
 
 class OutlineManager(MP_NodeManager):
     def get_queryset(self):
-        # return OutlineQueryset(self.model).order_by('tree_id', 'lft')
         return OutlineQueryset(self.model).order_by("path")
 
 
@@ -63,9 +62,7 @@ class Outline(MP_Node, DisplayTitleMixIn):
     _cached_parent: Optional[Self] = None
     _cached_children: List[Self] = []
 
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="new_outlines"
-    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="outlines")
     title = models.CharField(max_length=500, db_index=True)
     feed = models.ForeignKey(Feed, on_delete=models.CASCADE, null=True, blank=True)
     sort_order_asc = models.BooleanField(default=True)
@@ -103,3 +100,15 @@ class Outline(MP_Node, DisplayTitleMixIn):
         if include_children:
             outline["children"] = [node.to_dict() for node in self.children]
         return outline
+
+    def get_ancestors(self, include_self=False):
+        if self.is_root():
+            return get_result_class(self.__class__).objects.none()
+        paths = [self.path[0:pos] for pos in range(0, len(self.path), self.steplen)[1:]]
+        if include_self:
+            paths.append(self.path)
+        return (
+            get_result_class(self.__class__)
+            .objects.filter(path__in=paths)
+            .order_by("depth")
+        )

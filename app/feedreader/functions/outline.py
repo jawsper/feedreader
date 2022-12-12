@@ -15,6 +15,5 @@ def update_userpost_unread_count(userpost: UserPost, num: int):
 
 
 def update_outline_unread_count(outline: Outline, num: int):
-    outline.get_ancestors().update(unread_count=F("unread_count") + num)
-    outline.unread_count += num
-    outline.save(update_fields=["unread_count"])
+    outlines = outline.get_ancestors(include_self=True)
+    outlines.update(unread_count=F("unread_count") + num)
