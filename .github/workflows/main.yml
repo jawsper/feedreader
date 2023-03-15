@@ -7,6 +7,9 @@ on:
 
 jobs:
   build:
+    permissions:
+      contents: read
+      packages: write
     runs-on: ubuntu-latest
 
     steps:
@@ -19,16 +22,17 @@ jobs:
     - name: Login to registry
       uses: docker/login-action@v2
       with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        registry: ghcr.io
     - name: Build and push Docker images
       uses: docker/build-push-action@v3
       with:
         context: app
         tags: |
-          jawsper/feedreader:${{ env.RELEASE_VERSION }}
-          jawsper/feedreader:latest
-        cache-from: type=registry,ref=jawsper/feedreader:latest
+          ghcr.io/jawsper/feedreader:${{ env.RELEASE_VERSION }}
+          ghcr.io/jawsper/feedreader:latest
+        cache-from: type=registry,ref=ghcr.io/jawsper/feedreader:latest
         cache-to: type=inline
         push: true
     - name: Release
