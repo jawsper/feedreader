@@ -15,5 +15,6 @@ services:
     restart: unless-stopped
     image: jawsper/feedreader:latest
   ingress:
+    restart: unless-stopped
     ports:
       - 127.0.0.1:1337:80
