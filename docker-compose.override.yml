@@ -7,13 +7,13 @@ services:
     restart: unless-stopped
   web:
     restart: unless-stopped
-    image: jawsper/feedreader:latest
+    image: ghcr.io/jawsper/feedreader:latest
   celery:
     restart: unless-stopped
-    image: jawsper/feedreader:latest
+    image: ghcr.io/jawsper/feedreader:latest
   beat:
     restart: unless-stopped
-    image: jawsper/feedreader:latest
+    image: ghcr.io/jawsper/feedreader:latest
   ingress:
     restart: unless-stopped
     ports:
