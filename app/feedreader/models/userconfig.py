@@ -1,9 +1,9 @@
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.db import models
 
 
 class UserConfig(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     show_only_unread = models.BooleanField(default=True)
     show_nsfw_feeds = models.BooleanField(default=False)
 

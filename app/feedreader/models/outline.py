@@ -1,7 +1,7 @@
 from typing import List, Optional
 from typing_extensions import Self
 
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.db import models
 
 from treebeard.mp_tree import MP_Node, MP_NodeManager, MP_NodeQuerySet, get_result_class
@@ -62,7 +62,9 @@ class Outline(MP_Node, DisplayTitleMixIn):
     _cached_parent: Optional[Self] = None
     _cached_children: List[Self] = []
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="outlines")
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="outlines"
+    )
     title = models.CharField(max_length=500, db_index=True)
     feed = models.ForeignKey(Feed, on_delete=models.CASCADE, null=True, blank=True)
     sort_order_asc = models.BooleanField(default=True)
