@@ -11,6 +11,7 @@ x-celery: &celery-app
   <<: *default-app
   depends_on:
     - redis
+    - web
 
 services:
   db:
