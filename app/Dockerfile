@@ -40,7 +40,7 @@ FROM python:3.10-slim as runtime
 WORKDIR /app
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
-    && apt-get install --no-install-recommends -y libpq-dev \
+    && apt-get install --no-install-recommends -y libpq5 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && addgroup --system feedreader \
