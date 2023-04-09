@@ -1,5 +1,4 @@
-from typing import List, Optional
-from typing_extensions import Self
+from typing import List, Optional, Self
 
 from django.conf import settings
 from django.db import models
