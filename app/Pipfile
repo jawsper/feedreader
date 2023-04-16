@@ -20,6 +20,10 @@ whitenoise = "~=6.2.0"
 pillow = "~=9.3.0"
 django-treebeard = "~=4.6.1"
 django-cors-headers = "~=3.14.0"
+djangorestframework = "~=3.14.0"
+djangorestframework-recursive = "~=0.1.2"
+uritemplate = "~=4.1.1"
+drf-nested-routers = "~=0.93.4"
 
 [dev-packages]
 django-debug-toolbar = "~=3.7.0"
