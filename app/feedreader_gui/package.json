@@ -6,7 +6,8 @@
   "private": true,
   "scripts": {
     "watch": "webpack watch --config webpack.config.js --mode development",
-    "build": "webpack --config webpack.config.js"
+    "build": "webpack --config webpack.config.js",
+    "api": "rm -rf assets/js/api/gen && openapi-generator-cli generate -i http://localhost:8000/api/1/openapi -g typescript-fetch -o assets/js/api/gen --additional-properties=withSeperateModelsAndApi=true,withInterfaces=true,withoutPrefixEnums=true,enumNameSuffix=,modelPropertyNaming=original && yarn prettier --write ./assets/js/api/gen/"
   },
   "dependencies": {
     "@popperjs/core": "^2.10.2",
@@ -19,6 +20,7 @@
     "svelte-infinite-scroll": "^2.0.1"
   },
   "devDependencies": {
+    "@openapitools/openapi-generator-cli": "^2.6.0",
     "@tsconfig/svelte": "^3.0.0",
     "@types/bootstrap": "^5.1.0",
     "@types/dompurify": "^2.3.3",
@@ -29,6 +31,7 @@
     "mini-css-extract-plugin": "^2.4.5",
     "postcss": "^8.0.1",
     "postcss-loader": "^6.2.1",
+    "prettier": "^2.8.7",
     "sass": "^1.44.0",
     "sass-loader": "^12.3.0",
     "svelte": "^3.44.2",
