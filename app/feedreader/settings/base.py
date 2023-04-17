@@ -42,6 +42,7 @@ THIRD_PARTY_APPS = [
     "django_celery_beat",
     "webpack_loader",
     "treebeard",
+    "rest_framework",
 ]
 
 INSTALLED_APPS = DJANGO_CORE_APPS + FEEDREADER_APPS + THIRD_PARTY_APPS
@@ -120,4 +121,11 @@ WEBPACK_LOADER = {
         "BUNDLE_DIR_NAME": "",
         "STATS_FILE": str(BASE_DIR / "feedreader_gui/webpack-stats.json"),
     }
+}
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "DEFAULT_SCHEMA_CLASS": "feedreader_api.api1.utils.schema.AutoSchema",
 }
