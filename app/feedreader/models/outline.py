@@ -59,7 +59,7 @@ class OutlineManager(MP_NodeManager):
 class Outline(MP_Node, DisplayTitleMixIn):
     objects = OutlineManager()
     _cached_parent: Optional[Self] = None
-    _cached_children: List[Self] = []
+    _cached_children: list[Self] | None = None
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="outlines"
@@ -70,6 +70,10 @@ class Outline(MP_Node, DisplayTitleMixIn):
     show_only_new = models.BooleanField(default=True)
     folder_opened = models.BooleanField(default=True)
     unread_count = models.IntegerField(default=0, db_index=True)
+
+    def __init__(self, *args, **kwargs) -> None:
+        self._cached_children = []
+        super().__init__(*args, **kwargs)
 
     def __str__(self):
         return self.display_title
