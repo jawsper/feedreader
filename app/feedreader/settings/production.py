@@ -47,11 +47,11 @@ sentry_sdk.init(
     release=f"feedreader@{__version__}",
 )
 
-SESSION_COOKIE_SECURE = True
-SESSION_COOKIE_PATH = "/"
+SESSION_COOKIE_SECURE = os.getenv("SESSION_COOKIE_SECURE", "True") == "True"
+SESSION_COOKIE_PATH = os.getenv("SESSION_COOKIE_PATH", "/")
 SESSION_COOKIE_SAMESITE = os.getenv("SESSION_COOKIE_SAMESITE", "Strict")
-CSRF_COOKIE_SECURE = True
-CSRF_COOKIE_PATH = "/"
+CSRF_COOKIE_SECURE = os.getenv("CSRF_COOKIE_SECURE", "True") == "True"
+CSRF_COOKIE_PATH = os.getenv("CSRF_COOKIE_PATH", "/")
 CSRF_COOKIE_SAMESITE = os.getenv("CSRF_COOKIE_SAMESITE", "Strict")
 
 CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",")
