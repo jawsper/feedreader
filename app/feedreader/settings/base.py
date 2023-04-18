@@ -37,6 +37,7 @@ FEEDREADER_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
+    "corsheaders",
     "django_extensions",
     "django_celery_beat",
     "webpack_loader",
@@ -46,6 +47,7 @@ THIRD_PARTY_APPS = [
 INSTALLED_APPS = DJANGO_CORE_APPS + FEEDREADER_APPS + THIRD_PARTY_APPS
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
