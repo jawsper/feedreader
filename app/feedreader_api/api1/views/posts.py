@@ -1,4 +1,4 @@
-from rest_framework import viewsets, pagination
+from rest_framework import mixins, viewsets, pagination
 
 from feedreader.models import Outline, UserConfig, UserPost
 from ..serializers.post import PostSerializer
@@ -59,3 +59,12 @@ class PostsViewSet(viewsets.ReadOnlyModelViewSet):
             posts_queryset = posts_queryset.reverse()
 
         return posts_queryset
+
+
+class PostEditViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
+    serializer_class = PostSerializer
+
+    lookup_field = "post_id"
+
+    def get_queryset(self):
+        return UserPost.objects.filter(user=self.request.user)

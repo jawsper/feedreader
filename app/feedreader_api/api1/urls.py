@@ -5,13 +5,15 @@ from rest_framework_nested import routers
 
 from feedreader import __version__
 from .views.outlines import OutlinesViewSet
-from .views.posts import PostsViewSet
+from .views.posts import PostsViewSet, PostEditViewSet
 
 router = DefaultRouter()
 router.register(r"outlines", OutlinesViewSet, basename="outlines")
 
 outlines_router = routers.NestedSimpleRouter(router, r"outlines", lookup="outline")
 outlines_router.register(r"posts", PostsViewSet, basename="outline-posts")
+
+router.register(r"posts", PostEditViewSet, basename="posts")
 
 urlpatterns = [
     path("", include(router.urls)),
