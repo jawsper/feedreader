@@ -6,11 +6,7 @@ from ..serializers.outline import OutlineSerializer, SingleOutlineSerializer
 
 class OutlinesViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
-        qs = (
-            Outline.objects.filter(user=self.request.user)
-            .select_related("feed")
-            .prefetch_related("feed")
-        )
+        qs = Outline.objects.filter(user=self.request.user).select_related("feed")
         if self.kwargs:
             return qs
         return qs.get_cached_trees()
