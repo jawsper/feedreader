@@ -67,3 +67,8 @@ class Feed(models.Model, DisplayTitleMixIn):
             self.favicon.delete()
         self.favicon.save(image_filename, content)
         return True
+
+    @property
+    def icon(self):
+        if self.favicon and self.favicon.url:
+            return self.favicon.url
