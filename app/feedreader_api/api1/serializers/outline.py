@@ -7,7 +7,9 @@ from .feed import FeedSerializer
 
 
 class SingleOutlineSerializer(serializers.ModelSerializer):
+    title = serializers.CharField(read_only=True)
     feed = FeedSerializer(read_only=True)
+    unread_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Outline

@@ -1,10 +1,10 @@
-from rest_framework import viewsets
+from rest_framework import mixins, viewsets
 
 from feedreader.models import Outline
 from ..serializers.outline import OutlineSerializer, SingleOutlineSerializer
 
 
-class OutlinesViewSet(viewsets.ReadOnlyModelViewSet):
+class OutlinesViewSet(mixins.UpdateModelMixin, viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         qs = Outline.objects.filter(user=self.request.user).select_related("feed")
         if self.kwargs:
