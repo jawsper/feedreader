@@ -1,4 +1,5 @@
-from typing import List, Optional, Self
+from typing import Self
+import warnings
 
 from django.conf import settings
 from django.db import models
@@ -17,10 +18,11 @@ class OutlineQueryset(MP_NodeQuerySet):
         and its parent in `_cached_parent`. This avoids having to query the database.
         """
 
-        top_nodes: List[Outline] = []
-        path: List[Outline] = []
+        top_nodes: list[Outline] = []
+        path: list[Outline] = []
 
         def add_top_node(obj: Outline) -> None:
+            nonlocal top_nodes, path
             top_nodes.append(obj)
             path.clear()
 
@@ -29,11 +31,7 @@ class OutlineQueryset(MP_NodeQuerySet):
             parent._cached_children.append(obj)
 
         def is_child_of(child: Outline, parent: Outline) -> bool:
-            """Return whether `child` is a sub page of `parent` without database query.
-
-            `_get_children_path_interval` is an internal method of MP_Node.
-            """
-            return child.is_descendant_of(parent)
+            return child.is_child_of(parent)
 
         obj: Outline
         for obj in self:
@@ -52,13 +50,17 @@ class OutlineQueryset(MP_NodeQuerySet):
 
 
 class OutlineManager(MP_NodeManager):
+    # this method is not used, but it is to let pycharm see the method of the queryset
+    def get_cached_trees(self) -> list["Outline"]:
+        return []
+
     def get_queryset(self):
         return OutlineQueryset(self.model).order_by("path")
 
 
 class Outline(MP_Node, DisplayTitleMixIn):
     objects = OutlineManager()
-    _cached_parent: Optional[Self] = None
+    _cached_parent: Self | None = None
     _cached_children: list[Self] | None = None
 
     user = models.ForeignKey(
@@ -79,8 +81,8 @@ class Outline(MP_Node, DisplayTitleMixIn):
         return self.display_title
 
     @property
-    def children(self) -> List[Self]:
-        if not self._cached_children:
+    def children(self) -> list[Self]:
+        if not self._cached_children and not self.is_leaf():
             self._cached_children = list(self.get_children())
         return self._cached_children
 
@@ -91,15 +93,22 @@ class Outline(MP_Node, DisplayTitleMixIn):
         if self.feed:
             return ensure_https_url(self.feed.favicon_url)
 
+    # TODO: remove and only use OutlineSerializer
     def to_dict(self, include_children=True):
+        warnings.warn(
+            "Outline.to_dict is deprecated. Use OutlineSerializer instead.",
+            DeprecationWarning,
+        )
+
+        favicon = None
+        if self.feed and self.feed.favicon:
+            favicon = self.feed.favicon.url
         outline = {
             "id": self.pk,
             "title": self.title,
             "unread_count": self.unread_count,
-            "feed_id": self.feed_id,
-            "icon": self.feed.favicon.url
-            if self.feed_id and self.feed.favicon
-            else None,
+            "feed": {"id": self.feed_id} if self.feed_id else None,
+            "icon": favicon,
             "folder_opened": self.folder_opened,
         }
         if include_children:
