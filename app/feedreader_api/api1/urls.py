@@ -6,6 +6,7 @@ from rest_framework_nested import routers
 from feedreader import __version__
 from .views.outlines import OutlinesViewSet
 from .views.posts import PostsViewSet, PostEditViewSet
+from .views.config import ConfigViewSet
 
 router = DefaultRouter()
 router.register(r"outlines", OutlinesViewSet, basename="outlines")
@@ -18,6 +19,9 @@ router.register(r"posts", PostEditViewSet, basename="posts")
 urlpatterns = [
     path("", include(router.urls)),
     path("", include(outlines_router.urls)),
+    path(
+        "config/", ConfigViewSet.as_view({"get": "retrieve", "patch": "partial_update"})
+    ),
     path(
         "openapi",
         get_schema_view(
