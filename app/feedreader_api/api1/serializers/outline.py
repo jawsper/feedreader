@@ -22,9 +22,19 @@ class SingleOutlineSerializer(serializers.ModelSerializer):
         ]
 
 
-class OutlineSerializer(SingleOutlineSerializer):
+class OutlineSerializer(serializers.ModelSerializer):
+    feed = FeedSerializer(read_only=True)
     children = serializers.ListField(child=RecursiveField())
 
     class Meta:
         model = Outline
-        fields = SingleOutlineSerializer.Meta.fields + ["children"]
+        fields = [
+            "id",
+            "title",
+            "feed",
+            "sort_order_asc",
+            "show_only_new",
+            "folder_opened",
+            "unread_count",
+            "children",
+        ]
