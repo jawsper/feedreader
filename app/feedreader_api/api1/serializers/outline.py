@@ -6,9 +6,8 @@ from feedreader.models import Outline
 from .feed import FeedSerializer
 
 
-class OutlineSerializer(serializers.ModelSerializer):
+class SingleOutlineSerializer(serializers.ModelSerializer):
     feed = FeedSerializer(read_only=True)
-    children = serializers.ListField(child=RecursiveField())
 
     class Meta:
         model = Outline
@@ -20,5 +19,12 @@ class OutlineSerializer(serializers.ModelSerializer):
             "show_only_new",
             "folder_opened",
             "unread_count",
-            "children",
         ]
+
+
+class OutlineSerializer(SingleOutlineSerializer):
+    children = serializers.ListField(child=RecursiveField())
+
+    class Meta:
+        model = Outline
+        fields = SingleOutlineSerializer.Meta.fields + ["children"]
