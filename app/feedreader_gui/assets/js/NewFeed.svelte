@@ -1,20 +1,15 @@
 <script lang="ts">
-  import { api_request } from "./api";
+  import { add_new_feed } from "./api";
 
   let value = "";
-
-  const add_new_feed = async (url: string) => {
+  const handle_add_feed = async () => {
     try {
-      const result = await api_request<any>("feed_add", { url });
-      if (result.success) {
+      const result = await add_new_feed(value);
+      if (result) {
         location.reload();
       }
     } finally {
     }
-  };
-
-  const handle_add_feed = () => {
-    add_new_feed(value);
   };
 </script>
 
