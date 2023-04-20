@@ -4,19 +4,21 @@ from rest_framework.schemas import get_schema_view
 from rest_framework_nested import routers
 
 from feedreader import __version__
+from .views.config import ConfigViewSet
 from .views.feed import FeedViewSet
 from .views.outlines import OutlinesViewSet
 from .views.posts import PostsViewSet, PostEditViewSet
-from .views.config import ConfigViewSet
+from .views.unread_count import UnreadCountViewSet
 
 router = DefaultRouter()
-router.register(r"outlines", OutlinesViewSet, basename="outlines")
-router.register(f"feed", FeedViewSet, basename="feed")
+router.register("outlines", OutlinesViewSet, basename="outlines")
+router.register("feed", FeedViewSet, basename="feed")
+router.register("posts", PostEditViewSet, basename="posts")
+router.register("unread_counts", UnreadCountViewSet, basename="unread_counts")
 
 outlines_router = routers.NestedSimpleRouter(router, r"outlines", lookup="outline")
-outlines_router.register(r"posts", PostsViewSet, basename="outline-posts")
+outlines_router.register("posts", PostsViewSet, basename="outline-posts")
 
-router.register(r"posts", PostEditViewSet, basename="posts")
 
 urlpatterns = [
     path("", include(router.urls)),
