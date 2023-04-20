@@ -1,17 +1,13 @@
 import { debounce } from "lodash";
 import { get } from "svelte/store";
 
-import { api, api_request } from "./base";
+import { api } from "./base";
 import {
   posts as posts_store,
   outline as outline_store,
   outlines as outlines_store,
   unreadPosts,
 } from "../stores";
-import type {
-  IGetUnreadResult,
-  IPostActionResult,
-} from "./types";
 import type { Outline } from "../api/gen";
 
 const g_limit = 10;
@@ -97,9 +93,9 @@ export const get_unread_counts = debounce(
     if (!outline) return;
     const { id: outline_id } = outline;
     try {
-      const data = await api_request<IGetUnreadResult>("get_unread", {
-        outline_id,
-      });
+      const data = await api.retrieveUnreadCount({
+        id: `${outline_id}`,
+      })
       document.title =
         data.total > 0 ? `Feedreader (${data.total})` : "Feedreader";
       if (!data.counts) return;

@@ -7,3 +7,4 @@ export * from "./Outline";
 export * from "./OutlineFeed";
 export * from "./Post";
 export * from "./SingleOutline";
+export * from "./UnreadCount";

@@ -20,6 +20,7 @@ import type {
   Outline,
   Post,
   SingleOutline,
+  UnreadCount,
 } from "../models";
 import {
   ConfigFromJSON,
@@ -34,6 +35,8 @@ import {
   PostToJSON,
   SingleOutlineFromJSON,
   SingleOutlineToJSON,
+  UnreadCountFromJSON,
+  UnreadCountToJSON,
 } from "../models";
 
 export interface CreateNewFeedRequest {
@@ -66,6 +69,10 @@ export interface RetrievePostRequest {
 }
 
 export interface RetrieveSingleOutlineRequest {
+  id: string;
+}
+
+export interface RetrieveUnreadCountRequest {
   id: string;
 }
 
@@ -144,6 +151,23 @@ export interface ApiApiInterface {
     requestParameters: ListPostsRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction
   ): Promise<ListPosts200Response>;
+
+  /**
+   *
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ApiApiInterface
+   */
+  listUnreadCountsRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<Array<UnreadCount>>>;
+
+  /**
+   *
+   */
+  listUnreadCounts(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<Array<UnreadCount>>;
 
   /**
    *
@@ -264,6 +288,26 @@ export interface ApiApiInterface {
     requestParameters: RetrieveSingleOutlineRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction
   ): Promise<SingleOutline>;
+
+  /**
+   *
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ApiApiInterface
+   */
+  retrieveUnreadCountRaw(
+    requestParameters: RetrieveUnreadCountRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<UnreadCount>>;
+
+  /**
+   *
+   */
+  retrieveUnreadCount(
+    requestParameters: RetrieveUnreadCountRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<UnreadCount>;
 
   /**
    *
@@ -445,6 +489,41 @@ export class ApiApi extends runtime.BaseAPI implements ApiApiInterface {
     initOverrides?: RequestInit | runtime.InitOverrideFunction
   ): Promise<ListPosts200Response> {
     const response = await this.listPostsRaw(requestParameters, initOverrides);
+    return await response.value();
+  }
+
+  /**
+   *
+   */
+  async listUnreadCountsRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<Array<UnreadCount>>> {
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    const response = await this.request(
+      {
+        path: `/api/1/unread_counts/`,
+        method: "GET",
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      jsonValue.map(UnreadCountFromJSON)
+    );
+  }
+
+  /**
+   *
+   */
+  async listUnreadCounts(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<Array<UnreadCount>> {
+    const response = await this.listUnreadCountsRaw(initOverrides);
     return await response.value();
   }
 
@@ -747,6 +826,56 @@ export class ApiApi extends runtime.BaseAPI implements ApiApiInterface {
     initOverrides?: RequestInit | runtime.InitOverrideFunction
   ): Promise<SingleOutline> {
     const response = await this.retrieveSingleOutlineRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
+
+  /**
+   *
+   */
+  async retrieveUnreadCountRaw(
+    requestParameters: RetrieveUnreadCountRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<UnreadCount>> {
+    if (requestParameters.id === null || requestParameters.id === undefined) {
+      throw new runtime.RequiredError(
+        "id",
+        "Required parameter requestParameters.id was null or undefined when calling retrieveUnreadCount."
+      );
+    }
+
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    const response = await this.request(
+      {
+        path: `/api/1/unread_counts/{id}/`.replace(
+          `{${"id"}}`,
+          encodeURIComponent(String(requestParameters.id))
+        ),
+        method: "GET",
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      UnreadCountFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   *
+   */
+  async retrieveUnreadCount(
+    requestParameters: RetrieveUnreadCountRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<UnreadCount> {
+    const response = await this.retrieveUnreadCountRaw(
       requestParameters,
       initOverrides
     );

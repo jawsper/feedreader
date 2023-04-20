@@ -9,5 +9,6 @@ models/Outline.ts
 models/OutlineFeed.ts
 models/Post.ts
 models/SingleOutline.ts
+models/UnreadCount.ts
 models/index.ts
 runtime.ts
