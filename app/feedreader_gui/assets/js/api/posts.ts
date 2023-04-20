@@ -1,20 +1,18 @@
 import { debounce } from "lodash";
 import { get } from "svelte/store";
 
-import { api_request } from "./base";
+import { api, api_request } from "./base";
 import {
   posts as posts_store,
   outline as outline_store,
   outlines as outlines_store,
-  toasts as toasts_store,
   unreadPosts,
 } from "../stores";
 import type {
-  IGetPostsResult,
   IGetUnreadResult,
   IPostActionResult,
 } from "./types";
-import type { IOutline } from "../types";
+import type { Outline } from "../api/gen";
 
 const g_limit = 10;
 
@@ -29,36 +27,33 @@ export const load_posts = debounce(
     posts_store.no_more_posts.set(false);
 
     try {
-      const data = await api_request<IGetPostsResult>("get_posts", {
+      const outline = await api.retrieveSingleOutline({
+        id: `${a_outline_id}`,
+      })
+      outline_store.set(outline);
+
+      const data = await api.listPosts({
+        outlinePk: `${a_outline_id}`,
         limit: g_limit,
-        outline: a_outline_id,
       });
-      if (data.success) {
-        const { posts, success, ...rest } = data;
-        outline_store.set({
-          id: a_outline_id,
-          ...rest,
-        });
-        get_unread_counts();
+      get_unread_counts();
 
-        requestAnimationFrame(() =>
-          window.scrollTo({
-            top: 0,
-            left: 0,
-            // @ts-ignore
-            behavior: "instant",
-          })
-        );
+      requestAnimationFrame(() =>
+        window.scrollTo({
+          top: 0,
+          left: 0,
+          // @ts-ignore
+          behavior: "instant",
+        })
+      );
 
-        posts_store.current_id.set(null);
-        if (data.posts.length > 0) {
-          posts_store.set(posts);
-          posts_store.no_more_posts.set(false);
-        } else {
-          posts_store.set([]);
-          posts_store.no_more_posts.set(true);
-        }
+      posts_store.current_id.set(null);
+      if (data.results.length > 0) {
+        posts_store.set(data.results);
+      } else {
+        posts_store.set([]);
       }
+      posts_store.no_more_posts.set(data.next === null);
     } finally {
       posts_store.loading.set(false);
     }
@@ -79,20 +74,15 @@ export const load_more_posts = debounce(
     let skip = get(unreadPosts);
 
     try {
-      const data = await api_request<IGetPostsResult>("get_posts", {
-        outline: outline_id,
-        skip,
+      const data = await api.listPosts({
+        outlinePk: `${outline_id}`,
+        offset: skip,
         limit: g_limit,
-      });
-
-      if (data.success) {
-        if (data.posts.length > 0) {
-          posts_store.append(data.posts);
-          posts_store.no_more_posts.set(false);
-        } else {
-          posts_store.no_more_posts.set(true);
-        }
+      })
+      if (data.results.length > 0) {
+        posts_store.append(data.results);
       }
+      posts_store.no_more_posts.set(data.next === null);
     } finally {
       posts_store.loading.set(false);
     }
@@ -107,14 +97,14 @@ export const get_unread_counts = debounce(
     if (!outline) return;
     const { id: outline_id } = outline;
     try {
-      const data: IGetUnreadResult = await api_request("get_unread", {
+      const data = await api_request<IGetUnreadResult>("get_unread", {
         outline_id,
       });
       document.title =
         data.total > 0 ? `Feedreader (${data.total})` : "Feedreader";
       if (!data.counts) return;
 
-      const update_outline = (outline: IOutline) => {
+      const update_outline = (outline: Outline) => {
         if (data.counts[`${outline.id}`] !== undefined) {
           outline.unread_count = data.counts[`${outline.id}`];
         }
@@ -154,15 +144,13 @@ export const set_post_attr_state = async (
   state: boolean
 ) => {
   try {
-    const data = await api_request<IPostActionResult>("post_action", {
-      post: post_id,
-      action: attr,
-      state: state,
+    const result = await api.partialUpdatePost({
+      postId: `${post_id}`,
+      post: {
+        [attr]: state,
+      },
     });
-
-    // TODO: add config option to re-enable
-    // toasts_store.push(data, { context: `${post_id}` });
-    if (data.success) get_unread_counts();
+    if(result) get_unread_counts();
   } finally {
   }
 };

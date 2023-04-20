@@ -1,6 +1,7 @@
 <script lang="ts">
   import { cloneDeep } from "lodash";
-  import { api_request, load_navigation, load_posts } from "./api";
+  import { update_config, load_navigation, load_posts } from "./api";
+  import type { Config } from "./api/gen/models/Config";
   import { outline_id, options } from "./stores";
   import type { Options } from "./stores/options";
 
@@ -26,14 +27,13 @@
     previous_options = cloneDeep(new_options);
   });
 
-  const save_option = async (name: string, value: any) => {
-    const data = {
-      [name]: value,
-    };
+  const save_option = async (config: Config) => {
     try {
-      const result = await api_request<any>("set_option", data);
-      if (result.success) {
-        options.set(name as any, value);
+      const result = await update_config(config);
+      if (result) {
+        for (const [key, value] of Object.entries(config)) {
+          options.set(key as keyof Options, value);
+        }
       }
     } finally {
     }
@@ -43,7 +43,10 @@
     const option = $options[name];
     if (option.type === "boolean") {
       option.value = !option.value;
-      save_option(name, option.value);
+      // @ts-ignore
+      save_option({
+        [name]: option.value,
+      });
     }
   };
 </script>

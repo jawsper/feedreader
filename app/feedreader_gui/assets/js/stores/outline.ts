@@ -2,12 +2,12 @@ import { derived, writable } from "svelte/store";
 import { load_posts } from "../api/posts";
 import { posts } from "./posts";
 
-import type { ICurrentOutline } from "../api/types";
+import type { SingleOutline } from "../api/gen";
 
 export const outline_id = writable<number | null>(null);
 
 const createOutline = () => {
-  const { subscribe, set, update } = writable<ICurrentOutline>(null);
+  const { subscribe, set, update } = writable<SingleOutline>(null);
 
   outline_id.subscribe(($outline_id) => {
     if (!$outline_id) set(null);

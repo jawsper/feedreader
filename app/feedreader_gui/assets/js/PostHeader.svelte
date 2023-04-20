@@ -4,7 +4,7 @@
 
 <h4 class="mb-3">
   {#if $outline}
-    <a href={$outline.html_url} target="_blank">
+    <a href={$outline.feed?.html_url} target="_blank">
       {$outline.title}
     </a>
   {/if}

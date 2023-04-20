@@ -1,17 +1,17 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
 
-  import type { IOutline } from "./types";
+  import type { Outline } from "./api/gen";
 
-  export let outline: IOutline;
-  export let highlight : number | null;
+  export let outline: Outline;
+  export let highlight: number | null;
 
   const dispatch = createEventDispatcher();
 
-  $: outlineStyle = outline.icon && `background-image: url(${outline.icon})`;
+  $: outlineStyle = outline.feed?.icon && `background-image: url(${outline.feed.icon})`;
 
   const handleOpenFolder = () => {
-    if (outline.feed_id) return;
+    if (outline.feed?.id) return;
     dispatch("folder-open", {
       id: outline.id,
       folder_opened: outline.folder_opened,
@@ -24,7 +24,7 @@
 
 <li
   class="outline"
-  class:feed={outline.feed_id}
+  class:feed={outline.feed?.id}
   class:folder-closed={!outline.folder_opened}
   class:has-unread={outline.unread_count > 0}
   class:highlight={highlight === outline.id}

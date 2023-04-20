@@ -77,7 +77,7 @@
             class="btn btn-outline-dark"
             type="button"
             on:click={() => {
-              if ($outline) set_outline_param($outline.id, "show_only_new");
+              if ($outline) set_outline_param($outline.id, "show_only_new", !$outline.show_only_new);
             }}
           >
             {#if $outline?.show_only_new}
@@ -91,10 +91,10 @@
           <button
             class="btn btn-outline-dark"
             on:click={() => {
-              if ($outline) set_outline_param($outline.id, "sort_order");
+              if ($outline) set_outline_param($outline.id, "sort_order_asc", !$outline.sort_order_asc);
             }}
           >
-            {#if $outline?.sort_order === "ASC"}
+            {#if $outline?.sort_order_asc}
               Oldest first
             {:else if $outline}
               Newest first

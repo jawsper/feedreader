@@ -1,18 +1,18 @@
 import { writable } from "svelte/store";
 import { load_more_posts } from ".";
 
-import type { IUserPost } from "../api/types";
+import type { Post } from "../api/gen";
 
 function createPosts() {
-  const { subscribe, set, update } = writable<IUserPost[]>([]);
+  const { subscribe, set, update } = writable<Post[]>([]);
   const current_id = writable<number | null>(null);
-  const current = writable<IUserPost | null>(null);
+  const current = writable<Post | null>(null);
   const loading = writable<boolean>(false);
   const no_more_posts = writable<boolean>(false);
 
-  let posts_value: IUserPost[];
+  let posts_value: Post[];
   let current_post_id_value: number | null;
-  let current_post_value: IUserPost | null;
+  let current_post_value: Post | null;
   subscribe((new_value) => {
     posts_value = new_value;
   });
@@ -26,7 +26,7 @@ function createPosts() {
     current_post_value = new_value;
   });
 
-  const append = (new_posts: IUserPost[]) => {
+  const append = (new_posts: Post[]) => {
     update((posts) => {
       const filtered_new_posts = new_posts.filter(
         (new_post) => !posts.find((post) => post.id === new_post.id)
@@ -35,7 +35,7 @@ function createPosts() {
     });
   };
 
-  const update_post = (post_id: number, value: Partial<IUserPost>) => {
+  const update_post = (post_id: number, value: Partial<Post>) => {
     update((posts) => {
       return posts.map((post) => {
         if (post.id === post_id) {
@@ -49,7 +49,7 @@ function createPosts() {
     });
   };
 
-  const update_current_post = (callback: (post: IUserPost) => IUserPost) => {
+  const update_current_post = (callback: (post: Post) => Post) => {
     update((posts) => {
       return posts.map((post) => {
         if (post.id === current_post_id_value) return callback(post);

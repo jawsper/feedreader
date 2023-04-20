@@ -3,7 +3,7 @@
 
   import NavigationLine from "./NavigationLine.svelte";
   import { set_outline_param } from "./api";
-  import type { IOutline } from "./types";
+  import type { Outline } from "./api/gen";
 
   const handleOpenFolder = ({ detail }) => {
     const { id: outline_id, folder_opened } = detail;
@@ -29,7 +29,7 @@
   let highlight: number | null = null;
 
   const update_highlight = (id: number, next: boolean = true) => {
-    const flatten_outline = (outline: IOutline): IOutline[] =>
+    const flatten_outline = (outline: Outline): Outline[] =>
       [outline, ...outline.children.map(flatten_outline)].flat();
     let flattened = $outlines.flatMap(flatten_outline);
     if ($options.show_only_unread.value) {
