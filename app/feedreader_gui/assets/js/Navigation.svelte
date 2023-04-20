@@ -4,14 +4,15 @@
   import NavigationLine from "./NavigationLine.svelte";
   import { set_outline_param } from "./api";
   import type { Outline } from "./api/gen";
+  import type { FolderOpen, OpenOutline } from "./types";
 
-  const handleOpenFolder = ({ detail }) => {
-    const { id: outline_id, folder_opened } = detail;
-    set_outline_param(outline_id, "folder_opened", !folder_opened, true);
+  const handleOpenFolder = ({ detail }: CustomEvent<FolderOpen>) => {
+    const { id: outline_id, open } = detail;
+    set_outline_param(outline_id, "folder_opened", !open, true);
     outlines.update((outlines) => {
       return outlines.map((outline) => {
         if (outline.id === outline_id) {
-          return { ...outline, folder_opened: !folder_opened };
+          return { ...outline, folder_opened: !open };
         }
         return outline;
       });
@@ -24,7 +25,7 @@
     history.pushState(null, null, href);
   };
 
-  const handleOpenOutline = ({ detail }) => open_outline(detail.id);
+  const handleOpenOutline = ({ detail }: CustomEvent<OpenOutline>) => open_outline(detail.id);
 
   let highlight: number | null = null;
 
@@ -79,8 +80,8 @@
       {outline}
       {highlight}
       on:outline
-      on:folder-open={handleOpenFolder}
-      on:open-outline={handleOpenOutline}
+      on:folder_open={handleOpenFolder}
+      on:open_outline={handleOpenOutline}
     />
   {/each}
 </ul>
