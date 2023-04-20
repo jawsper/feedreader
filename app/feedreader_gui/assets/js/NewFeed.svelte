@@ -1,7 +1,19 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import { add_new_feed, load_navigation } from "./api";
 
+  let input: HTMLInputElement, modal: Element;
   let value = "";
+
+  onMount(() => {
+    modal.addEventListener("shown.bs.modal", () => {
+      input.focus();
+    });
+    modal.addEventListener("hidden.bs.modal", () => {
+      value = "";
+    });
+  });
+
   const handle_add_feed = async () => {
     try {
       const result = await add_new_feed(value);
@@ -13,7 +25,7 @@
   };
 </script>
 
-<div id="new-feed-modal" class="modal fade" tabindex="-1">
+<div id="new-feed-modal" class="modal fade" tabindex="-1" bind:this={modal}>
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -32,6 +44,7 @@
             type="text"
             id="new-feed-url"
             class="form-control"
+            bind:this={input}
             bind:value
           />
         </form>
