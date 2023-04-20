@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { add_new_feed, load_navigation } from "./api";
+  import { Modal } from "bootstrap";
 
   let input: HTMLInputElement, modal: Element;
   let value = "";
@@ -18,6 +19,7 @@
     try {
       const result = await add_new_feed(value);
       if (result) {
+        Modal.getInstance(modal).hide();
         await load_navigation();
       }
     } finally {
