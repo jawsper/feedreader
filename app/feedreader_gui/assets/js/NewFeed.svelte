@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { add_new_feed } from "./api";
+  import { add_new_feed, load_navigation } from "./api";
 
   let value = "";
   const handle_add_feed = async () => {
     try {
       const result = await add_new_feed(value);
       if (result) {
-        location.reload();
+        await load_navigation();
       }
     } finally {
     }
