@@ -1,5 +1,6 @@
 from rest_framework import mixins, viewsets, pagination
 
+from feedreader.functions.outline import update_userpost_unread_count
 from feedreader.models import Outline, UserConfig, UserPost
 from ..serializers.post import PostSerializer
 
@@ -65,6 +66,15 @@ class PostEditViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
     serializer_class = PostSerializer
 
     lookup_field = "post_id"
+
+    def update(self, request, *args, **kwargs):
+        result = super().update(request, *args, **kwargs)
+        if "read" in self.request.data:
+            read = self.request.data["read"]
+            post_id = kwargs[self.lookup_field]
+            instance = UserPost.objects.get(user=self.request.user, post_id=post_id)
+            update_userpost_unread_count(instance, -1 if read else +1)
+        return result
 
     def get_queryset(self):
         return UserPost.objects.filter(user=self.request.user)
