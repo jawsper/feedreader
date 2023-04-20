@@ -5,6 +5,7 @@
 
   let input: HTMLInputElement, modal: Element;
   let value = "";
+  let disabled = false;
 
   onMount(() => {
     modal.addEventListener("shown.bs.modal", () => {
@@ -17,7 +18,9 @@
 
   const handle_add_feed = async () => {
     try {
+      disabled = true;
       const result = await add_new_feed(value);
+      disabled = false;
       if (result) {
         Modal.getInstance(modal).hide();
         await load_navigation();
@@ -48,15 +51,22 @@
             class="form-control"
             bind:this={input}
             bind:value
+            {disabled}
           />
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
-          >Close</button
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+          {disabled}>Close</button
         >
-        <button type="button" class="btn btn-primary" on:click={handle_add_feed}
-          >Add feed</button
+        <button
+          type="button"
+          class="btn btn-primary"
+          on:click={handle_add_feed}
+          {disabled}>Add feed</button
         >
       </div>
     </div>
