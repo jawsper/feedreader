@@ -16,6 +16,7 @@ import * as runtime from "../runtime";
 import type {
   Config,
   ListPosts200Response,
+  NewFeed,
   Outline,
   Post,
   SingleOutline,
@@ -25,6 +26,8 @@ import {
   ConfigToJSON,
   ListPosts200ResponseFromJSON,
   ListPosts200ResponseToJSON,
+  NewFeedFromJSON,
+  NewFeedToJSON,
   OutlineFromJSON,
   OutlineToJSON,
   PostFromJSON,
@@ -32,6 +35,10 @@ import {
   SingleOutlineFromJSON,
   SingleOutlineToJSON,
 } from "../models";
+
+export interface CreateNewFeedRequest {
+  newFeed?: NewFeed;
+}
 
 export interface ListPostsRequest {
   outlinePk: string;
@@ -79,6 +86,26 @@ export interface UpdateSingleOutlineRequest {
  * @interface ApiApiInterface
  */
 export interface ApiApiInterface {
+  /**
+   *
+   * @param {NewFeed} [newFeed]
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ApiApiInterface
+   */
+  createNewFeedRaw(
+    requestParameters: CreateNewFeedRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<NewFeed>>;
+
+  /**
+   *
+   */
+  createNewFeed(
+    requestParameters: CreateNewFeedRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<NewFeed>;
+
   /**
    *
    * @param {*} [options] Override http request option.
@@ -285,6 +312,49 @@ export interface ApiApiInterface {
  *
  */
 export class ApiApi extends runtime.BaseAPI implements ApiApiInterface {
+  /**
+   *
+   */
+  async createNewFeedRaw(
+    requestParameters: CreateNewFeedRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<NewFeed>> {
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    headerParameters["Content-Type"] = "application/json";
+
+    const response = await this.request(
+      {
+        path: `/api/1/feed/`,
+        method: "POST",
+        headers: headerParameters,
+        query: queryParameters,
+        body: NewFeedToJSON(requestParameters.newFeed),
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      NewFeedFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   *
+   */
+  async createNewFeed(
+    requestParameters: CreateNewFeedRequest = {},
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<NewFeed> {
+    const response = await this.createNewFeedRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
+
   /**
    *
    */

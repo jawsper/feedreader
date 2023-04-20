@@ -9,3 +9,9 @@ class FeedSerializer(serializers.ModelSerializer):
     class Meta:
         model = Feed
         fields = ["id", "title", "html_url", "is_nsfw", "icon"]
+
+
+class NewFeedSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Feed
+        fields = ["xml_url"]

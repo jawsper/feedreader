@@ -4,12 +4,14 @@ from rest_framework.schemas import get_schema_view
 from rest_framework_nested import routers
 
 from feedreader import __version__
+from .views.feed import FeedViewSet
 from .views.outlines import OutlinesViewSet
 from .views.posts import PostsViewSet, PostEditViewSet
 from .views.config import ConfigViewSet
 
 router = DefaultRouter()
 router.register(r"outlines", OutlinesViewSet, basename="outlines")
+router.register(f"feed", FeedViewSet, basename="feed")
 
 outlines_router = routers.NestedSimpleRouter(router, r"outlines", lookup="outline")
 outlines_router.register(r"posts", PostsViewSet, basename="outline-posts")
