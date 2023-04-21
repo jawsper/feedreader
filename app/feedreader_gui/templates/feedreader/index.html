@@ -41,26 +41,30 @@
           >
           <ul class="dropdown-menu"><li></li></ul>
         </div>
-        <div class="btn-group ms-3">
-          <button
-            class="nav-item btn btn-outline-dark"
-            data-bs-toggle="modal"
-            data-bs-target="#new-feed-modal"
-          >
-            Add a new feed
-          </button>
-          <a
-            class="nav-item btn btn-outline-dark"
-            href="{% url 'admin:index' %}"
-          >
-            <i class="bi bi-gear"></i>
-            Manage
-          </a>
-          <a class="btn btn-outline-dark" href="{% url 'logout' %}">
-            <i class="bi bi-box-arrow-left"></i>
-            Logout
-          </a>
-        </div>
+        <form id="logout-form" method="post" action="{% url 'logout' %}">
+          <div class="btn-group ms-3">
+            {% csrf_token %}
+            <button
+              type="button"
+              class="nav-item btn btn-outline-dark"
+              data-bs-toggle="modal"
+              data-bs-target="#new-feed-modal"
+            >
+              Add a new feed
+            </button>
+            <a
+              class="nav-item btn btn-outline-dark"
+              href="{% url 'admin:index' %}"
+            >
+              <i class="bi bi-gear"></i>
+              Manage
+            </a>
+            <button type="submit" class="btn btn-outline-dark">
+              <i class="bi bi-box-arrow-left"></i>
+              Logout
+            </button>
+          </div>
+        </form>
         <div class="nav-item btn-group ms-3">
           <button
             class="btn btn-outline-dark"

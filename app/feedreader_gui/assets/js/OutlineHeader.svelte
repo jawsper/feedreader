@@ -1,5 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from "svelte";
+  import Cookies from "js-cookie";
 
   import {
     mark_all_as_read,
@@ -120,29 +121,33 @@
             <Options />
           </ul>
         </div>
-        <div class="btn-group ms-3">
-          <button
-            class="nav-item btn btn-outline-dark"
-            data-bs-toggle="modal"
-            data-bs-target="#new-feed-modal"
-          >
-            Add a new feed
-          </button>
-          <a
-            class="nav-item btn btn-outline-dark"
-            href={document.body.dataset.manageUrl}
-          >
-            <i class="bi bi-gear" />
-            Manage
-          </a>
-          <a
-            class="btn btn-outline-dark"
-            href={document.body.dataset.logoutUrl}
-          >
-            <i class="bi bi-box-arrow-left" />
-            Logout
-          </a>
-        </div>
+        <form id="logout-form" method="post" action={document.body.dataset.logoutUrl}>
+          <input type="hidden" name="csrfmiddlewaretoken" value={Cookies.get("csrftoken")} />
+          <div class="btn-group ms-3">
+            <button
+              type="button"
+              class="nav-item btn btn-outline-dark"
+              data-bs-toggle="modal"
+              data-bs-target="#new-feed-modal"
+            >
+              Add a new feed
+            </button>
+            <a
+              class="nav-item btn btn-outline-dark"
+              href={document.body.dataset.manageUrl}
+            >
+              <i class="bi bi-gear" />
+              Manage
+            </a>
+            <button
+              type="submit"
+              class="btn btn-outline-dark"
+            >
+              <i class="bi bi-box-arrow-left" />
+              Logout
+            </button>
+          </div>
+        </form>
         <div class="nav-item btn-group ms-3">
           <button
             class="btn btn-outline-dark"
