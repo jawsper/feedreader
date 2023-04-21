@@ -9,8 +9,8 @@
     <div
       class="toast show"
       role="alert"
-      class:bg-primary={toast.success}
-      class:bg-danger={!toast.success}
+      class:text-bg-primary={toast.success}
+      class:text-bg-danger={!toast.success}
       transition:slide
     >
       <div class="toast-header">
