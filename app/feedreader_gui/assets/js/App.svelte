@@ -14,8 +14,9 @@
     load_posts,
     set_post_attr_state,
   } from "./api";
+  import type { PostRead, PostStarred } from "./types";
 
-  let navigation;
+  let navigation: Navigation;
 
   load_more_posts.subscribe((more) => {
     if (more) {
@@ -24,13 +25,13 @@
     }
   });
 
-  const on_posts_read = (e) => {
-    const { id, value } = e.detail;
-    set_post_attr_state(id, "read", value);
+  const on_posts_read = (e: CustomEvent<PostRead>) => {
+    const { id, read } = e.detail;
+    set_post_attr_state(id, "read", read);
   };
-  const on_posts_starred = (e) => {
-    const { id, value } = e.detail;
-    set_post_attr_state(id, "starred", value);
+  const on_posts_starred = (e: CustomEvent<PostStarred>) => {
+    const { id, starred } = e.detail;
+    set_post_attr_state(id, "starred", starred);
   };
 
   const on_body_keypress = (e) => {

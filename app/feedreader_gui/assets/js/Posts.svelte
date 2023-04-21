@@ -8,27 +8,27 @@
   import { load_more_posts } from "./api";
   import Post from "./Post.svelte";
   import PostHeader from "./PostHeader.svelte";
+  import type { PostFocus, PostRead, PostStarred } from "./types";
 
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher<{
+    starred: PostStarred,
+    read: PostRead,
+  }>();
 
-  const post_on_focus = (e) => {
-    const post_id = e.detail;
-    $current_id = post_id;
+  const post_on_focus = (e: CustomEvent<PostFocus>) => {
+    const { id } = e.detail;
+    $current_id = id;
   };
 
-  const post_on_starred = (e) => {
-    const { id, value } = e.detail;
-    posts.update_post(id, {
-      starred: value,
-    });
+  const post_on_starred = (e: CustomEvent<PostStarred>) => {
+    const { id, starred } = e.detail;
+    posts.update_post(id, { starred });
     dispatch("starred", e.detail);
   };
 
-  const post_on_read = (e) => {
-    const { id, value } = e.detail;
-    posts.update_post(id, {
-      read: value,
-    });
+  const post_on_read = (e: CustomEvent<PostRead>) => {
+    const { id, read } = e.detail;
+    posts.update_post(id, { read });
     dispatch("read", e.detail);
   };
 
