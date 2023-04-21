@@ -1,6 +1,7 @@
 <script lang="ts">
   import DOMPurify from "dompurify";
   import { createEventDispatcher } from "svelte";
+  import type { Post } from "./api/gen";
 
   DOMPurify.addHook("afterSanitizeAttributes", (node) => {
     if (node.tagName === "A") {
@@ -13,7 +14,7 @@
 
   import { header_offset, posts } from "./stores";
 
-  export let post;
+  export let post: Post;
   export let is_feed: boolean;
   export let is_current: boolean;
 
@@ -74,10 +75,10 @@
         referrerpolicy="no-referrer">{post.title}</a
       >
     </div>
-    <div class="pubDate">{post.pubDate}</div>
+    <div class="pubDate">{post.pub_date}</div>
     <div class="source">
       {#if !is_feed}
-        from {post.feedTitle}
+        from {post.feed_title}
       {/if}
       {#if post.author}
         by <span class="authorName">{post.author}</span>
