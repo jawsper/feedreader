@@ -10,8 +10,6 @@ import {
 } from "../stores";
 import type { Outline } from "../api/gen";
 
-const g_limit = 10;
-
 export const load_posts = debounce(
   async (a_outline_id: number) => {
     if (!a_outline_id) {
@@ -29,7 +27,6 @@ export const load_posts = debounce(
 
       const data = await api.listPosts({
         outlinePk: `${a_outline_id}`,
-        limit: g_limit,
       });
       get_unread_counts();
 
@@ -74,7 +71,6 @@ export const load_more_posts = debounce(
       const data = await api.listPosts({
         outlinePk: `${outline_id}`,
         offset: skip,
-        limit: g_limit,
       });
       if (data.results.length > 0) {
         posts_store.append(data.results);
