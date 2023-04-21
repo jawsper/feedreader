@@ -59,7 +59,7 @@
     {#each $posts as post}
       <Post
         {post}
-        is_feed={$outline?.feed !== null}
+        is_feed={$outline?.feed !== undefined}
         is_current={$current_id === post.id}
         on:focus={post_on_focus}
         on:starred={post_on_starred}
