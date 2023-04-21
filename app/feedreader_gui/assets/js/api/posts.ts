@@ -25,8 +25,7 @@ export const load_posts = debounce(
     try {
       const outline = await api.retrieveSingleOutline({
         id: `${a_outline_id}`,
-      })
-      outline_store.set(outline);
+      });
 
       const data = await api.listPosts({
         outlinePk: `${a_outline_id}`,
@@ -42,6 +41,8 @@ export const load_posts = debounce(
           behavior: "instant",
         })
       );
+
+      outline_store.set(outline);
 
       posts_store.current_id.set(null);
       if (data.results.length > 0) {
@@ -74,7 +75,7 @@ export const load_more_posts = debounce(
         outlinePk: `${outline_id}`,
         offset: skip,
         limit: g_limit,
-      })
+      });
       if (data.results.length > 0) {
         posts_store.append(data.results);
       }
@@ -93,9 +94,7 @@ export const get_unread_counts = debounce(
     if (!outline) return;
     const { id: outline_id } = outline;
     try {
-      const data = await api.retrieveUnreadCount({
-        id: `${outline_id}`,
-      })
+      const data = await api.retrieveUnreadCount({ id: `${outline_id}` });
       document.title =
         data.total > 0 ? `Feedreader (${data.total})` : "Feedreader";
       if (!data.counts) return;
@@ -140,13 +139,13 @@ export const set_post_attr_state = async (
   state: boolean
 ) => {
   try {
-    const result = await api.partialUpdatePost({
+    const data = await api.partialUpdatePost({
       postId: `${post_id}`,
       post: {
         [attr]: state,
       },
     });
-    if(result) get_unread_counts();
+    if (data) get_unread_counts();
   } finally {
   }
 };

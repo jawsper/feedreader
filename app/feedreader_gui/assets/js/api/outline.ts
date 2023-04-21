@@ -12,14 +12,13 @@ export const set_outline_param = async (
   if (!outline_id) return;
 
   try {
-
-    const result = await api.partialUpdateSingleOutline({
+    const data = await api.partialUpdateSingleOutline({
       id: `${outline_id}`,
       singleOutline: {
         [key]: value,
-      }
+      },
     });
-    if (result) {
+    if (data) {
       if (!no_load) load_posts(outline_id);
     }
   } finally {
@@ -27,7 +26,7 @@ export const set_outline_param = async (
 };
 
 export const mark_all_as_read = async (outline_id: number) => {
-  console.warn("mark all as read not implemented yet")
+  console.warn("mark all as read not implemented yet");
   // if (!outline_id) return;
   // try {
   //   const response = await api_request<any>("outline_mark_read", {
@@ -41,8 +40,8 @@ export const mark_all_as_read = async (outline_id: number) => {
 export const load_navigation = async () => {
   outlines_loading.set(true);
   try {
-    const data = await api.listOutlines()
-    outlines.set(data)
+    const data = await api.listOutlines();
+    outlines.set(data);
   } finally {
     outlines_loading.set(false);
   }
