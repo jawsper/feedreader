@@ -1,6 +1,5 @@
 import asyncio
 import datetime
-import io
 import logging
 import re
 from typing import List, Union
@@ -177,7 +176,7 @@ class FeedUpdater:
             if not self.options.get("force", False):
                 return "Success | 304"
 
-        data = feedparser.parse(io.StringIO(raw_data))
+        data = feedparser.parse(raw_data)
 
         if not data:
             self.log.warning("Failed: no data")
