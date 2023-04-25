@@ -182,8 +182,7 @@ class FeedUpdater:
             self.log.warning("Failed: no data")
             raise FeedUpdateFailure("Error | No data")
         if data["bozo"]:
-            self.log.warning("Failed to parse XML: %s", data["bozo_exception"])
-            raise FeedUpdateFailure("Failed to parse response as XML")
+            self.log.warning("Failed to parse XML strictly: %s", data["bozo_exception"])
 
         if etag := response.headers.get("etag"):
             if self.feed.last_etag != etag:
