@@ -1,5 +1,6 @@
 import asyncio
 import datetime
+import io
 import logging
 import re
 from typing import List, Union
@@ -121,7 +122,7 @@ class FeedUpdater:
 
     async def download_feed(self):
         if not self.feed.xml_url:
-            return None, None
+            raise ValueError("Missing feed URL")
         headers = {}
         if not self.options.get("force", False):
             if self.feed.last_etag:
@@ -176,7 +177,7 @@ class FeedUpdater:
             if not self.options.get("force", False):
                 return "Success | 304"
 
-        data = feedparser.parse(raw_data)
+        data = feedparser.parse(io.StringIO(raw_data))
 
         if not data:
             self.log.warning("Failed: no data")
