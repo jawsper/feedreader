@@ -11,13 +11,11 @@ from sentry_sdk.integrations.redis import RedisIntegration
 
 DEBUG = False
 
-ALLOWED_HOSTS = [os.environ.get("DJANGO_ALLOWED_HOST")]
+ALLOWED_HOSTS = [os.getenv("DJANGO_ALLOWED_HOST")]
 
 SECRET_KEY = open("/var/run/secrets/secret_key", "rt").read()
 
-ADMINS = (
-    (os.environ.get("ADMIN_EMAIL_NAME", ""), os.environ.get("ADMIN_EMAIL_ADDRESS", "")),
-)
+ADMINS = ((os.getenv("ADMIN_EMAIL_NAME", ""), os.getenv("ADMIN_EMAIL_ADDRESS", "")),)
 
 DATABASES = {
     "default": {
@@ -30,14 +28,14 @@ DATABASES = {
     }
 }
 
-STATIC_ROOT = os.environ.get("STATIC_ROOT", str(BASE_DIR / "static/"))
-STATIC_URL = os.environ.get("STATIC_URL", STATIC_URL)
+STATIC_ROOT = os.getenv("STATIC_ROOT", str(BASE_DIR / "static/"))
+STATIC_URL = os.getenv("STATIC_URL", STATIC_URL)
 
-MEDIA_ROOT = os.environ.get("MEDIA_ROOT", str(BASE_DIR / "media/"))
-MEDIA_URL = os.environ.get("MEDIA_URL", MEDIA_URL)
+MEDIA_ROOT = os.getenv("MEDIA_ROOT", str(BASE_DIR / "media/"))
+MEDIA_URL = os.getenv("MEDIA_URL", MEDIA_URL)
 
 sentry_sdk.init(
-    os.environ.get("SENTRY_DSN"),
+    os.getenv("SENTRY_DSN"),
     integrations=[
         DjangoIntegration(),
         CeleryIntegration(),

@@ -12,8 +12,10 @@ DATABASES = {
     "default": {
         "ENGINE": os.getenv("SQL_ENGINE", "django.db.backends.sqlite3"),
         "NAME": os.getenv("SQL_DATABASE", BASE_DIR / "develop.sqlite3"),
-        "USER": "feedreader",
-        "PASSWORD": "feedreader",
+        "USER": os.getenv("SQL_USER", "feedreader"),
+        "PASSWORD": os.getenv("SQL_PASSWORD", "password"),
+        "HOST": os.getenv("SQL_HOST", "localhost"),
+        "PORT": os.getenv("SQL_PORT", "5432"),
     }
 }
 
