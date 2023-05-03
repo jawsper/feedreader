@@ -1,4 +1,5 @@
 import asyncio
+import cgi
 import datetime
 import logging
 import re
@@ -143,14 +144,7 @@ class FeedUpdater:
             ] = "Mozilla/5.0 (compatible; Baiduspider; +http://www.baidu.com/search/spider.html)"
         try:
             async with self.session.get(self.feed.xml_url, headers=headers) as response:
-                if self.feed.quirk_fix_override_encoding is not None:
-                    self.log.info(
-                        "Encoding overriden to %s",
-                        self.feed.quirk_fix_override_encoding,
-                    )
-                return (
-                    await response.text(encoding=self.feed.quirk_fix_override_encoding)
-                ), response
+                return await response.read(), response
         except aiohttp.ClientConnectionError as e:
             self.log.warning("Connection error | %s", str(e))
             raise FeedUpdateFailure(f"Error in connection | {e}")
@@ -176,7 +170,19 @@ class FeedUpdater:
             if not self.options.get("force", False):
                 return "Success | 304"
 
-        data = feedparser.parse(raw_data)
+        headers = {}
+        if self.feed.quirk_fix_override_encoding is not None:
+            self.log.info(
+                "Encoding overriden to %s",
+                self.feed.quirk_fix_override_encoding,
+            )
+            content_type, options = cgi.parse_header(
+                response.headers.get("content-type", "")
+            )
+            headers[
+                "content-type"
+            ] = f'{content_type}; charset="{self.feed.quirk_fix_override_encoding}"'
+        data = feedparser.parse(raw_data, response_headers=headers)
 
         if not data:
             self.log.warning("Failed: no data")
