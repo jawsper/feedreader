@@ -129,3 +129,12 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_SCHEMA_CLASS": "feedreader_api.api1.utils.schema.AutoSchema",
 }
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": f"redis://{REDIS_HOST}:{REDIS_PORT}",
+    }
+}
+
+SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
