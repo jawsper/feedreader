@@ -24,12 +24,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIPENV_VENV_IN_PROJECT=1
 # set work directory
 WORKDIR /app
 
-# Install build dependencies
-RUN DEBIAN_FRONTEND=noninteractive apt-get update \
-    && apt-get install --no-install-recommends -y python3-dev libpq-dev gcc
-
 # install dependencies
-RUN python -m pip install pipenv==2022.8.5
+RUN python -m pip install pipenv==2023.4.20
 COPY ./Pipfile ./Pipfile.lock ./
 RUN pipenv sync
 
@@ -39,11 +35,7 @@ FROM python:3.11-slim as runtime
 
 WORKDIR /app
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update \
-    && apt-get install --no-install-recommends -y libpq5 \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && addgroup --system feedreader \
+RUN addgroup --system feedreader \
     && adduser \
     --system \
     --home "$(pwd)" \
