@@ -1,24 +1,36 @@
 <script lang="ts">
-  import { api_request } from "./api";
+  import { onMount } from "svelte";
+  import { add_new_feed, load_navigation } from "./api";
+  import { Modal } from "bootstrap";
 
+  let input: HTMLInputElement, modal: Element;
   let value = "";
+  let disabled = false;
 
-  const add_new_feed = async (url: string) => {
+  onMount(() => {
+    modal.addEventListener("shown.bs.modal", () => {
+      input.focus();
+    });
+    modal.addEventListener("hidden.bs.modal", () => {
+      value = "";
+    });
+  });
+
+  const handle_add_feed = async () => {
     try {
-      const result = await api_request<any>("feed_add", { url });
-      if (result.success) {
-        location.reload();
+      disabled = true;
+      const result = await add_new_feed(value);
+      disabled = false;
+      if (result) {
+        Modal.getInstance(modal).hide();
+        await load_navigation();
       }
     } finally {
     }
   };
-
-  const handle_add_feed = () => {
-    add_new_feed(value);
-  };
 </script>
 
-<div id="new-feed-modal" class="modal fade" tabindex="-1">
+<div id="new-feed-modal" class="modal fade" tabindex="-1" bind:this={modal}>
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -37,16 +49,24 @@
             type="text"
             id="new-feed-url"
             class="form-control"
+            bind:this={input}
             bind:value
+            {disabled}
           />
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
-          >Close</button
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+          {disabled}>Close</button
         >
-        <button type="button" class="btn btn-primary" on:click={handle_add_feed}
-          >Add feed</button
+        <button
+          type="button"
+          class="btn btn-primary"
+          on:click={handle_add_feed}
+          {disabled}>Add feed</button
         >
       </div>
     </div>

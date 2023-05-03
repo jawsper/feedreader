@@ -1,6 +1,8 @@
 import { writable } from "svelte/store";
 
-const config = JSON.parse(document.getElementById("config").textContent);
+import type { Config } from "../api/gen";
+
+const config = JSON.parse(document.getElementById("config").textContent) as Config;
 
 type OptionType = "boolean";
 

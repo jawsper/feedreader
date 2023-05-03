@@ -1,6 +1,8 @@
 <script lang="ts">
   import DOMPurify from "dompurify";
   import { createEventDispatcher } from "svelte";
+  import type { Post } from "./api/gen";
+  import type { PostFocus, PostRead, PostStarred } from "./types";
 
   DOMPurify.addHook("afterSanitizeAttributes", (node) => {
     if (node.tagName === "A") {
@@ -13,11 +15,15 @@
 
   import { header_offset, posts } from "./stores";
 
-  export let post;
+  export let post: Post;
   export let is_feed: boolean;
   export let is_current: boolean;
 
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher<{
+    starred: PostStarred,
+    read: PostRead,
+    focus: PostFocus,
+  }>();
 
   let div: HTMLDivElement;
   let dont_auto_mark_read = false;
@@ -44,7 +50,7 @@
   const mark_post_starred = () => {
     dispatch("starred", {
       id: post.id,
-      value: !is_starred,
+      starred: !is_starred,
     });
   };
   const mark_post_read = () => {
@@ -54,7 +60,7 @@
     }
     dispatch("read", {
       id: post.id,
-      value: new_is_read,
+      read: new_is_read,
     });
   };
 </script>
@@ -63,7 +69,7 @@
   bind:this={div}
   class={postClasses}
   id="post_{post.id}"
-  on:mouseup={() => dispatch("focus", post.id)}
+  on:mouseup={() => dispatch("focus", {id: post.id })}
 >
   <div class="header">
     <div class="link">
@@ -74,10 +80,10 @@
         referrerpolicy="no-referrer">{post.title}</a
       >
     </div>
-    <div class="pubDate">{post.pubDate}</div>
+    <div class="pubDate">{post.pub_date}</div>
     <div class="source">
       {#if !is_feed}
-        from {post.feedTitle}
+        from {post.feed_title}
       {/if}
       {#if post.author}
         by <span class="authorName">{post.author}</span>

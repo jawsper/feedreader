@@ -2,7 +2,6 @@
 # Author: Jasper Seidel
 # Date: 2013-06-24
 
-from typing import List
 from django.db.models import Q
 from django.http import Http404
 from django.urls import reverse
@@ -11,6 +10,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from feedreader.models import Outline, UserConfig
 from feedreader_api.api0 import urls as api_urls
+from feedreader_api.api1.serializers.outline import OutlineSerializer
 
 
 class IndexView(LoginRequiredMixin, TemplateView):
@@ -24,10 +24,13 @@ class IndexView(LoginRequiredMixin, TemplateView):
         if not config.show_nsfw_feeds:
             filters.append(Q(feed=None) | Q(feed__is_nsfw=False))
 
-        root_nodes: List[Outline] = (
+        root_nodes: list[Outline] = (
             Outline.objects.select_related("feed").filter(*filters).get_cached_trees()
         )
-        context["navigation"] = [node.to_dict() for node in root_nodes]
+        serializer = OutlineSerializer()
+        context["navigation"] = [
+            serializer.to_representation(node) for node in root_nodes
+        ]
         context["config"] = config.to_dict()
         context["urls"] = {
             url.name: {"url": reverse(url.name)} for url in api_urls.urlpatterns

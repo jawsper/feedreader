@@ -3,7 +3,9 @@ from django.db import models
 
 
 class UserConfig(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="user_config"
+    )
     show_only_unread = models.BooleanField(default=True)
     show_nsfw_feeds = models.BooleanField(default=False)
 
