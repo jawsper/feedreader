@@ -27,7 +27,7 @@ def struct_time_to_aware_datetime(time):
 
 
 class FeedUpdateFailure(Exception):
-    def __init__(self, message):
+    def __init__(self, message: str):
         self.message = message
 
 
@@ -122,7 +122,7 @@ class FeedUpdater:
 
     async def download_feed(self):
         if not self.feed.xml_url:
-            raise ValueError("Missing feed URL")
+            raise FeedUpdateFailure("Missing feed URL")
         headers = {}
         if not self.options.get("force", False):
             if self.feed.last_etag:
@@ -138,7 +138,7 @@ class FeedUpdater:
 
         # Fix for GDPR wall on tumblr sites (#14)
         hostname = urlparse(self.feed.xml_url).hostname
-        if hostname.endswith(".tumblr.com"):
+        if hostname and hostname.endswith(".tumblr.com"):
             headers[
                 "User-Agent"
             ] = "Mozilla/5.0 (compatible; Baiduspider; +http://www.baidu.com/search/spider.html)"
