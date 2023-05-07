@@ -1,6 +1,9 @@
 <script lang="ts">
   import DOMPurify from "dompurify";
+  import { formatRelative } from "date-fns";
   import { createEventDispatcher } from "svelte";
+  import { locale } from "./utils/locale";
+
   import type { Post } from "./api/gen";
   import type { PostFocus, PostRead, PostStarred } from "./types";
 
@@ -63,6 +66,10 @@
       read: new_is_read,
     });
   };
+
+  const format_date = (date: Date) => {
+    return formatRelative(date, new Date(), { locale, weekStartsOn: 1 });
+  }
 </script>
 
 <div
@@ -80,7 +87,7 @@
         referrerpolicy="no-referrer">{post.title}</a
       >
     </div>
-    <div class="pubDate">{post.pub_date}</div>
+    <div class="pubDate" title={post.pub_date?.toString()}>{format_date(post.pub_date)}</div>
     <div class="source">
       {#if !is_feed}
         from {post.feed_title}
