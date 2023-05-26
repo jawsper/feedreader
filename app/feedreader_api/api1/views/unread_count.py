@@ -32,7 +32,7 @@ class UnreadCountViewSet(viewsets.GenericViewSet):
             counts[ancestor.id] = ancestor.unread_count
         counts[outline.id] = outline.unread_count
         for descendant in outline.get_descendants():
-            counts[descendant.id] = outline.unread_count
+            counts[descendant.id] = descendant.unread_count
 
         data = {"counts": counts, "total": get_total_unread_count(self.request.user)}
         serializer = self.get_serializer(data)
