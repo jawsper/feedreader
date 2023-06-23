@@ -1,7 +1,23 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.models import User
 from treebeard.admin import TreeAdmin
 from treebeard.forms import movenodeform_factory
-from .models import Outline, Feed
+from .models import Outline, Feed, UserConfig
+
+
+class ConfigInline(admin.StackedInline):
+    model = UserConfig
+    can_delete = False
+    # verbose_name_plural = "configs"
+
+
+class UserAdmin(BaseUserAdmin):
+    inlines = [ConfigInline]
+
+
+admin.site.unregister(User)
+admin.site.register(User, UserAdmin)
 
 
 @admin.register(Outline)
