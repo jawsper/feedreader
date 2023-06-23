@@ -29,6 +29,8 @@ whitenoise = "~=6.2.0"
 black = "~=22.10.0"
 django-debug-toolbar = "~=4.0.0"
 pre-commit = "~=2.20.0"
+pytest = "*"
+pytest-django = "*"
 
 [requires]
 python_version = "3.11"
