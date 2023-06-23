@@ -116,7 +116,7 @@ class Outline(MP_Node, DisplayTitleMixIn):
         return outline
 
     def get_ancestors(self, include_self=False):
-        if self.is_root():
+        if self.is_root() and not include_self:
             return get_result_class(self.__class__).objects.none()
         paths = [self.path[0:pos] for pos in range(0, len(self.path), self.steplen)[1:]]
         if include_self:
