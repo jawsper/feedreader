@@ -3,6 +3,7 @@ from .base import *
 from feedreader import __version__
 
 import os
+from pathlib import Path
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.celery import CeleryIntegration
@@ -13,7 +14,12 @@ DEBUG = False
 
 ALLOWED_HOSTS = [os.getenv("DJANGO_ALLOWED_HOST")]
 
-SECRET_KEY = open("/var/run/secrets/secret_key", "rt").read()
+if secret_key := os.getenv("DJANGO_SECRET_KEY"):
+    SECRET_KEY = secret_key
+else:
+    SECRET_KEY = Path(
+        os.getenv("DJANGO_SECRET_KEY_PATH", "/var/run/secrets/secret_key")
+    ).read_text()
 
 ADMINS = ((os.getenv("ADMIN_EMAIL_NAME", ""), os.getenv("ADMIN_EMAIL_ADDRESS", "")),)
 
