@@ -1,8 +1,7 @@
-from typing import List
 from .base import *
 
 DEBUG = True
-ALLOWED_HOSTS: List[str] = []
+ALLOWED_HOSTS = [os.getenv("DJANGO_ALLOWED_HOST")]
 
 LOAD_FAVICON = False
 
