@@ -1,4 +1,5 @@
 from rest_framework import mixins, viewsets, pagination
+from rest_framework.schemas.openapi import AutoSchema
 
 from feedreader.functions.outline import update_userpost_unread_count
 from feedreader.models import Outline, UserConfig, UserPost
@@ -84,6 +85,8 @@ class AllPostsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = PostSerializer
     pagination_class = PostPagination
 
+    schema = AutoSchema(operation_id_base="AllPosts")
+
     params = {}
 
     def get_queryset(self):
@@ -104,4 +107,5 @@ class AllPostsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 
 class StarredPostsViewSet(AllPostsViewSet):
+    schema = AutoSchema(operation_id_base="StarredPosts")
     params = {"starred": True}
