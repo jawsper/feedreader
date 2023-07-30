@@ -1,7 +1,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export * from "./Config";
-export * from "./ListPosts200Response";
+export * from "./ListAllPosts200Response";
 export * from "./NewFeed";
 export * from "./Outline";
 export * from "./OutlineFeed";

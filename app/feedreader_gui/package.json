@@ -21,7 +21,7 @@
     "svelte-infinite-scroll": "^2.0.1"
   },
   "devDependencies": {
-    "@openapitools/openapi-generator-cli": "^2.6.0",
+    "@openapitools/openapi-generator-cli": "^2.7.0",
     "@tsconfig/svelte": "^3.0.0",
     "@types/bootstrap": "^5.1.0",
     "@types/dompurify": "^2.3.3",

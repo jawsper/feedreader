@@ -1,9 +1,8 @@
-.openapi-generator-ignore
 apis/ApiApi.ts
 apis/index.ts
 index.ts
 models/Config.ts
-models/ListPosts200Response.ts
+models/ListAllPosts200Response.ts
 models/NewFeed.ts
 models/Outline.ts
 models/OutlineFeed.ts
