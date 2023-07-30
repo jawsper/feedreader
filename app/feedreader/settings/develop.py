@@ -1,7 +1,7 @@
 from .base import *
 
 DEBUG = True
-ALLOWED_HOSTS = [os.getenv("DJANGO_ALLOWED_HOST")]
+ALLOWED_HOSTS = [os.getenv("DJANGO_ALLOWED_HOST", "localhost")]
 
 LOAD_FAVICON = False
 
