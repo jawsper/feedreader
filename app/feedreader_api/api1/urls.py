@@ -39,6 +39,8 @@ urlpatterns = [
             title="Feedreader",
             description="Feedreader",
             version=__version__,
+            public=True,
+            permission_classes=[],
         ),
         name="openapi-schema",
     ),
