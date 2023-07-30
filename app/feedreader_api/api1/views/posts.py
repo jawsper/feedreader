@@ -78,3 +78,30 @@ class PostEditViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
 
     def get_queryset(self):
         return UserPost.objects.filter(user=self.request.user)
+
+
+class AllPostsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = PostSerializer
+    pagination_class = PostPagination
+
+    params = {}
+
+    def get_queryset(self):
+        user = self.request.user
+
+        params = {
+            "user": user,
+        }
+
+        params.update(self.params)
+
+        posts_queryset = (
+            UserPost.objects.filter(**params)
+            .select_related("post", "post__feed")
+            .order_by("post_id")
+        )
+        return posts_queryset
+
+
+class StarredPostsViewSet(AllPostsViewSet):
+    params = {"starred": True}

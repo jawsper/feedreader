@@ -7,12 +7,19 @@ from feedreader import __version__
 from .views.config import ConfigViewSet
 from .views.feed import FeedViewSet
 from .views.outlines import OutlinesViewSet
-from .views.posts import PostsViewSet, PostEditViewSet
+from .views.posts import (
+    PostsViewSet,
+    PostEditViewSet,
+    AllPostsViewSet,
+    StarredPostsViewSet,
+)
 from .views.unread_count import UnreadCountViewSet
 
 router = DefaultRouter()
 router.register("outlines", OutlinesViewSet, basename="outlines")
 router.register("feed", FeedViewSet, basename="feed")
+router.register("posts/all", AllPostsViewSet, basename="all")
+router.register("posts/starred", StarredPostsViewSet, basename="starred")
 router.register("posts", PostEditViewSet, basename="posts")
 router.register("unread_counts", UnreadCountViewSet, basename="unread_counts")
 
