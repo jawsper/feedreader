@@ -30,6 +30,12 @@ export interface UnreadCount {
    * @type {number}
    * @memberof UnreadCount
    */
+  readonly starred?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof UnreadCount
+   */
   readonly total?: number;
 }
 
@@ -55,6 +61,7 @@ export function UnreadCountFromJSONTyped(
   }
   return {
     counts: !exists(json, "counts") ? undefined : json["counts"],
+    starred: !exists(json, "starred") ? undefined : json["starred"],
     total: !exists(json, "total") ? undefined : json["total"],
   };
 }

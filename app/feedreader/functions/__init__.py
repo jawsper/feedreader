@@ -48,6 +48,11 @@ def get_total_unread_count(user):
     return query.count()
 
 
+def get_starred_unread_count(user):
+    query = UserPost.objects.filter(user=user, starred=True)
+    return query.count()
+
+
 import urllib.request, urllib.error, urllib.parse
 
 

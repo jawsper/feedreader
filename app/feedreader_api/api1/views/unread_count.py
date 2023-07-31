@@ -2,7 +2,7 @@ from rest_framework import viewsets
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
-from feedreader.functions import get_total_unread_count
+from feedreader.functions import get_total_unread_count, get_starred_unread_count
 from feedreader.models import Outline
 
 from ..serializers.unread_count import UnreadCountSerializer
@@ -17,6 +17,7 @@ class UnreadCountViewSet(viewsets.GenericViewSet):
                 outline.id: outline.unread_count
                 for outline in Outline.objects.filter(user=self.request.user)
             },
+            "starred": get_starred_unread_count(self.request.user),
             "total": get_total_unread_count(self.request.user),
         }
         serializer = self.get_serializer(data)
@@ -34,6 +35,10 @@ class UnreadCountViewSet(viewsets.GenericViewSet):
         for descendant in outline.get_descendants():
             counts[descendant.id] = descendant.unread_count
 
-        data = {"counts": counts, "total": get_total_unread_count(self.request.user)}
+        data = {
+            "counts": counts,
+            "starred": get_starred_unread_count(self.request.user),
+            "total": get_total_unread_count(self.request.user),
+        }
         serializer = self.get_serializer(data)
         return Response(serializer.data)
