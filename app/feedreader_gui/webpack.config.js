@@ -1,6 +1,7 @@
 var path = require("path");
 var BundleTracker = require("webpack-bundle-tracker");
 var MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
 const preprocess = require("svelte-preprocess");
 
 module.exports = {
@@ -24,6 +25,9 @@ module.exports = {
     }),
     new MiniCssExtractPlugin({
       filename: "[name]-[chunkhash].css",
+    }),
+    new CopyPlugin({
+      patterns: [{ from: "./assets/images/favicon.png", to: "images" }],
     }),
   ],
 
