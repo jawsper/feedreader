@@ -1,5 +1,9 @@
+from importlib import import_module
+
 from celery import shared_task
 import asyncio
+
+from django.conf import settings
 
 from feedreader.functions.feedupdate import FeedsUpdater
 from feedreader.models import Feed
@@ -49,3 +53,9 @@ def download_feed_favicon(feed_id):
     logger.info("Downloading favicon")
     result = feed.download_favicon()
     logger.info(f"Download success: {result}")
+
+
+@shared_task(ignore_result=True)
+def clear_sessions():
+    SessionStore = import_module(settings.SESSION_ENGINE).SessionStore
+    SessionStore.clear_expired()
