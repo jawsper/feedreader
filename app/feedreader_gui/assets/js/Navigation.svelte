@@ -43,7 +43,7 @@
     if (id !== null) {
       idx = flattened.findIndex((ol) => ol.id === id);
     } else {
-      idx = -1;
+      idx = next ? -1 : flattened.length;
     }
     let next_idx = next ? idx + 1 : idx - 1;
     if (next_idx < 0 || next_idx >= flattened.length) {
