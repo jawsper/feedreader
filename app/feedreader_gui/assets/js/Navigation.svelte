@@ -30,8 +30,11 @@
   let highlight: number | null = null;
 
   const update_highlight = (id: number, next: boolean = true) => {
-    const flatten_outline = (outline: Outline): Outline[] =>
-      [outline, ...outline.children.map(flatten_outline)].flat();
+    const flatten_outline = (outline: Outline): Outline[] => {
+      if(outline.children && !outline.folder_opened) return [outline];
+      return [outline, ...outline.children.map(flatten_outline)].flat();
+    }
+
     let flattened = $outlines.flatMap(flatten_outline);
     if ($options.show_only_unread.value) {
       flattened = flattened.filter((o) => o.unread_count > 0);
