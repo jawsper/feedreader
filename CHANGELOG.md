@@ -1,3 +1,110 @@
+## 2.1.0
+- feat: add API endpoints for all posts and starred posts
+- fix: set DJANGO_ALLOWED_HOST default to "localhost" in develop settings
+- fix: allow fetching openapi schema without authentication
+- fix: ensure AllPosts and StarredPosts get a unique operationId
+- feat: add copy-webpack-plugin to copy favicon to static/images
+- feat: add starred to unread count view
+- feat: create clear_sessions task
+- fix: skip closed folders when navigating outlines by keyboard
+- fix: make it possible to kb-navigate outlines from the bottom
+- updated dependencies
+
+## 2.0.14
+- updated dependencies
+
+## 2.0.13
+- updated dependencies
+
+## 2.0.12
+- feat: also read DJANGO_ALLOWED_HOST in develop settings
+
+## 2.0.11
+- fix: another place to check for debug_toolbar import
+
+## 2.0.10
+- fix: use correct exception to check for ModuleNotFoundError
+
+## 2.0.9
+- feat: only import debug_toolbar if it's installed
+
+## 2.0.8
+- feat: update gui dependencies
+- fix: add missing migration
+
+## 2.0.7
+- feat: allow setting DJANGO_SECRET_KEY or DJANGO_SECRET_KEY_PATH to pass secret key in other ways
+
+## 2.0.6
+- dep: add pytest and pytest-django to dev dependencies
+- feat: add tests for Outline.get_ancestors
+- fix: ensure Outline.get_ancestors(include_self=True) return self
+- feat: show UserConfig in UserAdmin
+
+## 2.0.5
+- fix: set default permission for DRF to `IsAuthenticated`
+
+## 2.0.4
+- fix: Unread count for outline does not return correct counts
+
+## 2.0.3
+- feat: show post dates in relative format
+
+## 2.0.2
+- feat: remove X-Frame-Options middleware
+
+## 2.0.1
+- updated dependencies
+
+## 2.0.0
+- add new api/1/ using django-rest-framework
+- feat: use content decoding algorithm from feedparser library
+- feat: use os.getenv everywhere instead of os.environ.get
+- feat: add caching with redis
+- feat: throw FeedUpdateFailure when feed has no XML URL, make sure hostname is not None
+
+## 1.28.4
+- fix: undo last commit
+
+## 1.28.3
+- fix: throw error when no feed URL, wrap response data in StringIO
+
+## 1.28.2
+- fix: don't throw error on bozo
+
+## 1.28.1
+- feat: make more cookie vars configurable
+
+## 1.28.0
+- feat: add django-cors-headers, update redis to 4.4.x
+- feat: add corsheaders app, allow configure samesite with env vars
+
+## 1.27.1
+- feat: Upgrade to python 3.11, django 4.2
+- fix: make sure Outline._cached_children is a different instance for each Outline
+- updated dependencies
+
+## 1.27.0
+- fix: ensure celery apps start after web has finished migrations
+- feat: use libpq5 instead of libpq-dev in final container
+
+## 1.26.6
+- Use settings.AUTH_USER_MODEL for User fk
+
+## 1.26.5
+- updated dependencies
+
+## 1.26.4
+- actions: Set permissions.contents to write to allow creating releases
+
+## 1.26.3
+- switch from hub.docker.com to ghcr.io
+- add missing "restart: unless-stopped" to ingress
+
+## 1.26.2
+- updated dependencies
+- updated .git-blame-ignore-revs
+
 ## 1.26.1
 - updated dependencies
 
