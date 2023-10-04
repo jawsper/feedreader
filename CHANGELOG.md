@@ -1,3 +1,11 @@
+## 2.2.1
+- updated django-treebeard to 4.7.0
+
+## 2.2.0
+- feat: make HttpOnly flag on session/csrf cookies configurable
+- fix: make sure to recurse into outlines when opening/closing folders
+- updated dependencies
+
 ## 2.1.0
 - feat: add API endpoints for all posts and starred posts
 - fix: set DJANGO_ALLOWED_HOST default to "localhost" in develop settings
