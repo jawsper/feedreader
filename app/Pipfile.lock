@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "16b18c7d96f01bcf62e03a8daf6a01e3165e7f8848407ac4f8aff1c6ef54e5a9"
+            "sha256": "77302c2323b9d987829e2656375383c0f601145ccdffe8b158b1dbc9a0cd6ae9"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -359,12 +359,12 @@
         },
         "django-treebeard": {
             "hashes": [
-                "sha256:84ab35040277d524eb77939e235568c9c856cb523cc9655793b66fe9a3ef468b",
-                "sha256:89bc79a7d9ae62e8071ff1f866c83b1484c408d6082ce11cf3eca689240712f6"
+                "sha256:787117995ff985d98e6c2b241ef6b9d37fe8ff7051cd7535c283616a0b5b2645",
+                "sha256:c751a3f924158c288fea89afc25a7151979faf01bf11fdc7be3b858099dfa56d"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.8'",
-            "version": "==4.6.1"
+            "version": "==4.7"
         },
         "django-webpack-loader": {
             "hashes": [
