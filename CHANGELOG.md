@@ -1,3 +1,6 @@
+## 2.2.2
+- fix: ensure nested outlines have their unread count updated properly
+
 ## 2.2.1
 - updated django-treebeard to 4.7.0
 
