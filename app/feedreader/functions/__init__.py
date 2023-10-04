@@ -35,7 +35,11 @@ def get_unread_count(user, outline: Outline):
         )
     else:
 
-        feed_query = outline.get_children().values_list("feed", flat=True)
+        feed_query = (
+            outline.get_descendants()
+            .filter(feed__isnull=False)
+            .values_list("feed", flat=True)
+        )
         post_query = Post.objects.filter(feed__in=feed_query)
         query = UserPost.objects.filter(
             user=outline.user, post__in=post_query, read=False
