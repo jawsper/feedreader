@@ -9,13 +9,20 @@
   const handleOpenFolder = ({ detail }: CustomEvent<FolderOpen>) => {
     const { id: outline_id, open } = detail;
     set_outline_param(outline_id, "folder_opened", !open, true);
+    const outlines_update_function = (outline: Outline) => {
+      if (outline.id === outline_id) {
+        return { ...outline, folder_opened: !open };
+      }
+      if (outline.children?.length > 0) {
+        return {
+          ...outline,
+          children: outline.children.map(outlines_update_function),
+        };
+      }
+      return outline;
+    };
     outlines.update((outlines) => {
-      return outlines.map((outline) => {
-        if (outline.id === outline_id) {
-          return { ...outline, folder_opened: !open };
-        }
-        return outline;
-      });
+      return outlines.map(outlines_update_function);
     });
   };
 
@@ -25,15 +32,16 @@
     history.pushState(null, null, href);
   };
 
-  const handleOpenOutline = ({ detail }: CustomEvent<OpenOutline>) => open_outline(detail.id);
+  const handleOpenOutline = ({ detail }: CustomEvent<OpenOutline>) =>
+    open_outline(detail.id);
 
   let highlight: number | null = null;
 
   const update_highlight = (id: number, next: boolean = true) => {
     const flatten_outline = (outline: Outline): Outline[] => {
-      if(outline.children && !outline.folder_opened) return [outline];
+      if (outline.children && !outline.folder_opened) return [outline];
       return [outline, ...outline.children.map(flatten_outline)].flat();
-    }
+    };
 
     let flattened = $outlines.flatMap(flatten_outline);
     if ($options.show_only_unread.value) {
