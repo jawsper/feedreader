@@ -24,7 +24,7 @@ WORKDIR /app
 
 FROM base as poetry
 
-RUN python -m pip install poetry
+RUN python -m pip install poetry==1.6.1
 COPY pyproject.toml poetry.lock ./
 RUN poetry export -o requirements.txt
 
