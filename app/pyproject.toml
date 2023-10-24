@@ -1,9 +1,13 @@
-[[source]]
-url = "https://pypi.org/simple"
-verify_ssl = true
-name = "pypi"
+[tool.poetry]
+name = "feedreader"
+version = "2.2.2"
+description = "Automated RSS feedreader with webinterface."
+authors = ["Jasper Seidel <1558353+jawsper@users.noreply.github.com>"]
+license = "MIT"
+readme = "../README.rst"
 
-[packages]
+[tool.poetry.dependencies]
+python = "^3.11"
 aiohttp = "~=3.8.4"
 beautifulsoup4 = "~=4.11.1"
 celery = "~=5.2.2"
@@ -25,12 +29,14 @@ sentry-sdk = "~=1.14.0"
 uritemplate = "~=4.1.1"
 whitenoise = "~=6.2.0"
 
-[dev-packages]
+
+[tool.poetry.group.dev.dependencies]
 black = "~=22.10.0"
 django-debug-toolbar = "~=4.0.0"
 pre-commit = "~=2.20.0"
 pytest = "*"
 pytest-django = "*"
 
-[requires]
-python_version = "3.11"
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

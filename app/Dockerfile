@@ -15,25 +15,31 @@ RUN yarn --frozen-lockfile && \
 
 ######################################
 
-# pull official base image
-FROM python:3.11-slim as builder
+FROM python:3.11-slim as base
 
-# set environment varibles
-ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIPENV_VENV_IN_PROJECT=1
-
-# set work directory
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 WORKDIR /app
-
-# install dependencies
-RUN python -m pip install pipenv==2023.4.20
-COPY ./Pipfile ./Pipfile.lock ./
-RUN pipenv sync
 
 ######################################
 
-FROM python:3.11-slim as runtime
+FROM base as poetry
 
-WORKDIR /app
+RUN python -m pip install poetry
+COPY pyproject.toml poetry.lock ./
+RUN poetry export -o requirements.txt
+
+######################################
+
+FROM base as builder
+
+COPY --from=poetry /app/requirements.txt /tmp/requirements.txt
+RUN python -m venv .venv && \
+    .venv/bin/pip install -U pip && \
+    .venv/bin/pip install -r /tmp/requirements.txt
+
+######################################
+
+FROM base as runtime
 
 RUN addgroup --system feedreader \
     && adduser \
@@ -46,8 +52,6 @@ RUN addgroup --system feedreader \
     && mkdir media static \
     && chown feedreader media static
 
-USER feedreader
-
 # copy project
 ENV PATH=/app/.venv/bin:$PATH
 USER nobody
@@ -59,5 +63,7 @@ COPY manage.py .
 COPY entrypoint.sh .
 COPY --from=node-builder /app/static ./feedreader_gui/static/
 COPY --from=node-builder /app/webpack-stats.json ./feedreader_gui/
+
+USER feedreader
 
 # ENTRYPOINT ["/app/entrypoint.sh"]
